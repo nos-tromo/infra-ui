@@ -8,4 +8,5 @@ export default defineConfig({
   minify: false,
   splitting: false,
   external: ['react', 'react-dom'],
+  tsconfig: 'tsconfig.build.json',
 })
