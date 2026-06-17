@@ -1,0 +1,19 @@
+@theme {
+  /* fixed family neutrals (from Nextext) */
+  --color-background: hsl(240 6% 8%);
+  --color-foreground: hsl(0 0% 98%);
+  --color-muted: hsl(240 4% 16%);
+  --color-muted-foreground: hsl(240 5% 65%);
+  --color-border: hsl(240 4% 22%);
+  --color-accent: hsl(240 5% 26%);
+  --color-danger: hsl(0 72% 55%);
+
+  /* the ONE per-app knob — falls back to the family blue if unset */
+  --color-primary: var(--app-accent, hsl(217 91% 60%));
+  --color-primary-foreground: hsl(0 0% 100%);
+
+  /* type + shape */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --radius: 0.5rem;
+}
