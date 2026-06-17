@@ -1,3 +1,5 @@
 export { cn } from './cn'
 export { Button, type ButtonProps } from './primitives/Button'
 export { Card } from './primitives/Card'
+export { Input } from './primitives/Input'
+export { Select } from './primitives/Select'
