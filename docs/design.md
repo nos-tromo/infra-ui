@@ -151,7 +151,7 @@ package's compiled output:
 ```css
 @import 'tailwindcss';
 @import '@infra/ui/theme.css';                 /* shared tokens */
-@source '../node_modules/@infra/ui/dist';      /* so TW sees the primitives' classes */
+@source '../../node_modules/@infra/ui/dist';      /* so TW sees the primitives' classes */
 :root { --app-accent: hsl(160 84% 39%); }      /* optional per-app brand */
 ```
 

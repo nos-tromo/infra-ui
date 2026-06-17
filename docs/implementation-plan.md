@@ -1094,7 +1094,7 @@ In your app's root CSS (e.g. `src/styles/globals.css`):
 ```css
 @import 'tailwindcss';
 @import '@infra/ui/theme.css';                 /* shared tokens */
-@source '../node_modules/@infra/ui/dist';      /* so Tailwind sees the primitives' classes */
+@source '../../node_modules/@infra/ui/dist';      /* so Tailwind sees the primitives' classes */
 
 /* optional: brand this app with one accent color (omit to inherit the family blue) */
 :root { --app-accent: hsl(160 84% 39%); }

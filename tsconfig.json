@@ -10,7 +10,7 @@
     "skipLibCheck": true,
     "noUnusedLocals": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["vitest/globals", "@testing-library/jest-dom", "node"],
+    "types": ["vitest/globals", "@testing-library/jest-dom", "node"]
   },
   "include": ["src", "demo"]
 }

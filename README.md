@@ -19,14 +19,18 @@ In your app's root CSS (e.g. `src/styles/globals.css`):
 ```css
 @import 'tailwindcss';
 @import '@infra/ui/theme.css';                 /* shared tokens */
-@source '../node_modules/@infra/ui/dist';      /* so Tailwind sees the primitives' classes */
+
+/* @source is resolved RELATIVE TO THIS CSS FILE. Point it at the installed
+   package's dist so Tailwind generates the primitives' utility classes.
+   Count the ../ from your CSS file to node_modules — e.g. an entry at
+   src/styles/globals.css needs two levels up: */
+@source '../../node_modules/@infra/ui/dist';
 
 /* optional: brand this app with one accent color (omit to inherit the family blue) */
 :root { --app-accent: hsl(160 84% 39%); }
 ```
 
-> The `@source` line is required — without it Tailwind won't generate the utility
-> classes the primitives reference, and they'll render unstyled.
+> The `@source` line is required, at the correct depth for your CSS file's location — without it Tailwind generates none of the primitives' classes and they render unstyled.
 
 ## Use
 
