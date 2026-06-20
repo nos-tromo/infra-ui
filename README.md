@@ -31,12 +31,13 @@ In your app's root CSS (e.g. `src/styles/globals.css`):
 ## Use
 
 ```tsx
-import { Button, Card, Input, Select, Badge, Spinner, Banner, cn } from '@infra/ui'
+import { Button, CopyButton, Card, Input, Select, Badge, Spinner, Banner, cn } from '@infra/ui'
 ```
 
 ## Primitives
 
-`Button` (primary/secondary/ghost/danger · sm/md) · `Card` · `Input` · `Select` ·
+`Button` (primary/secondary/ghost/danger · sm/md) · `CopyButton` (icon-only,
+copies text to the clipboard) · `Card` · `Input` · `Select` ·
 `Badge` (neutral/accent/danger) · `Spinner` · `Banner` (info/danger).
 
 All styling uses semantic design tokens only (`bg-primary`, `text-muted-foreground`,

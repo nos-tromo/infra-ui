@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Badge, Banner, Button, Card, Input, Select, Spinner } from '../src/index'
+import { Badge, Banner, Button, CopyButton, Card, Input, Select, Spinner } from '../src/index'
 import './styles.css'
 
 function Sink() {
@@ -15,6 +15,7 @@ function Sink() {
         <Button variant="danger">Danger</Button>
         <Button size="sm">Small</Button>
         <Button disabled>Disabled</Button>
+        <CopyButton text="Copied from the kitchen sink" />
         <Spinner />
       </section>
 

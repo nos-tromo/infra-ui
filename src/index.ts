@@ -1,5 +1,6 @@
 export { cn } from './cn'
 export { Button, type ButtonProps } from './primitives/Button'
+export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'
 export { Card } from './primitives/Card'
 export { Input } from './primitives/Input'
 export { Select } from './primitives/Select'
