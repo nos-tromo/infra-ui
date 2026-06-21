@@ -9,8 +9,12 @@ Dark, minimal, Nextext-derived. Consumed as a tag-pinned pnpm Git dependency.
 pnpm add github:nos-tromo/infra-ui#v0.1.0
 ```
 
-`react` and `react-dom` (v19) are peer dependencies. `dist/` is built automatically
-on install via the `prepare` script.
+`react` and `react-dom` (v19) are peer dependencies. The built `dist/` (JS + `.d.ts`)
+is **committed to the repo**, so every consumer gets the same prebuilt, deterministic
+types — there is no install-time rebuild. (Rebuilding per-consumer under `prepare` proved
+unreliable: a tag-pinned git dependency rebuilt in some CI environments emitted a degraded
+`.d.ts`, silently making the primitives `any`.) After changing `src/`, run `pnpm build`
+and commit `dist/`.
 
 ## Wire it up (Tailwind v4)
 
@@ -46,10 +50,10 @@ All styling uses semantic design tokens only (`bg-primary`, `text-muted-foregrou
 ## Develop
 
 ```bash
-pnpm install      # builds dist via prepare
+pnpm install      # install deps (dist is committed, not built on install)
 pnpm test         # vitest (unit tests for every primitive)
 pnpm demo         # Vite kitchen-sink for visual review
-pnpm build        # tsup -> dist/
+pnpm build        # tsup -> dist/  (commit dist/ whenever src/ changes)
 ```
 
 ## Design docs
