@@ -1,2 +1,7 @@
+*.code-workspace
+
 node_modules
 *.log
+
+# Demo (Vite) build output — keep ignored; the package's root dist/ is tracked intentionally
+demo/dist/
