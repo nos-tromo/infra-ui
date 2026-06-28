@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    # @infra/ui is a pnpm/TypeScript library, so it uses the shared node-lib
+    # reusable workflow (not python-app-ci.yml). check-dist guards the committed
+    # prebuilt dist/ that every app frontend consumes as a pinned git dependency:
+    # the job fails if a src/ change shipped without a matching `pnpm build`.
+    uses: nos-tromo/.github/.github/workflows/node-lib-ci.yml@v3
+    with:
+      check-dist: true
