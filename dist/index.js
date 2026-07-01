@@ -221,6 +221,18 @@ function Banner({ className, variant, ...props }) {
   const role = variant === "danger" ? "alert" : "status";
   return /* @__PURE__ */ jsx8("div", { role, className: cn(banner({ variant }), className), ...props });
 }
+
+// src/layout/Shell.tsx
+import { jsx as jsx9, jsxs as jsxs2 } from "react/jsx-runtime";
+function Shell({ title, actions, children, className }) {
+  return /* @__PURE__ */ jsxs2("div", { className: cn("min-h-full", className), children: [
+    /* @__PURE__ */ jsxs2("header", { className: "sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-background px-6 py-4", children: [
+      /* @__PURE__ */ jsx9("h1", { className: "text-lg font-semibold", children: title }),
+      actions
+    ] }),
+    /* @__PURE__ */ jsx9("main", { className: "mx-auto max-w-5xl px-6 py-8", children })
+  ] });
+}
 export {
   Badge,
   Banner,
@@ -229,6 +241,7 @@ export {
   CopyButton,
   Input,
   Select,
+  Shell,
   Spinner,
   cn
 };
