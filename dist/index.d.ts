@@ -1,6 +1,6 @@
 import { ClassValue } from 'clsx';
 import * as react from 'react';
-import { ButtonHTMLAttributes, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes, ReactNode } from 'react';
 import * as class_variance_authority_types from 'class-variance-authority/types';
 import { VariantProps } from 'class-variance-authority';
 
@@ -58,4 +58,22 @@ interface BannerProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeo
 }
 declare function Banner({ className, variant, ...props }: BannerProps): react.JSX.Element;
 
-export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, Input, Select, Spinner, type SpinnerProps, cn };
+interface ShellProps {
+    /** Heading rendered on the left of the sticky header. */
+    title: ReactNode;
+    /** Optional right-aligned slot (e.g. a status bar or action buttons). */
+    actions?: ReactNode;
+    /** Page body rendered inside the centered main container. */
+    children?: ReactNode;
+    /** Extra classes merged onto the full-height root wrapper. */
+    className?: string;
+}
+/**
+ * App shell: a full-height wrapper with a sticky top header (title + optional
+ * actions slot) above a centered main content column. The header stays pinned
+ * to the top and keeps an opaque `bg-background` so it remains visible — and
+ * does not let content bleed through — while the page scrolls.
+ */
+declare function Shell({ title, actions, children, className }: ShellProps): react.JSX.Element;
+
+export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn };
