@@ -32,10 +32,35 @@ var Button = forwardRef(
 );
 Button.displayName = "Button";
 
+// src/primitives/HoverIconAction.tsx
+import { forwardRef as forwardRef2 } from "react";
+import { jsx as jsx2 } from "react/jsx-runtime";
+var HoverIconAction = forwardRef2(
+  ({ icon, label, className, ...props }, ref) => /* @__PURE__ */ jsx2(
+    Button,
+    {
+      ref,
+      type: "button",
+      variant: "ghost",
+      size: "sm",
+      "aria-label": label,
+      title: label,
+      className: cn(
+        "aspect-square px-0 opacity-0 transition-opacity",
+        "group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100",
+        className
+      ),
+      ...props,
+      children: icon
+    }
+  )
+);
+HoverIconAction.displayName = "HoverIconAction";
+
 // src/primitives/CopyButton.tsx
-import { forwardRef as forwardRef2, useEffect, useRef, useState } from "react";
-import { jsx as jsx2, jsxs } from "react/jsx-runtime";
-var CopyButton = forwardRef2(
+import { forwardRef as forwardRef3, useEffect, useRef, useState } from "react";
+import { jsx as jsx3, jsxs } from "react/jsx-runtime";
+var CopyButton = forwardRef3(
   ({
     text,
     label = "Copy",
@@ -65,7 +90,7 @@ var CopyButton = forwardRef2(
       }, resetDelayMs);
     }
     const currentLabel = copied ? copiedLabel : label;
-    return /* @__PURE__ */ jsx2(
+    return /* @__PURE__ */ jsx3(
       Button,
       {
         ref,
@@ -77,7 +102,7 @@ var CopyButton = forwardRef2(
         onClick: () => void copy(),
         className: cn("aspect-square px-0", className),
         ...props,
-        children: copied ? /* @__PURE__ */ jsx2(CheckGlyph, {}) : /* @__PURE__ */ jsx2(CopyGlyph, {})
+        children: copied ? /* @__PURE__ */ jsx3(CheckGlyph, {}) : /* @__PURE__ */ jsx3(CopyGlyph, {})
       }
     );
   }
@@ -97,14 +122,14 @@ function CopyGlyph() {
       className: "h-4 w-4",
       "aria-hidden": "true",
       children: [
-        /* @__PURE__ */ jsx2("rect", { x: "8", y: "8", width: "14", height: "14", rx: "2", ry: "2" }),
-        /* @__PURE__ */ jsx2("path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" })
+        /* @__PURE__ */ jsx3("rect", { x: "8", y: "8", width: "14", height: "14", rx: "2", ry: "2" }),
+        /* @__PURE__ */ jsx3("path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" })
       ]
     }
   );
 }
 function CheckGlyph() {
-  return /* @__PURE__ */ jsx2(
+  return /* @__PURE__ */ jsx3(
     "svg",
     {
       xmlns: "http://www.w3.org/2000/svg",
@@ -116,16 +141,16 @@ function CheckGlyph() {
       strokeLinejoin: "round",
       className: "h-4 w-4",
       "aria-hidden": "true",
-      children: /* @__PURE__ */ jsx2("path", { d: "M20 6 9 17l-5-5" })
+      children: /* @__PURE__ */ jsx3("path", { d: "M20 6 9 17l-5-5" })
     }
   );
 }
 
 // src/primitives/Card.tsx
-import { forwardRef as forwardRef3 } from "react";
-import { jsx as jsx3 } from "react/jsx-runtime";
-var Card = forwardRef3(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx3(
+import { forwardRef as forwardRef4 } from "react";
+import { jsx as jsx4 } from "react/jsx-runtime";
+var Card = forwardRef4(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx4(
     "div",
     {
       ref,
@@ -137,10 +162,10 @@ var Card = forwardRef3(
 Card.displayName = "Card";
 
 // src/primitives/Input.tsx
-import { forwardRef as forwardRef4 } from "react";
-import { jsx as jsx4 } from "react/jsx-runtime";
-var Input = forwardRef4(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx4(
+import { forwardRef as forwardRef5 } from "react";
+import { jsx as jsx5 } from "react/jsx-runtime";
+var Input = forwardRef5(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx5(
     "input",
     {
       ref,
@@ -155,10 +180,10 @@ var Input = forwardRef4(
 Input.displayName = "Input";
 
 // src/primitives/Select.tsx
-import { forwardRef as forwardRef5 } from "react";
-import { jsx as jsx5 } from "react/jsx-runtime";
-var Select = forwardRef5(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx5(
+import { forwardRef as forwardRef6 } from "react";
+import { jsx as jsx6 } from "react/jsx-runtime";
+var Select = forwardRef6(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx6(
     "select",
     {
       ref,
@@ -174,7 +199,7 @@ Select.displayName = "Select";
 
 // src/primitives/Badge.tsx
 import { cva as cva2 } from "class-variance-authority";
-import { jsx as jsx6 } from "react/jsx-runtime";
+import { jsx as jsx7 } from "react/jsx-runtime";
 var badge = cva2("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium", {
   variants: {
     variant: {
@@ -186,13 +211,13 @@ var badge = cva2("inline-flex items-center rounded-full px-2 py-0.5 text-xs font
   defaultVariants: { variant: "neutral" }
 });
 function Badge({ className, variant, ...props }) {
-  return /* @__PURE__ */ jsx6("span", { className: cn(badge({ variant }), className), ...props });
+  return /* @__PURE__ */ jsx7("span", { className: cn(badge({ variant }), className), ...props });
 }
 
 // src/primitives/Spinner.tsx
-import { jsx as jsx7 } from "react/jsx-runtime";
+import { jsx as jsx8 } from "react/jsx-runtime";
 function Spinner({ className, label = "Loading" }) {
-  return /* @__PURE__ */ jsx7(
+  return /* @__PURE__ */ jsx8(
     "span",
     {
       role: "status",
@@ -207,7 +232,7 @@ function Spinner({ className, label = "Loading" }) {
 
 // src/primitives/Banner.tsx
 import { cva as cva3 } from "class-variance-authority";
-import { jsx as jsx8 } from "react/jsx-runtime";
+import { jsx as jsx9 } from "react/jsx-runtime";
 var banner = cva3("rounded-md border px-4 py-3 text-sm", {
   variants: {
     variant: {
@@ -219,18 +244,18 @@ var banner = cva3("rounded-md border px-4 py-3 text-sm", {
 });
 function Banner({ className, variant, ...props }) {
   const role = variant === "danger" ? "alert" : "status";
-  return /* @__PURE__ */ jsx8("div", { role, className: cn(banner({ variant }), className), ...props });
+  return /* @__PURE__ */ jsx9("div", { role, className: cn(banner({ variant }), className), ...props });
 }
 
 // src/layout/Shell.tsx
-import { jsx as jsx9, jsxs as jsxs2 } from "react/jsx-runtime";
+import { jsx as jsx10, jsxs as jsxs2 } from "react/jsx-runtime";
 function Shell({ title, actions, children, className }) {
   return /* @__PURE__ */ jsxs2("div", { className: cn("min-h-full", className), children: [
     /* @__PURE__ */ jsxs2("header", { className: "sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-background px-6 py-4", children: [
-      /* @__PURE__ */ jsx9("h1", { className: "text-lg font-semibold", children: title }),
+      /* @__PURE__ */ jsx10("h1", { className: "text-lg font-semibold", children: title }),
       actions
     ] }),
-    /* @__PURE__ */ jsx9("main", { className: "mx-auto max-w-5xl px-6 py-8", children })
+    /* @__PURE__ */ jsx10("main", { className: "mx-auto max-w-5xl px-6 py-8", children })
   ] });
 }
 export {
@@ -239,6 +264,7 @@ export {
   Button,
   Card,
   CopyButton,
+  HoverIconAction,
   Input,
   Select,
   Shell,
