@@ -1,6 +1,6 @@
 import { ClassValue } from 'clsx';
 import * as react from 'react';
-import { ButtonHTMLAttributes, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes, ReactNode } from 'react';
+import { ButtonHTMLAttributes, ReactNode, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes } from 'react';
 import * as class_variance_authority_types from 'class-variance-authority/types';
 import { VariantProps } from 'class-variance-authority';
 
@@ -14,6 +14,20 @@ declare const button: (props?: ({
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof button> {
 }
 declare const Button: react.ForwardRefExoticComponent<ButtonProps & react.RefAttributes<HTMLButtonElement>>;
+
+interface HoverIconActionProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+    /** The glyph to render. Passed as a node so the design system stays icon-library-agnostic. */
+    icon: ReactNode;
+    /** Accessible name — drives both `aria-label` and `title`. Required (there is no text child). */
+    label: string;
+}
+/**
+ * A ghost, square icon button that stays visually quiet until needed: it is
+ * `opacity-0` until an ancestor marked `.group` is hovered or focus-within, or
+ * the button itself receives keyboard focus. The consumer owns the `.group`
+ * marker and the button's positioning.
+ */
+declare const HoverIconAction: react.ForwardRefExoticComponent<HoverIconActionProps & react.RefAttributes<HTMLButtonElement>>;
 
 interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'onClick' | 'aria-label' | 'title'> {
     /** Text written to the clipboard on click. */
@@ -76,4 +90,4 @@ interface ShellProps {
  */
 declare function Shell({ title, actions, children, className }: ShellProps): react.JSX.Element;
 
-export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn };
+export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn };
