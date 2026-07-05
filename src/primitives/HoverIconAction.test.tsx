@@ -3,9 +3,11 @@ import { HoverIconAction } from './HoverIconAction'
 
 const Glyph = () => <svg data-testid="glyph" />
 
-test('exposes the label as the accessible name', () => {
+test('exposes the label as the accessible name and the tooltip', () => {
   render(<HoverIconAction icon={<Glyph />} label="Translate" />)
-  expect(screen.getByRole('button', { name: 'Translate' })).toBeInTheDocument()
+  const btn = screen.getByRole('button', { name: 'Translate' })
+  expect(btn).toBeInTheDocument()
+  expect(btn).toHaveAttribute('title', 'Translate')
 })
 
 test('is hover/focus revealed (opacity-0 until group/focus)', () => {

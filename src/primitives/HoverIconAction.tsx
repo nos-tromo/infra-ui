@@ -3,7 +3,7 @@ import { cn } from '../cn'
 import { Button } from './Button'
 
 export interface HoverIconActionProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'> {
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'aria-label' | 'title'> {
   /** The glyph to render. Passed as a node so the design system stays icon-library-agnostic. */
   icon: ReactNode
   /** Accessible name — drives both `aria-label` and `title`. Required (there is no text child). */
