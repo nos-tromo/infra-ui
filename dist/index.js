@@ -5,6 +5,20 @@ function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
+// src/mergeFiles.ts
+function mergeFiles(existing, incoming) {
+  const key = (file) => `${file.name}::${file.size}`;
+  const seen = new Set(existing.map(key));
+  const merged = [...existing];
+  for (const file of incoming) {
+    const fileKey = key(file);
+    if (seen.has(fileKey)) continue;
+    seen.add(fileKey);
+    merged.push(file);
+  }
+  return merged;
+}
+
 // src/primitives/Button.tsx
 import { forwardRef } from "react";
 import { cva } from "class-variance-authority";
@@ -247,15 +261,80 @@ function Banner({ className, variant, ...props }) {
   return /* @__PURE__ */ jsx9("div", { role, className: cn(banner({ variant }), className), ...props });
 }
 
-// src/layout/Shell.tsx
+// src/primitives/FileList.tsx
 import { jsx as jsx10, jsxs as jsxs2 } from "react/jsx-runtime";
+function formatBytes(bytes) {
+  if (bytes < 1024) return `${bytes} B`;
+  const units = ["KB", "MB", "GB", "TB"];
+  let value = bytes / 1024;
+  let unit = 0;
+  while (value >= 1024 && unit < units.length - 1) {
+    value /= 1024;
+    unit += 1;
+  }
+  return `${value.toFixed(1)} ${units[unit]}`;
+}
+function FileList({ files, onRemove, onClear, className, ...props }) {
+  if (files.length === 0) return null;
+  return /* @__PURE__ */ jsxs2(
+    "div",
+    {
+      className: cn("rounded-md border border-border bg-muted/30 text-sm", className),
+      ...props,
+      children: [
+        /* @__PURE__ */ jsxs2("div", { className: "flex items-center justify-between border-b border-border px-3 py-2", children: [
+          /* @__PURE__ */ jsxs2("span", { className: "font-medium text-foreground", children: [
+            files.length,
+            " file",
+            files.length === 1 ? "" : "s"
+          ] }),
+          onClear && /* @__PURE__ */ jsx10(
+            "button",
+            {
+              type: "button",
+              className: "text-muted-foreground transition-colors hover:text-foreground",
+              onClick: onClear,
+              children: "Clear all"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsx10("ul", { className: "divide-y divide-border", children: files.map((file, index) => /* @__PURE__ */ jsxs2(
+          "li",
+          {
+            className: "flex items-center justify-between gap-3 px-3 py-2",
+            children: [
+              /* @__PURE__ */ jsx10("span", { className: "min-w-0 truncate text-foreground", children: file.name }),
+              /* @__PURE__ */ jsxs2("span", { className: "flex shrink-0 items-center gap-3", children: [
+                /* @__PURE__ */ jsx10("span", { className: "text-muted-foreground", children: formatBytes(file.size) }),
+                onRemove && /* @__PURE__ */ jsx10(
+                  "button",
+                  {
+                    type: "button",
+                    "aria-label": `Remove ${file.name}`,
+                    className: "text-muted-foreground transition-colors hover:text-danger",
+                    onClick: () => onRemove(index),
+                    children: "\u2715"
+                  }
+                )
+              ] })
+            ]
+          },
+          `${file.name}::${file.size}`
+        )) })
+      ]
+    }
+  );
+}
+
+// src/layout/Shell.tsx
+import { jsx as jsx11, jsxs as jsxs3 } from "react/jsx-runtime";
 function Shell({ title, actions, children, className }) {
-  return /* @__PURE__ */ jsxs2("div", { className: cn("min-h-full", className), children: [
-    /* @__PURE__ */ jsxs2("header", { className: "sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-background px-6 py-4", children: [
-      /* @__PURE__ */ jsx10("h1", { className: "text-lg font-semibold", children: title }),
+  return /* @__PURE__ */ jsxs3("div", { className: cn("min-h-full", className), children: [
+    /* @__PURE__ */ jsxs3("header", { className: "sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-background px-6 py-4", children: [
+      /* @__PURE__ */ jsx11("h1", { className: "text-lg font-semibold", children: title }),
       actions
     ] }),
-    /* @__PURE__ */ jsx10("main", { className: "mx-auto max-w-5xl px-6 py-8", children })
+    /* @__PURE__ */ jsx11("main", { className: "mx-auto max-w-5xl px-6 py-8", children })
   ] });
 }
 export {
@@ -264,10 +343,12 @@ export {
   Button,
   Card,
   CopyButton,
+  FileList,
   HoverIconAction,
   Input,
   Select,
   Shell,
   Spinner,
-  cn
+  cn,
+  mergeFiles
 };

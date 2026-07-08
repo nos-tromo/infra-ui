@@ -7,6 +7,20 @@ import { VariantProps } from 'class-variance-authority';
 /** Merge conditional Tailwind classes, resolving utility conflicts (last wins). */
 declare function cn(...inputs: ClassValue[]): string;
 
+/**
+ * Append `incoming` files to `existing`, dropping any incoming file that
+ * duplicates one already present (including duplicates within `incoming`
+ * itself). Two files are treated as the same when both their `name` and
+ * `size` match — enough to dedup a re-selected file without reading its
+ * contents. Order is stable: existing files keep their positions and new,
+ * non-duplicate files are appended in selection order.
+ *
+ * @param existing - Files already selected.
+ * @param incoming - Newly selected files to merge in.
+ * @returns A new array; the input arrays are not mutated.
+ */
+declare function mergeFiles(existing: File[], incoming: File[]): File[];
+
 declare const button: (props?: ({
     variant?: "primary" | "secondary" | "ghost" | "danger" | null | undefined;
     size?: "sm" | "md" | null | undefined;
@@ -72,6 +86,28 @@ interface BannerProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeo
 }
 declare function Banner({ className, variant, ...props }: BannerProps): react.JSX.Element;
 
+interface FileListProps extends HTMLAttributes<HTMLDivElement> {
+    /** The selected files to display, in order. */
+    files: File[];
+    /**
+     * Called with a file's index to remove it. Omit to hide the per-row remove
+     * controls (e.g. while an upload is in flight).
+     */
+    onRemove?: (index: number) => void;
+    /** Called to clear every file. Omit to hide the "Clear all" control. */
+    onClear?: () => void;
+}
+/**
+ * Render a selected-files panel: a count header with an optional "Clear all"
+ * action, and one row per file showing its name, size, and an optional remove
+ * control. Renders nothing when `files` is empty.
+ *
+ * Each control appears only when its handler is supplied, so a disabled or
+ * pending caller can pass `undefined` to hide the remove/clear affordances
+ * without changing the layout otherwise.
+ */
+declare function FileList({ files, onRemove, onClear, className, ...props }: FileListProps): react.JSX.Element | null;
+
 interface ShellProps {
     /** Heading rendered on the left of the sticky header. */
     title: ReactNode;
@@ -90,4 +126,4 @@ interface ShellProps {
  */
 declare function Shell({ title, actions, children, className }: ShellProps): react.JSX.Element;
 
-export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn };
+export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, FileList, type FileListProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, mergeFiles };
