@@ -146,11 +146,102 @@ function CheckGlyph() {
   );
 }
 
+// src/primitives/FileList.tsx
+import { Fragment, jsx as jsx4, jsxs as jsxs2 } from "react/jsx-runtime";
+function mergeFiles(existing, incoming) {
+  const key = (file) => `${file.name}:${file.size ?? ""}`;
+  const seen = new Set(existing.map(key));
+  const result = [...existing];
+  for (const file of incoming) {
+    const k = key(file);
+    if (seen.has(k)) continue;
+    seen.add(k);
+    result.push(file);
+  }
+  return result;
+}
+var KB = 1024;
+var SIZE_UNITS = ["KB", "MB", "GB", "TB"];
+function formatBytes(bytes) {
+  if (bytes < KB) return `${bytes} B`;
+  let value = bytes / KB;
+  let unit = 0;
+  while (value >= KB && unit < SIZE_UNITS.length - 1) {
+    value /= KB;
+    unit += 1;
+  }
+  let rounded = value >= 10 ? Math.round(value) : Math.round(value * 10) / 10;
+  if (rounded >= KB && unit < SIZE_UNITS.length - 1) {
+    rounded = 1;
+    unit += 1;
+  }
+  return `${rounded} ${SIZE_UNITS[unit]}`;
+}
+function XGlyph() {
+  return /* @__PURE__ */ jsxs2(
+    "svg",
+    {
+      viewBox: "0 0 24 24",
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: "2",
+      strokeLinecap: "round",
+      strokeLinejoin: "round",
+      className: "h-4 w-4",
+      "aria-hidden": "true",
+      children: [
+        /* @__PURE__ */ jsx4("path", { d: "M18 6 6 18" }),
+        /* @__PURE__ */ jsx4("path", { d: "m6 6 12 12" })
+      ]
+    }
+  );
+}
+function FileList({ files, onRemove, onClear, labels, className }) {
+  if (files.length === 0) return null;
+  const filesLabel = labels?.files ?? ((n) => `${n} file${n === 1 ? "" : "s"}`);
+  const clearAllLabel = labels?.clearAll ?? "Clear all";
+  const removeLabel = labels?.remove ?? "Remove";
+  const totalBytes = files.reduce((sum, file) => sum + (file.size ?? 0), 0);
+  return /* @__PURE__ */ jsxs2("div", { className: cn("rounded-lg border border-border bg-muted/30", className), children: [
+    /* @__PURE__ */ jsxs2("div", { className: "flex items-center justify-between gap-2 border-b border-border px-3 py-2", children: [
+      /* @__PURE__ */ jsxs2("span", { className: "text-sm text-muted-foreground", children: [
+        filesLabel(files.length),
+        totalBytes > 0 && /* @__PURE__ */ jsxs2(Fragment, { children: [
+          " \xB7 ",
+          formatBytes(totalBytes)
+        ] })
+      ] }),
+      onClear && /* @__PURE__ */ jsx4(Button, { variant: "ghost", size: "sm", onClick: onClear, children: clearAllLabel })
+    ] }),
+    /* @__PURE__ */ jsx4("ul", { className: "max-h-64 divide-y divide-border overflow-y-auto", children: files.map((file, index) => /* @__PURE__ */ jsxs2(
+      "li",
+      {
+        className: "group flex items-center gap-3 px-3 py-1.5 text-sm",
+        children: [
+          /* @__PURE__ */ jsx4("span", { className: "w-6 shrink-0 text-right tabular-nums text-muted-foreground", children: index + 1 }),
+          /* @__PURE__ */ jsx4("span", { className: "flex-1 truncate text-foreground", title: file.name, children: file.name }),
+          file.size !== void 0 && /* @__PURE__ */ jsx4("span", { className: "shrink-0 tabular-nums text-muted-foreground", children: formatBytes(file.size) }),
+          onRemove && /* @__PURE__ */ jsx4(
+            HoverIconAction,
+            {
+              icon: /* @__PURE__ */ jsx4(XGlyph, {}),
+              label: `${removeLabel} ${file.name}`,
+              onClick: () => onRemove(index)
+            }
+          )
+        ]
+      },
+      `${file.name}:${file.size ?? ""}`
+    )) })
+  ] });
+}
+FileList.displayName = "FileList";
+
 // src/primitives/Card.tsx
 import { forwardRef as forwardRef4 } from "react";
-import { jsx as jsx4 } from "react/jsx-runtime";
+import { jsx as jsx5 } from "react/jsx-runtime";
 var Card = forwardRef4(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx4(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx5(
     "div",
     {
       ref,
@@ -163,9 +254,9 @@ Card.displayName = "Card";
 
 // src/primitives/Input.tsx
 import { forwardRef as forwardRef5 } from "react";
-import { jsx as jsx5 } from "react/jsx-runtime";
+import { jsx as jsx6 } from "react/jsx-runtime";
 var Input = forwardRef5(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx5(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx6(
     "input",
     {
       ref,
@@ -181,9 +272,9 @@ Input.displayName = "Input";
 
 // src/primitives/Select.tsx
 import { forwardRef as forwardRef6 } from "react";
-import { jsx as jsx6 } from "react/jsx-runtime";
+import { jsx as jsx7 } from "react/jsx-runtime";
 var Select = forwardRef6(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx6(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx7(
     "select",
     {
       ref,
@@ -199,7 +290,7 @@ Select.displayName = "Select";
 
 // src/primitives/Badge.tsx
 import { cva as cva2 } from "class-variance-authority";
-import { jsx as jsx7 } from "react/jsx-runtime";
+import { jsx as jsx8 } from "react/jsx-runtime";
 var badge = cva2("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium", {
   variants: {
     variant: {
@@ -211,13 +302,13 @@ var badge = cva2("inline-flex items-center rounded-full px-2 py-0.5 text-xs font
   defaultVariants: { variant: "neutral" }
 });
 function Badge({ className, variant, ...props }) {
-  return /* @__PURE__ */ jsx7("span", { className: cn(badge({ variant }), className), ...props });
+  return /* @__PURE__ */ jsx8("span", { className: cn(badge({ variant }), className), ...props });
 }
 
 // src/primitives/Spinner.tsx
-import { jsx as jsx8 } from "react/jsx-runtime";
+import { jsx as jsx9 } from "react/jsx-runtime";
 function Spinner({ className, label = "Loading" }) {
-  return /* @__PURE__ */ jsx8(
+  return /* @__PURE__ */ jsx9(
     "span",
     {
       role: "status",
@@ -232,7 +323,7 @@ function Spinner({ className, label = "Loading" }) {
 
 // src/primitives/Banner.tsx
 import { cva as cva3 } from "class-variance-authority";
-import { jsx as jsx9 } from "react/jsx-runtime";
+import { jsx as jsx10 } from "react/jsx-runtime";
 var banner = cva3("rounded-md border px-4 py-3 text-sm", {
   variants: {
     variant: {
@@ -244,18 +335,18 @@ var banner = cva3("rounded-md border px-4 py-3 text-sm", {
 });
 function Banner({ className, variant, ...props }) {
   const role = variant === "danger" ? "alert" : "status";
-  return /* @__PURE__ */ jsx9("div", { role, className: cn(banner({ variant }), className), ...props });
+  return /* @__PURE__ */ jsx10("div", { role, className: cn(banner({ variant }), className), ...props });
 }
 
 // src/layout/Shell.tsx
-import { jsx as jsx10, jsxs as jsxs2 } from "react/jsx-runtime";
+import { jsx as jsx11, jsxs as jsxs3 } from "react/jsx-runtime";
 function Shell({ title, actions, children, className }) {
-  return /* @__PURE__ */ jsxs2("div", { className: cn("min-h-full", className), children: [
-    /* @__PURE__ */ jsxs2("header", { className: "sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-background px-6 py-4", children: [
-      /* @__PURE__ */ jsx10("h1", { className: "text-lg font-semibold", children: title }),
+  return /* @__PURE__ */ jsxs3("div", { className: cn("min-h-full", className), children: [
+    /* @__PURE__ */ jsxs3("header", { className: "sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-background px-6 py-4", children: [
+      /* @__PURE__ */ jsx11("h1", { className: "text-lg font-semibold", children: title }),
       actions
     ] }),
-    /* @__PURE__ */ jsx10("main", { className: "mx-auto max-w-5xl px-6 py-8", children })
+    /* @__PURE__ */ jsx11("main", { className: "mx-auto max-w-5xl px-6 py-8", children })
   ] });
 }
 export {
@@ -264,10 +355,12 @@ export {
   Button,
   Card,
   CopyButton,
+  FileList,
   HoverIconAction,
   Input,
   Select,
   Shell,
   Spinner,
-  cn
+  cn,
+  mergeFiles
 };

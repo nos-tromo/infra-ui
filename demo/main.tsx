@@ -1,9 +1,25 @@
-import { StrictMode } from 'react'
+import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Badge, Banner, Button, CopyButton, Card, Input, Select, Spinner } from '../src/index'
+import {
+  Badge,
+  Banner,
+  Button,
+  CopyButton,
+  Card,
+  FileList,
+  Input,
+  Select,
+  Spinner,
+} from '../src/index'
 import './styles.css'
 
 function Sink() {
+  const [demoFiles, setDemoFiles] = useState([
+    { name: 'interview_2021_part1.mp4', size: 412_000_000 },
+    { name: 'witness_statement_final.pdf', size: 2_100_000 },
+    { name: 'photo_evidence_0043.jpg', size: 880_000 },
+  ])
+
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 p-10">
       <h1 className="text-lg font-semibold">@infra/ui kitchen sink</h1>
@@ -37,6 +53,12 @@ function Sink() {
 
       <Banner>Informational banner</Banner>
       <Banner variant="danger">Something went wrong</Banner>
+
+      <FileList
+        files={demoFiles}
+        onRemove={(i) => setDemoFiles((fs) => fs.filter((_, j) => j !== i))}
+        onClear={() => setDemoFiles([])}
+      />
     </main>
   )
 }
