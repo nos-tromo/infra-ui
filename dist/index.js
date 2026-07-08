@@ -170,7 +170,11 @@ function formatBytes(bytes) {
     value /= KB;
     unit += 1;
   }
-  const rounded = value >= 10 ? Math.round(value) : Math.round(value * 10) / 10;
+  let rounded = value >= 10 ? Math.round(value) : Math.round(value * 10) / 10;
+  if (rounded >= KB && unit < SIZE_UNITS.length - 1) {
+    rounded = 1;
+    unit += 1;
+  }
   return `${rounded} ${SIZE_UNITS[unit]}`;
 }
 function XGlyph() {

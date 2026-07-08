@@ -59,7 +59,13 @@ function formatBytes(bytes: number): string {
     value /= KB
     unit += 1
   }
-  const rounded = value >= 10 ? Math.round(value) : Math.round(value * 10) / 10
+  let rounded = value >= 10 ? Math.round(value) : Math.round(value * 10) / 10
+  // Rounding can lift the value to the next unit's floor (e.g. 1023.99 KB → 1024);
+  // promote so we render "1 MB" instead of "1024 KB".
+  if (rounded >= KB && unit < SIZE_UNITS.length - 1) {
+    rounded = 1
+    unit += 1
+  }
   return `${rounded} ${SIZE_UNITS[unit]}`
 }
 

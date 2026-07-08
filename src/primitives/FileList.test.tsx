@@ -99,4 +99,17 @@ describe('FileList', () => {
     render(<FileList files={[f('a.txt', 1)]} />)
     expect(screen.getByRole('list')).toHaveClass('max-h-64', 'overflow-y-auto')
   })
+
+  test('rolls a size just under a 1024 power up to the next unit', () => {
+    render(<FileList files={[f('big.bin', 1048575)]} />)
+    expect(screen.getAllByText(/1 MB/).length).toBeGreaterThan(0)
+    expect(screen.queryByText(/1024 KB/)).toBeNull()
+  })
+
+  test('omits the size cell and total when a file has no size', () => {
+    render(<FileList files={[f('unknown.dat')]} />)
+    expect(screen.getByText('unknown.dat')).toBeInTheDocument()
+    expect(screen.getByText('1 file')).toBeInTheDocument()
+    expect(screen.queryByText(/\d+ (B|KB|MB|GB)/)).toBeNull()
+  })
 })
