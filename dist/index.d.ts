@@ -46,6 +46,51 @@ interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'onClick' | 'ar
  */
 declare const CopyButton: react.ForwardRefExoticComponent<CopyButtonProps & react.RefAttributes<HTMLButtonElement>>;
 
+interface FileLike {
+    name: string;
+    size?: number;
+}
+/**
+ * Append `incoming` to `existing`, skipping any file already present (matched
+ * by `name` + `size`) and preserving the existing order. Use in a file-input
+ * "add" handler so re-selecting the same file never produces duplicate rows.
+ */
+declare function mergeFiles<T extends FileLike>(existing: T[], incoming: T[]): T[];
+interface FileListLabels {
+    /** Summary count text. Default: `n => `${n} file${n === 1 ? '' : 's'}``. */
+    files?: (count: number) => string;
+    /** Header "Clear all" action label. Default: `'Clear all'`. */
+    clearAll?: string;
+    /** Remove verb; used as the row aria-label `${remove} ${name}`. Default: `'Remove'`. */
+    remove?: string;
+}
+interface FileListProps {
+    /** Files to display. A `File[]` satisfies `FileLike[]` and may be passed directly. */
+    files: FileLike[];
+    /** Per-row remove handler. Omit to render read-only rows (no remove control). */
+    onRemove?: (index: number) => void;
+    /** Header "Clear all" handler. Omit to hide the action. */
+    onClear?: () => void;
+    /** Localized label overrides; English defaults are used when absent. */
+    labels?: FileListLabels;
+    /** Extra classes merged onto the outer panel. */
+    className?: string;
+}
+/**
+ * A self-contained panel that displays a list of selected files: a pinned
+ * summary header (count + total size + optional "Clear all") over a
+ * height-capped, internally-scrolling body of numbered rows. Each row shows an
+ * index, the (truncated) filename, its humanized size, and — when `onRemove`
+ * is provided — a hover/focus-revealed remove control.
+ *
+ * Renders nothing when `files` is empty, so callers need no length guard.
+ * Stable row keys assume `files` is deduped by name+size (see `mergeFiles`).
+ */
+declare function FileList({ files, onRemove, onClear, labels, className }: FileListProps): react.JSX.Element | null;
+declare namespace FileList {
+    var displayName: string;
+}
+
 declare const Card: react.ForwardRefExoticComponent<HTMLAttributes<HTMLDivElement> & react.RefAttributes<HTMLDivElement>>;
 
 declare const Input: react.ForwardRefExoticComponent<InputHTMLAttributes<HTMLInputElement> & react.RefAttributes<HTMLInputElement>>;
@@ -90,4 +135,4 @@ interface ShellProps {
  */
 declare function Shell({ title, actions, children, className }: ShellProps): react.JSX.Element;
 
-export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn };
+export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, mergeFiles };

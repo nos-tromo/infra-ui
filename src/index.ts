@@ -2,6 +2,13 @@ export { cn } from './cn'
 export { Button, type ButtonProps } from './primitives/Button'
 export { HoverIconAction, type HoverIconActionProps } from './primitives/HoverIconAction'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'
+export {
+  FileList,
+  mergeFiles,
+  type FileListProps,
+  type FileListLabels,
+  type FileLike,
+} from './primitives/FileList'
 export { Card } from './primitives/Card'
 export { Input } from './primitives/Input'
 export { Select } from './primitives/Select'
