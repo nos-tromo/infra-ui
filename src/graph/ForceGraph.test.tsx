@@ -127,4 +127,11 @@ describe('ForceGraph', () => {
     const fitButton = screen.getByRole('button', { name: 'Fit' })
     expect(() => fireEvent.click(fitButton)).not.toThrow()
   })
+
+  it('renders a background-color halo behind node labels', () => {
+    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} />)
+    const alphaText = screen.getByRole('button', { name: /Alpha/ }).querySelector('text')
+    expect(alphaText?.getAttribute('class')).toContain('stroke-background')
+    expect(alphaText?.style.paintOrder).toBe('stroke')
+  })
 })

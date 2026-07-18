@@ -731,7 +731,10 @@ export function ForceGraph({
                     y={r + 11 / view.k}
                     textAnchor="middle"
                     fontSize={11 / view.k}
-                    className="pointer-events-none"
+                    className="pointer-events-none stroke-background"
+                    strokeWidth={3 / view.k}
+                    strokeLinejoin="round"
+                    style={{ paintOrder: 'stroke' }}
                     fill={nodeStyles[n.kind]?.color ?? 'currentColor'}
                   >
                     {n.label.length > 24 ? `${n.label.slice(0, 23)}…` : n.label}
