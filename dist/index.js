@@ -568,6 +568,7 @@ var DEFAULT_LABELS = {
   reset: "Reset",
   fit: "Fit",
   expandSelected: "Expand node",
+  removeSelected: "Remove node",
   maximize: "Expand graph",
   minimize: "Collapse graph"
 };
@@ -627,6 +628,7 @@ function ForceGraph({
   onSelectNode,
   onExpandNode,
   expandingId,
+  onDeleteNode,
   statusText,
   legend,
   labels,
@@ -684,6 +686,7 @@ function ForceGraph({
   const dragStartRef = useRef2(null);
   const movedRef = useRef2(false);
   const panRef = useRef2(null);
+  const panMovedRef = useRef2(false);
   const rafRef = useRef2(0);
   const runningRef = useRef2(false);
   const runLoop = useCallback(() => {
@@ -741,6 +744,21 @@ function ForceGraph({
       document.body.style.overflow = prevOverflow;
     };
   }, [isMaximized]);
+  useEffect2(() => {
+    if (selectedId == null || !onDeleteNode) return;
+    const onKeyDown = (e) => {
+      if (e.key !== "Backspace" && e.key !== "Delete") return;
+      const target = e.target;
+      const tag = target?.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select" || target?.isContentEditable) {
+        return;
+      }
+      e.preventDefault();
+      onDeleteNode(selectedId);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [selectedId, onDeleteNode]);
   useEffect2(() => {
     if (nodes.length === 0) setIsMaximized(false);
   }, [nodes.length]);
@@ -823,12 +841,16 @@ function ForceGraph({
     (e) => {
       e.currentTarget.setPointerCapture?.(e.pointerId);
       panRef.current = { startX: e.clientX, startY: e.clientY, view };
+      panMovedRef.current = false;
     },
     [view]
   );
   const onBackgroundPointerMove = useCallback((e) => {
     const pan = panRef.current;
     if (!pan) return;
+    if (Math.hypot(e.clientX - pan.startX, e.clientY - pan.startY) > DRAG_THRESHOLD) {
+      panMovedRef.current = true;
+    }
     const svg = svgRef.current;
     const rect = svg?.getBoundingClientRect();
     const w = rect?.width || WIDTH;
@@ -837,10 +859,17 @@ function ForceGraph({
     const dy = (e.clientY - pan.startY) / h * HEIGHT;
     setView({ k: pan.view.k, x: pan.view.x + dx, y: pan.view.y + dy });
   }, []);
-  const onBackgroundPointerUp = useCallback((e) => {
-    e.currentTarget.releasePointerCapture?.(e.pointerId);
-    panRef.current = null;
-  }, []);
+  const onBackgroundPointerUp = useCallback(
+    (e) => {
+      e.currentTarget.releasePointerCapture?.(e.pointerId);
+      const pan = panRef.current;
+      const movedAtUp = pan != null && Math.hypot(e.clientX - pan.startX, e.clientY - pan.startY) > DRAG_THRESHOLD;
+      const wasClick = pan != null && !panMovedRef.current && !movedAtUp;
+      panRef.current = null;
+      if (wasClick) onSelectNode?.(null);
+    },
+    [onSelectNode]
+  );
   const onNodePointerDown = useCallback(
     (e, id) => {
       e.stopPropagation();
@@ -1133,7 +1162,7 @@ function ForceGraph({
                                   strokeWidth: 3 / view.k,
                                   strokeLinejoin: "round",
                                   style: { paintOrder: "stroke" },
-                                  fill: nodeStyles[n.kind]?.color ?? "currentColor",
+                                  fill: nodeStyles[n.kind]?.labelColor ?? nodeStyles[n.kind]?.color ?? "currentColor",
                                   children: n.label.length > 24 ? `${n.label.slice(0, 23)}\u2026` : n.label
                                 }
                               )
@@ -1158,16 +1187,28 @@ function ForceGraph({
                   children: isMaximized ? /* @__PURE__ */ jsx12(CollapseIcon, {}) : /* @__PURE__ */ jsx12(ExpandIcon, {})
                 }
               ),
-              selectedId && onExpandNode && /* @__PURE__ */ jsx12(
-                "button",
-                {
-                  type: "button",
-                  disabled: expandingId === selectedId,
-                  onClick: () => onExpandNode(selectedId),
-                  className: "absolute bottom-2 left-2 z-10 rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground disabled:opacity-40",
-                  children: L.expandSelected
-                }
-              ),
+              selectedId && (onExpandNode || onDeleteNode) && /* @__PURE__ */ jsxs4("div", { className: "absolute bottom-2 left-2 z-10 flex items-center gap-1.5", children: [
+                onExpandNode && /* @__PURE__ */ jsx12(
+                  "button",
+                  {
+                    type: "button",
+                    disabled: expandingId === selectedId,
+                    onClick: () => onExpandNode(selectedId),
+                    className: "rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground disabled:opacity-40",
+                    children: L.expandSelected
+                  }
+                ),
+                onDeleteNode && /* @__PURE__ */ jsx12(
+                  "button",
+                  {
+                    type: "button",
+                    "aria-label": L.removeSelected,
+                    onClick: () => onDeleteNode(selectedId),
+                    className: "rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground",
+                    children: L.removeSelected
+                  }
+                )
+              ] }),
               legend && legend.length > 0 && /* @__PURE__ */ jsx12("div", { className: "absolute right-2 top-2 max-w-[12rem] rounded-md border border-border bg-background/90 p-2 text-xs space-y-1", children: /* @__PURE__ */ jsx12("ul", { className: "space-y-0.5", children: legend.map(({ kind, label }) => /* @__PURE__ */ jsxs4("li", { className: "flex items-center gap-1.5", children: [
                 /* @__PURE__ */ jsx12(
                   "span",

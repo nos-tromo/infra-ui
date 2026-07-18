@@ -60,7 +60,7 @@ Interactive SVG force-directed graph with zoom, pan, drag, node selection, and i
 />
 ```
 
-The `nodes` prop accepts new nodes that merge into the existing layout without resetting. The `labels` prop provides translated UI control captions for pan/zoom/select modes.
+The `nodes` prop accepts new nodes that merge into the existing layout without resetting. The `labels` prop provides translated UI control captions for pan/zoom/select modes. Per-kind styles accept an optional `labelColor` for label text distinct from the node fill; clicking empty canvas clears the selection (`onSelectNode` now also receives `null`); and an optional `onDeleteNode` prop adds a Remove button plus Backspace/Delete support for the selected node.
 
 ## Develop
 
