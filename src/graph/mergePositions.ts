@@ -51,7 +51,8 @@ export function seedPositions(
 
   // Unconnected newcomers: fresh spiral slots offset past the already-used
   // count so they do not stack onto slots earlier nodes may occupy.
-  const spiral = phyllotaxisSeed(out.size + orphans.length, centerX, centerY, 30)
-  orphans.forEach((id, i) => out.set(id, spiral[out.size ? out.size + i : i] ?? spiral[i]))
+  const base = out.size
+  const spiral = phyllotaxisSeed(base + orphans.length, centerX, centerY, 30)
+  orphans.forEach((id, i) => out.set(id, spiral[base + i]))
   return out
 }

@@ -57,4 +57,31 @@ describe('seedPositions', () => {
     ] as const
     expect(seedPositions(...args)).toEqual(seedPositions(...args))
   })
+
+  it('three unconnected new nodes get three distinct positions', () => {
+    const out = seedPositions([{ id: 'x' }, { id: 'y' }, { id: 'z' }], [], new Map(), CX, CY)
+    const x = out.get('x')!
+    const y = out.get('y')!
+    const z = out.get('z')!
+    expect(x).not.toEqual(y)
+    expect(y).not.toEqual(z)
+    expect(z).not.toEqual(x)
+  })
+
+  it('orphans get distinct fresh slots when previous placements exist', () => {
+    const out = seedPositions(
+      [{ id: 'a' }, { id: 'o1' }, { id: 'o2' }],
+      [],
+      new Map([['a', { x: 0, y: 0 }]]),
+      CX,
+      CY
+    )
+    const a = out.get('a')!
+    const o1 = out.get('o1')!
+    const o2 = out.get('o2')!
+    expect(a).toEqual({ x: 0, y: 0 })
+    expect(o1).not.toEqual(o2)
+    expect(o1).not.toEqual(a)
+    expect(o2).not.toEqual(a)
+  })
 })
