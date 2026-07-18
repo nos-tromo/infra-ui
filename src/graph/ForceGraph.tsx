@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { cn } from '../cn'
 import {
   createForceSimulation,
@@ -54,6 +54,11 @@ export interface ForceGraphEdgeStyle {
   opacity?: number
 }
 
+export interface ForceGraphHandle {
+  /** Live layout snapshot (id → x/y) of every currently-visible node, e.g. for baking a layout into an export. */
+  getPositions(): Record<string, { x: number; y: number }>
+}
+
 export interface ForceGraphLabels {
   minEdges: string // "Min edges"
   edgeLength: string // "Edge length"
@@ -85,6 +90,8 @@ export interface ForceGraphProps {
   /** Canvas height class when not maximized (default 'h-[60vh]'). */
   heightClassName?: string
   className?: string
+  /** Imperative access to the live layout, e.g. for exports. */
+  apiRef?: React.Ref<ForceGraphHandle>
 }
 
 const DEFAULT_LABELS: ForceGraphLabels = {
@@ -182,7 +189,8 @@ export function ForceGraph({
   legend,
   labels,
   heightClassName,
-  className
+  className,
+  apiRef
 }: ForceGraphProps) {
   const L = { ...DEFAULT_LABELS, ...labels }
 
@@ -293,6 +301,18 @@ export function ForceGraph({
       runningRef.current = false
     }
   }, [runLoop])
+
+  useImperativeHandle(
+    apiRef,
+    () => ({
+      getPositions: () => {
+        const out: Record<string, { x: number; y: number }> = {}
+        for (const n of sim.nodes) out[n.id] = { x: n.x, y: n.y }
+        return out
+      }
+    }),
+    [sim]
+  )
 
   // Apply the edge-length multiplier to the live simulation (no reseed): scale
   // link rest-length and repulsion together so clusters open up, not just

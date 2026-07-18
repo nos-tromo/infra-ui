@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
-import { ForceGraph } from './ForceGraph'
+import { ForceGraph, type ForceGraphHandle } from './ForceGraph'
 
 const NODES = [
   { id: 'a', label: 'Alpha', kind: 'author' },
@@ -144,5 +144,29 @@ describe('ForceGraph', () => {
     expect(title).not.toBeNull()
     expect(title?.textContent).toBe(`${longLabel} (author)`)
     expect(group.firstElementChild?.tagName.toLowerCase()).toBe('title')
+  })
+
+  it('apiRef exposes current positions for every node', () => {
+    const ref = { current: null as ForceGraphHandle | null }
+    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} apiRef={ref} />)
+    const positions = ref.current?.getPositions()
+    expect(positions).toBeDefined()
+    for (const n of NODES) {
+      const p = positions![n.id]
+      expect(p).toBeDefined()
+      expect(Number.isFinite(p.x)).toBe(true)
+      expect(Number.isFinite(p.y)).toBe(true)
+    }
+  })
+
+  it('getPositions returns a snapshot, not a live reference', () => {
+    const ref = { current: null as ForceGraphHandle | null }
+    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} apiRef={ref} />)
+    const first = ref.current!.getPositions()
+    first.a.x = 999999
+    first.a.y = 999999
+    const second = ref.current!.getPositions()
+    expect(second.a.x).not.toBe(999999)
+    expect(second.a.y).not.toBe(999999)
   })
 })

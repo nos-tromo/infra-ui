@@ -351,7 +351,7 @@ function Shell({ title, actions, children, className }) {
 }
 
 // src/graph/ForceGraph.tsx
-import { useCallback, useEffect as useEffect2, useMemo, useRef as useRef2, useState as useState2 } from "react";
+import { useCallback, useEffect as useEffect2, useImperativeHandle, useMemo, useRef as useRef2, useState as useState2 } from "react";
 
 // src/graph/forceSimulation.ts
 var DEFAULTS = {
@@ -631,7 +631,8 @@ function ForceGraph({
   legend,
   labels,
   heightClassName,
-  className
+  className,
+  apiRef
 }) {
   const L = { ...DEFAULT_LABELS, ...labels };
   const svgRef = useRef2(null);
@@ -708,6 +709,17 @@ function ForceGraph({
       runningRef.current = false;
     };
   }, [runLoop]);
+  useImperativeHandle(
+    apiRef,
+    () => ({
+      getPositions: () => {
+        const out = {};
+        for (const n of sim.nodes) out[n.id] = { x: n.x, y: n.y };
+        return out;
+      }
+    }),
+    [sim]
+  );
   useEffect2(() => {
     sim.setOptions({
       linkDistance: BASE_LINK_DISTANCE * spread,

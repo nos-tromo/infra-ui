@@ -161,6 +161,13 @@ interface ForceGraphEdgeStyle {
     /** 0–1 stroke opacity when not dimmed (default 0.6). */
     opacity?: number;
 }
+interface ForceGraphHandle {
+    /** Live layout snapshot (id → x/y) of every currently-visible node, e.g. for baking a layout into an export. */
+    getPositions(): Record<string, {
+        x: number;
+        y: number;
+    }>;
+}
 interface ForceGraphLabels {
     minEdges: string;
     edgeLength: string;
@@ -194,6 +201,8 @@ interface ForceGraphProps {
     /** Canvas height class when not maximized (default 'h-[60vh]'). */
     heightClassName?: string;
     className?: string;
+    /** Imperative access to the live layout, e.g. for exports. */
+    apiRef?: React.Ref<ForceGraphHandle>;
 }
 /**
  * Interactive, force-directed graph primitive. Nodes are draggable (with
@@ -209,6 +218,6 @@ interface ForceGraphProps {
  * mapper output on the API payload) — a fresh array identity every render
  * rebuilds and reseeds the simulation on every frame.
  */
-declare function ForceGraph({ nodes, edges, nodeStyles, edgeStyles, selectedId, onSelectNode, onExpandNode, expandingId, statusText, legend, labels, heightClassName, className }: ForceGraphProps): react.JSX.Element;
+declare function ForceGraph({ nodes, edges, nodeStyles, edgeStyles, selectedId, onSelectNode, onExpandNode, expandingId, statusText, legend, labels, heightClassName, className, apiRef }: ForceGraphProps): react.JSX.Element;
 
-export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, mergeFiles };
+export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, mergeFiles };
