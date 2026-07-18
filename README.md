@@ -49,18 +49,21 @@ All styling uses semantic design tokens only (`bg-primary`, `text-muted-foregrou
 
 ### ForceGraph
 
-Interactive SVG force-directed graph with zoom, pan, drag, node selection, and incremental merge support. Nodes and edges are token-themed, and the simulation layout is preserved across updates so expanding the graph with new nodes maintains the existing visual structure.
+Interactive SVG force-directed graph with zoom, pan, drag, multi-node selection, and incremental merge support. Nodes and edges are token-themed, and the simulation layout is preserved across updates so expanding the graph with new nodes maintains the existing visual structure.
 
 ```tsx
 <ForceGraph
   nodes={[{ id: 'a', label: 'Alpha', kind: 'author' }]}
   edges={[]}
   nodeStyles={{ author: { color: '#7c3aed' } }}
-  onSelectNode={setSelected}
+  selectedIds={selected}
+  onSelectionChange={setSelected}
 />
 ```
 
-The `nodes` prop accepts new nodes that merge into the existing layout without resetting. The `labels` prop provides translated UI control captions for pan/zoom/select modes. Per-kind styles accept an optional `labelColor` for label text distinct from the node fill; clicking empty canvas clears the selection (`onSelectNode` now also receives `null`); and an optional `onDeleteNode` prop adds a Remove button plus Backspace/Delete support for the selected node.
+The `nodes` prop accepts new nodes that merge into the existing layout without resetting. The `labels` prop provides translated UI control captions for pan/zoom/select modes. Per-kind styles accept an optional `labelColor` for label text distinct from the node fill.
+
+Selection is a set (`selectedIds`/`onSelectionChange`), not a single id: a plain click replaces the selection with one node, shift+click toggles a node in/out of the set, shift+drag on the background draws a dashed marquee and selects every node inside it (unioned with whatever was already selected), and a plain click on empty canvas clears the selection. The Expand button (and double-click-to-expand) only appears when exactly one node is selected. An optional `onDeleteNodes` prop adds a Remove button — singular ("Remove node") at one selection, or the `removeSelectedMany` label (default "Remove {n} nodes") above that — plus Backspace/Delete support for the whole selected set.
 
 ## Develop
 

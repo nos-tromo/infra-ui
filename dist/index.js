@@ -569,6 +569,7 @@ var DEFAULT_LABELS = {
   fit: "Fit",
   expandSelected: "Expand node",
   removeSelected: "Remove node",
+  removeSelectedMany: "Remove {n} nodes",
   maximize: "Expand graph",
   minimize: "Collapse graph"
 };
@@ -624,11 +625,11 @@ function ForceGraph({
   edges,
   nodeStyles,
   edgeStyles,
-  selectedId,
-  onSelectNode,
+  selectedIds,
+  onSelectionChange,
   onExpandNode,
   expandingId,
-  onDeleteNode,
+  onDeleteNodes,
   statusText,
   legend,
   labels,
@@ -637,6 +638,8 @@ function ForceGraph({
   apiRef
 }) {
   const L = { ...DEFAULT_LABELS, ...labels };
+  const selectedIdsArr = selectedIds ?? [];
+  const selectedSet = useMemo(() => new Set(selectedIdsArr), [selectedIdsArr]);
   const svgRef = useRef2(null);
   const [minDegree, setMinDegree] = useState2(0);
   const [spread, setSpread] = useState2(1);
@@ -687,6 +690,8 @@ function ForceGraph({
   const movedRef = useRef2(false);
   const panRef = useRef2(null);
   const panMovedRef = useRef2(false);
+  const marqueeRef = useRef2(null);
+  const [marqueeRect, setMarqueeRect] = useState2(null);
   const rafRef = useRef2(0);
   const runningRef = useRef2(false);
   const runLoop = useCallback(() => {
@@ -745,7 +750,7 @@ function ForceGraph({
     };
   }, [isMaximized]);
   useEffect2(() => {
-    if (selectedId == null || !onDeleteNode) return;
+    if (selectedIdsArr.length === 0 || !onDeleteNodes) return;
     const onKeyDown = (e) => {
       if (e.key !== "Backspace" && e.key !== "Delete") return;
       const target = e.target;
@@ -754,11 +759,11 @@ function ForceGraph({
         return;
       }
       e.preventDefault();
-      onDeleteNode(selectedId);
+      onDeleteNodes(selectedIdsArr);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selectedId, onDeleteNode]);
+  }, [selectedIdsArr, onDeleteNodes]);
   useEffect2(() => {
     if (nodes.length === 0) setIsMaximized(false);
   }, [nodes.length]);
@@ -840,35 +845,70 @@ function ForceGraph({
   const onBackgroundPointerDown = useCallback(
     (e) => {
       e.currentTarget.setPointerCapture?.(e.pointerId);
+      if (e.shiftKey) {
+        const p = screenToLayout(e.clientX, e.clientY);
+        marqueeRef.current = { startX: p.x, startY: p.y };
+        setMarqueeRect({ x: p.x, y: p.y, width: 0, height: 0 });
+        return;
+      }
       panRef.current = { startX: e.clientX, startY: e.clientY, view };
       panMovedRef.current = false;
     },
-    [view]
+    [view, screenToLayout]
   );
-  const onBackgroundPointerMove = useCallback((e) => {
-    const pan = panRef.current;
-    if (!pan) return;
-    if (Math.hypot(e.clientX - pan.startX, e.clientY - pan.startY) > DRAG_THRESHOLD) {
-      panMovedRef.current = true;
-    }
-    const svg = svgRef.current;
-    const rect = svg?.getBoundingClientRect();
-    const w = rect?.width || WIDTH;
-    const h = rect?.height || HEIGHT;
-    const dx = (e.clientX - pan.startX) / w * WIDTH;
-    const dy = (e.clientY - pan.startY) / h * HEIGHT;
-    setView({ k: pan.view.k, x: pan.view.x + dx, y: pan.view.y + dy });
-  }, []);
+  const onBackgroundPointerMove = useCallback(
+    (e) => {
+      const marquee = marqueeRef.current;
+      if (marquee) {
+        const p = screenToLayout(e.clientX, e.clientY);
+        setMarqueeRect({
+          x: Math.min(marquee.startX, p.x),
+          y: Math.min(marquee.startY, p.y),
+          width: Math.abs(p.x - marquee.startX),
+          height: Math.abs(p.y - marquee.startY)
+        });
+        return;
+      }
+      const pan = panRef.current;
+      if (!pan) return;
+      if (Math.hypot(e.clientX - pan.startX, e.clientY - pan.startY) > DRAG_THRESHOLD) {
+        panMovedRef.current = true;
+      }
+      const svg = svgRef.current;
+      const rect = svg?.getBoundingClientRect();
+      const w = rect?.width || WIDTH;
+      const h = rect?.height || HEIGHT;
+      const dx = (e.clientX - pan.startX) / w * WIDTH;
+      const dy = (e.clientY - pan.startY) / h * HEIGHT;
+      setView({ k: pan.view.k, x: pan.view.x + dx, y: pan.view.y + dy });
+    },
+    [screenToLayout]
+  );
   const onBackgroundPointerUp = useCallback(
     (e) => {
       e.currentTarget.releasePointerCapture?.(e.pointerId);
+      if (marqueeRef.current) {
+        const rect = marqueeRect;
+        marqueeRef.current = null;
+        setMarqueeRect(null);
+        if (rect) {
+          const next = new Set(selectedIdsArr);
+          for (const n of sim.nodes) {
+            if (n.x >= rect.x && n.x <= rect.x + rect.width && n.y >= rect.y && n.y <= rect.y + rect.height) {
+              next.add(n.id);
+            }
+          }
+          onSelectionChange?.([...next]);
+        }
+        return;
+      }
       const pan = panRef.current;
       const movedAtUp = pan != null && Math.hypot(e.clientX - pan.startX, e.clientY - pan.startY) > DRAG_THRESHOLD;
       const wasClick = pan != null && !panMovedRef.current && !movedAtUp;
       panRef.current = null;
-      if (wasClick) onSelectNode?.(null);
+      if (wasClick) onSelectionChange?.([]);
     },
-    [onSelectNode]
+    [onSelectionChange, marqueeRect, selectedIdsArr, sim]
   );
   const onNodePointerDown = useCallback(
     (e, id) => {
@@ -910,24 +950,31 @@ function ForceGraph({
     [sim]
   );
   const handleSelect = useCallback(
-    (id) => {
+    (id, shiftKey) => {
       if (movedRef.current) {
         movedRef.current = false;
         return;
       }
-      onSelectNode?.(id);
+      if (shiftKey) {
+        const next = new Set(selectedIdsArr);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        onSelectionChange?.([...next]);
+      } else {
+        onSelectionChange?.([id]);
+      }
     },
-    [onSelectNode]
+    [onSelectionChange, selectedIdsArr]
   );
   const neighborIds = useMemo(() => {
-    if (selectedId == null) return null;
+    if (selectedSet.size === 0) return null;
     const set = /* @__PURE__ */ new Set();
     for (const e of visibleEdges) {
-      if (e.source === selectedId) set.add(e.target);
-      else if (e.target === selectedId) set.add(e.source);
+      if (selectedSet.has(e.source)) set.add(e.target);
+      if (selectedSet.has(e.target)) set.add(e.source);
     }
     return set;
-  }, [visibleEdges, selectedId]);
+  }, [visibleEdges, selectedSet]);
   const transform = `translate(${view.x} ${view.y}) scale(${view.k})`;
   return /* @__PURE__ */ jsxs4(
     "div",
@@ -1087,8 +1134,8 @@ function ForceGraph({
                         const b = sim.nodeById(e.target);
                         if (!a || !b) return null;
                         const style = edgeStyles?.[e.kind];
-                        const incident = selectedId != null && (e.source === selectedId || e.target === selectedId);
-                        const dimmed = selectedId != null && !incident;
+                        const incident = selectedSet.size > 0 && (selectedSet.has(e.source) || selectedSet.has(e.target));
+                        const dimmed = selectedSet.size > 0 && !incident;
                         const dx = b.x - a.x;
                         const dy = b.y - a.y;
                         const dist = Math.hypot(dx, dy) || 1;
@@ -1113,9 +1160,9 @@ function ForceGraph({
                       visibleNodes.map((n) => {
                         const sn = sim.nodeById(n.id);
                         if (!sn) return null;
-                        const isSelected = n.id === selectedId;
+                        const isSelected = selectedSet.has(n.id);
                         const isNeighbor = neighborIds?.has(n.id) ?? false;
-                        const dimmed = selectedId != null && !isSelected && !isNeighbor;
+                        const dimmed = selectedSet.size > 0 && !isSelected && !isNeighbor;
                         const r = sn.r;
                         return /* @__PURE__ */ jsxs4(
                           "g",
@@ -1130,14 +1177,14 @@ function ForceGraph({
                             onPointerDown: (e) => onNodePointerDown(e, n.id),
                             onPointerMove: (e) => onNodePointerMove(e, n.id),
                             onPointerUp: (e) => onNodePointerUp(e, n.id),
-                            onClick: () => handleSelect(n.id),
+                            onClick: (e) => handleSelect(n.id, e.shiftKey),
                             onDoubleClick: () => {
                               if (onExpandNode) onExpandNode(n.id);
                             },
                             onKeyDown: (e) => {
                               if (e.key === "Enter" || e.key === " ") {
                                 e.preventDefault();
-                                onSelectNode?.(n.id);
+                                onSelectionChange?.([n.id]);
                               }
                             },
                             children: [
@@ -1170,7 +1217,20 @@ function ForceGraph({
                           },
                           n.id
                         );
-                      })
+                      }),
+                      marqueeRect && /* @__PURE__ */ jsx12(
+                        "rect",
+                        {
+                          x: marqueeRect.x,
+                          y: marqueeRect.y,
+                          width: marqueeRect.width,
+                          height: marqueeRect.height,
+                          className: "stroke-primary fill-primary",
+                          fillOpacity: 0.08,
+                          strokeWidth: 1 / view.k,
+                          strokeDasharray: `${4 / view.k} ${4 / view.k}`
+                        }
+                      )
                     ] })
                   ]
                 }
@@ -1187,25 +1247,25 @@ function ForceGraph({
                   children: isMaximized ? /* @__PURE__ */ jsx12(CollapseIcon, {}) : /* @__PURE__ */ jsx12(ExpandIcon, {})
                 }
               ),
-              selectedId && (onExpandNode || onDeleteNode) && /* @__PURE__ */ jsxs4("div", { className: "absolute bottom-2 left-2 z-10 flex items-center gap-1.5", children: [
-                onExpandNode && /* @__PURE__ */ jsx12(
+              selectedIdsArr.length > 0 && (onExpandNode || onDeleteNodes) && /* @__PURE__ */ jsxs4("div", { className: "absolute bottom-2 left-2 z-10 flex items-center gap-1.5", children: [
+                onExpandNode && selectedIdsArr.length === 1 && /* @__PURE__ */ jsx12(
                   "button",
                   {
                     type: "button",
-                    disabled: expandingId === selectedId,
-                    onClick: () => onExpandNode(selectedId),
+                    disabled: expandingId === selectedIdsArr[0],
+                    onClick: () => onExpandNode(selectedIdsArr[0]),
                     className: "rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground disabled:opacity-40",
                     children: L.expandSelected
                   }
                 ),
-                onDeleteNode && /* @__PURE__ */ jsx12(
+                onDeleteNodes && /* @__PURE__ */ jsx12(
                   "button",
                   {
                     type: "button",
-                    "aria-label": L.removeSelected,
-                    onClick: () => onDeleteNode(selectedId),
+                    "aria-label": selectedIdsArr.length === 1 ? L.removeSelected : L.removeSelectedMany.replace("{n}", String(selectedIdsArr.length)),
+                    onClick: () => onDeleteNodes(selectedIdsArr),
                     className: "rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground",
-                    children: L.removeSelected
+                    children: selectedIdsArr.length === 1 ? L.removeSelected : L.removeSelectedMany.replace("{n}", String(selectedIdsArr.length))
                   }
                 )
               ] }),
