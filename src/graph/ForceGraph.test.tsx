@@ -134,4 +134,15 @@ describe('ForceGraph', () => {
     expect(alphaText?.getAttribute('class')).toContain('stroke-background')
     expect(alphaText?.style.paintOrder).toBe('stroke')
   })
+
+  it('shows the full untruncated label in a native title tooltip', () => {
+    const longLabel = 'A Very Long Node Label That Exceeds Twenty Four Characters'
+    const nodes = [{ id: 'z', label: longLabel, kind: 'author' }]
+    render(<ForceGraph nodes={nodes} edges={[]} nodeStyles={STYLES} />)
+    const group = screen.getByRole('button', { name: new RegExp(longLabel) })
+    const title = group.querySelector('title')
+    expect(title).not.toBeNull()
+    expect(title?.textContent).toBe(`${longLabel} (author)`)
+    expect(group.firstElementChild?.tagName.toLowerCase()).toBe('title')
+  })
 })

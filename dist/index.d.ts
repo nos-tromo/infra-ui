@@ -166,6 +166,7 @@ interface ForceGraphLabels {
     edgeLength: string;
     zoom: string;
     reset: string;
+    fit: string;
     expandSelected: string;
     maximize: string;
     minimize: string;

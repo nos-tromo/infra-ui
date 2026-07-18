@@ -720,6 +720,7 @@ export function ForceGraph({
                     }
                   }}
                 >
+                  <title>{`${n.label} (${n.kind})`}</title>
                   <circle
                     r={r}
                     fill={nodeStyles[n.kind]?.color ?? 'currentColor'}
