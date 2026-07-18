@@ -179,6 +179,8 @@ interface ForceGraphLabels {
     fit: string;
     expandSelected: string;
     removeSelected: string;
+    /** Rendered when >1 node is selected; the literal `{n}` is replaced with the count. */
+    removeSelectedMany: string;
     maximize: string;
     minimize: string;
 }
@@ -187,17 +189,20 @@ interface ForceGraphProps {
     edges: ForceGraphEdge[];
     nodeStyles: Record<string, ForceGraphNodeStyle>;
     edgeStyles?: Record<string, ForceGraphEdgeStyle>;
-    selectedId?: string | null;
-    /** Called with a node id on selection, or `null` when the background is
-     *  clicked to clear the selection. */
-    onSelectNode?: (id: string | null) => void;
-    /** When set, selection shows an Expand button and double-click expands. */
+    /** Controlled selection set. */
+    selectedIds?: string[];
+    /** Called with the full new selection set on every selection mutation:
+     *  click ([id]), shift+click toggle, marquee (union with previous), or
+     *  background click ([]). */
+    onSelectionChange?: (ids: string[]) => void;
+    /** When set and exactly one node is selected, shows an Expand button and
+     *  double-click expands. */
     onExpandNode?: (id: string) => void;
     /** Node id currently being expanded (renders its Expand button disabled). */
     expandingId?: string | null;
     /** When set, selection shows a Remove button and Backspace/Delete removes
-     *  the selected node (ignored while focus is in a text input). */
-    onDeleteNode?: (id: string) => void;
+     *  the whole selected set (ignored while focus is in a text input). */
+    onDeleteNodes?: (ids: string[]) => void;
     /** Status line above the canvas; consumer formats counts + hints. */
     statusText?: string;
     /** Legend entries; omit to hide the legend. */
@@ -216,7 +221,10 @@ interface ForceGraphProps {
 /**
  * Interactive, force-directed graph primitive. Nodes are draggable (with
  * collision), the canvas zooms (wheel) and pans (background drag), a click
- * selects a node, a double-click (or the Expand button) requests expansion,
+ * replaces the selection with a single node, shift+click toggles a node
+ * in/out of a multi-node selection, shift+drag on the background marquee-
+ * selects every node inside the drawn rectangle, a double-click (or the
+ * Expand button, shown only for a single selected node) requests expansion,
  * and layouts merge incrementally — nodes already on screen keep their
  * position when the data set grows, instead of the whole graph re-seeding.
  * Rendering is plain SVG over the dependency-free {@link createForceSimulation}
@@ -227,6 +235,6 @@ interface ForceGraphProps {
  * mapper output on the API payload) — a fresh array identity every render
  * rebuilds and reseeds the simulation on every frame.
  */
-declare function ForceGraph({ nodes, edges, nodeStyles, edgeStyles, selectedId, onSelectNode, onExpandNode, expandingId, onDeleteNode, statusText, legend, labels, heightClassName, className, apiRef }: ForceGraphProps): react.JSX.Element;
+declare function ForceGraph({ nodes, edges, nodeStyles, edgeStyles, selectedIds, onSelectionChange, onExpandNode, expandingId, onDeleteNodes, statusText, legend, labels, heightClassName, className, apiRef }: ForceGraphProps): react.JSX.Element;
 
 export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, mergeFiles };

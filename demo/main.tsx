@@ -63,7 +63,7 @@ function Sink() {
 
   const [graphNodes, setGraphNodes] = useState(INITIAL_GRAPH_NODES)
   const [graphEdges, setGraphEdges] = useState(INITIAL_GRAPH_EDGES)
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null)
+  const [selectedNodeIds, setSelectedNodeIds] = useState<string[]>([])
   const [expandingNodeId, setExpandingNodeId] = useState<string | null>(null)
 
   const expandGraphNode = (id: string) => {
@@ -130,9 +130,15 @@ function Sink() {
           nodeStyles={GRAPH_NODE_STYLES}
           edgeStyles={GRAPH_EDGE_STYLES}
           legend={GRAPH_LEGEND}
-          selectedId={selectedNodeId}
-          onSelectNode={setSelectedNodeId}
+          selectedIds={selectedNodeIds}
+          onSelectionChange={setSelectedNodeIds}
           onExpandNode={expandGraphNode}
+          onDeleteNodes={(ids) => {
+            const removed = new Set(ids)
+            setGraphNodes((ns) => ns.filter((n) => !removed.has(n.id)))
+            setGraphEdges((es) => es.filter((e) => !removed.has(e.source) && !removed.has(e.target)))
+            setSelectedNodeIds((prev) => prev.filter((id) => !removed.has(id)))
+          }}
           expandingId={expandingNodeId}
           statusText={`${graphNodes.length} nodes, ${graphEdges.length} edges`}
         />

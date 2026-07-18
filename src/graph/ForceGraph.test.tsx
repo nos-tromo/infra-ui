@@ -39,26 +39,90 @@ describe('ForceGraph', () => {
     expect(c2.querySelector('line')?.getAttribute('marker-end')).toBeNull()
   })
 
-  it('click selects a node', () => {
-    const onSelect = vi.fn()
-    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} onSelectNode={onSelect} />)
-    fireEvent.click(screen.getByRole('button', { name: /Alpha/ }))
-    expect(onSelect).toHaveBeenCalledWith('a')
-  })
-
-  it('shows the Expand button for the selected node and fires onExpandNode', () => {
-    const onExpand = vi.fn()
+  it('click selects a node (replacing any existing selection)', () => {
+    const onSelectionChange = vi.fn()
     render(
       <ForceGraph
         nodes={NODES}
         edges={EDGES}
         nodeStyles={STYLES}
-        selectedId="a"
+        selectedIds={['b']}
+        onSelectionChange={onSelectionChange}
+      />
+    )
+    fireEvent.click(screen.getByRole('button', { name: /Alpha/ }))
+    expect(onSelectionChange).toHaveBeenCalledWith(['a'])
+  })
+
+  it('shift+click toggles a node into the selection', () => {
+    const onSelectionChange = vi.fn()
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['b']}
+        onSelectionChange={onSelectionChange}
+      />
+    )
+    fireEvent.click(screen.getByRole('button', { name: /Alpha/ }), { shiftKey: true })
+    expect(onSelectionChange).toHaveBeenCalledWith(['b', 'a'])
+  })
+
+  it('shift+click toggles a node out of the selection', () => {
+    const onSelectionChange = vi.fn()
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a', 'b']}
+        onSelectionChange={onSelectionChange}
+      />
+    )
+    fireEvent.click(screen.getByRole('button', { name: /Alpha/ }), { shiftKey: true })
+    expect(onSelectionChange).toHaveBeenCalledWith(['b'])
+  })
+
+  it('keyboard Enter/Space still plain-selects even with multiple selected', () => {
+    const onSelectionChange = vi.fn()
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a', 'b']}
+        onSelectionChange={onSelectionChange}
+      />
+    )
+    fireEvent.keyDown(screen.getByRole('button', { name: /Alpha/ }), { key: 'Enter' })
+    expect(onSelectionChange).toHaveBeenCalledWith(['a'])
+  })
+
+  it('shows the Expand button only when exactly one node is selected', () => {
+    const onExpand = vi.fn()
+    const { rerender } = render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a']}
         onExpandNode={onExpand}
       />
     )
     fireEvent.click(screen.getByRole('button', { name: 'Expand node' }))
     expect(onExpand).toHaveBeenCalledWith('a')
+
+    rerender(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a', 'b']}
+        onExpandNode={onExpand}
+      />
+    )
+    expect(screen.queryByRole('button', { name: 'Expand node' })).toBeNull()
   })
 
   it('double-click expands', () => {
@@ -69,7 +133,7 @@ describe('ForceGraph', () => {
   })
 
   it('hides the Expand button when onExpandNode is not provided', () => {
-    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" />)
+    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedIds={['a']} />)
     expect(screen.queryByRole('button', { name: 'Expand node' })).toBeNull()
   })
 
@@ -165,60 +229,199 @@ describe('ForceGraph', () => {
   })
 
   it('clicking the background clears selection', () => {
-    const onSelect = vi.fn()
+    const onSelectionChange = vi.fn()
     const { container } = render(
-      <ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" onSelectNode={onSelect} />
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a']}
+        onSelectionChange={onSelectionChange}
+      />
     )
     const bgRect = container.querySelector('svg > rect')!
     fireEvent.pointerDown(bgRect, { clientX: 100, clientY: 100 })
     fireEvent.pointerUp(bgRect, { clientX: 100, clientY: 100 })
-    expect(onSelect).toHaveBeenCalledWith(null)
+    expect(onSelectionChange).toHaveBeenCalledWith([])
   })
 
   it('does not clear selection when the background pointer moved (a pan, not a click)', () => {
-    const onSelect = vi.fn()
+    const onSelectionChange = vi.fn()
     const { container } = render(
-      <ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" onSelectNode={onSelect} />
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a']}
+        onSelectionChange={onSelectionChange}
+      />
     )
     const bgRect = container.querySelector('svg > rect')!
     fireEvent.pointerDown(bgRect, { clientX: 100, clientY: 100 })
     fireEvent.pointerUp(bgRect, { clientX: 140, clientY: 140 })
-    expect(onSelect).not.toHaveBeenCalledWith(null)
+    expect(onSelectionChange).not.toHaveBeenCalledWith([])
   })
 
-  it('shows a Remove button for the selected node and fires onDeleteNode', () => {
-    const onDelete = vi.fn()
+  it('plain background drag pans without changing selection', () => {
+    const onSelectionChange = vi.fn()
+    const { container } = render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a']}
+        onSelectionChange={onSelectionChange}
+      />
+    )
+    const g = container.querySelector('svg > g')
+    const before = g?.getAttribute('transform')
+    const bgRect = container.querySelector('svg > rect')!
+    fireEvent.pointerDown(bgRect, { clientX: 100, clientY: 100 })
+    fireEvent.pointerMove(bgRect, { clientX: 160, clientY: 160 })
+    fireEvent.pointerUp(bgRect, { clientX: 160, clientY: 160 })
+    expect(g?.getAttribute('transform')).not.toBe(before)
+    expect(onSelectionChange).not.toHaveBeenCalled()
+  })
+
+  it('shift+drag marquee-selects nodes within the drawn rectangle', () => {
+    const ref = { current: null as ForceGraphHandle | null }
+    const onSelectionChange = vi.fn()
+    const { container } = render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['b']}
+        onSelectionChange={onSelectionChange}
+        apiRef={ref}
+      />
+    )
+    const positions = ref.current!.getPositions()
+    const svg = container.querySelector('svg')!
+    svg.getBoundingClientRect = () =>
+      ({ left: 0, top: 0, width: 960, height: 620 }) as DOMRect
+
+    const minX = Math.min(positions.a.x, positions.b.x) - 20
+    const minY = Math.min(positions.a.y, positions.b.y) - 20
+    const maxX = Math.max(positions.a.x, positions.b.x) + 20
+    const maxY = Math.max(positions.a.y, positions.b.y) + 20
+
+    const bgRect = container.querySelector('svg > rect')!
+    fireEvent.pointerDown(bgRect, { clientX: minX, clientY: minY, shiftKey: true })
+    fireEvent.pointerMove(bgRect, { clientX: maxX, clientY: maxY, shiftKey: true })
+
+    // While dragging, a marquee rect is rendered inside the transform group.
+    const g = container.querySelector('svg > g')!
+    expect(g.querySelector('rect')).not.toBeNull()
+
+    fireEvent.pointerUp(bgRect, { clientX: maxX, clientY: maxY, shiftKey: true })
+
+    expect(onSelectionChange).toHaveBeenCalledWith(expect.arrayContaining(['a', 'b']))
+    const [calledWith] = onSelectionChange.mock.calls[onSelectionChange.mock.calls.length - 1]
+    expect(new Set(calledWith)).toEqual(new Set(['a', 'b']))
+
+    // Marquee rect is gone after pointerup.
+    expect(g.querySelector('rect')).toBeNull()
+  })
+
+  it('dim logic: with two nodes selected, a neighbor of either is not dimmed', () => {
+    const nodes = [
+      { id: 'a', label: 'Alpha', kind: 'author' },
+      { id: 'b', label: 'Beta', kind: 'topic' },
+      { id: 'c', label: 'Gamma', kind: 'author' },
+      { id: 'd', label: 'Delta', kind: 'topic' }
+    ]
+    const edges = [
+      { source: 'a', target: 'b', kind: 'mentions' },
+      { source: 'c', target: 'd', kind: 'mentions' }
+    ]
     render(
-      <ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" onDeleteNode={onDelete} />
+      <ForceGraph nodes={nodes} edges={edges} nodeStyles={STYLES} selectedIds={['a', 'c']} />
+    )
+    const betaGroup = screen.getByRole('button', { name: /Beta/ })
+    const deltaGroup = screen.getByRole('button', { name: /Delta/ })
+    expect(betaGroup.getAttribute('opacity')).toBe('1')
+    expect(deltaGroup.getAttribute('opacity')).toBe('1')
+  })
+
+  it('aria-pressed reflects set membership', () => {
+    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedIds={['a', 'b']} />)
+    expect(screen.getByRole('button', { name: /Alpha/ }).getAttribute('aria-pressed')).toBe('true')
+    expect(screen.getByRole('button', { name: /Beta/ }).getAttribute('aria-pressed')).toBe('true')
+  })
+
+  it('shows a singular Remove button for one selected node and fires onDeleteNodes', () => {
+    const onDeleteNodes = vi.fn()
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a']}
+        onDeleteNodes={onDeleteNodes}
+      />
     )
     fireEvent.click(screen.getByRole('button', { name: 'Remove node' }))
-    expect(onDelete).toHaveBeenCalledWith('a')
+    expect(onDeleteNodes).toHaveBeenCalledWith(['a'])
   })
 
-  it('Backspace deletes the selected node', () => {
-    const onDelete = vi.fn()
+  it('shows a count Remove label for 3 selected nodes and fires with the full set', () => {
+    const onDeleteNodes = vi.fn()
+    const nodes = [
+      { id: 'a', label: 'Alpha', kind: 'author' },
+      { id: 'b', label: 'Beta', kind: 'topic' },
+      { id: 'c', label: 'Gamma', kind: 'author' }
+    ]
     render(
-      <ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" onDeleteNode={onDelete} />
+      <ForceGraph
+        nodes={nodes}
+        edges={[]}
+        nodeStyles={STYLES}
+        selectedIds={['a', 'b', 'c']}
+        onDeleteNodes={onDeleteNodes}
+      />
+    )
+    const button = screen.getByRole('button', { name: 'Remove 3 nodes' })
+    fireEvent.click(button)
+    expect(onDeleteNodes).toHaveBeenCalledWith(['a', 'b', 'c'])
+  })
+
+  it('Backspace deletes the full selected set', () => {
+    const onDeleteNodes = vi.fn()
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a', 'b']}
+        onDeleteNodes={onDeleteNodes}
+      />
     )
     fireEvent.keyDown(window, { key: 'Backspace' })
-    expect(onDelete).toHaveBeenCalledWith('a')
+    expect(onDeleteNodes).toHaveBeenCalledWith(['a', 'b'])
   })
 
-  it('Backspace inside an input does not delete the selected node', () => {
-    const onDelete = vi.fn()
+  it('Backspace inside an input does not delete the selection', () => {
+    const onDeleteNodes = vi.fn()
     render(
       <div>
         <input data-testid="text-input" />
-        <ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" onDeleteNode={onDelete} />
+        <ForceGraph
+          nodes={NODES}
+          edges={EDGES}
+          nodeStyles={STYLES}
+          selectedIds={['a']}
+          onDeleteNodes={onDeleteNodes}
+        />
       </div>
     )
     const input = screen.getByTestId('text-input')
     fireEvent.keyDown(input, { key: 'Backspace' })
-    expect(onDelete).not.toHaveBeenCalled()
+    expect(onDeleteNodes).not.toHaveBeenCalled()
   })
 
-  it('hides the Remove button and ignores Backspace when onDeleteNode is not provided', () => {
-    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" />)
+  it('hides the Remove button and ignores Backspace when onDeleteNodes is not provided', () => {
+    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedIds={['a']} />)
     expect(screen.queryByRole('button', { name: 'Remove node' })).toBeNull()
     expect(() => fireEvent.keyDown(window, { key: 'Backspace' })).not.toThrow()
   })
@@ -245,5 +448,59 @@ describe('ForceGraph', () => {
     const second = ref.current!.getPositions()
     expect(second.a.x).not.toBe(999999)
     expect(second.a.y).not.toBe(999999)
+  })
+
+  it('shift+drag marquee cancelled (pointercancel) clears marquee rect without selection', () => {
+    const onSelectionChange = vi.fn()
+    const { container } = render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['b']}
+        onSelectionChange={onSelectionChange}
+      />
+    )
+    const g = container.querySelector('svg > g')!
+    const bgRect = container.querySelector('svg > rect')!
+
+    // Start a marquee (shift+pointerdown + pointermove)
+    fireEvent.pointerDown(bgRect, { clientX: 100, clientY: 100, shiftKey: true })
+    fireEvent.pointerMove(bgRect, { clientX: 150, clientY: 150, shiftKey: true })
+
+    // Marquee rect should be visible now
+    expect(g.querySelector('rect')).not.toBeNull()
+
+    // Fire pointercancel
+    fireEvent.pointerCancel(bgRect)
+
+    // Marquee rect should be cleared
+    expect(g.querySelector('rect')).toBeNull()
+
+    // onSelectionChange should NOT have been called (no selection committed)
+    expect(onSelectionChange).not.toHaveBeenCalled()
+  })
+
+  it('node drag cancelled (pointercancel) releases node without selection change', () => {
+    const onSelectionChange = vi.fn()
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        onSelectionChange={onSelectionChange}
+      />
+    )
+    const nodeGroup = screen.getByRole('button', { name: /Alpha/ })
+
+    // Start dragging a node
+    fireEvent.pointerDown(nodeGroup, { clientX: 100, clientY: 100 })
+    fireEvent.pointerMove(nodeGroup, { clientX: 150, clientY: 150 })
+
+    // Fire pointercancel
+    fireEvent.pointerCancel(nodeGroup)
+
+    // onSelectionChange should NOT have been called (drag was not a click)
+    expect(onSelectionChange).not.toHaveBeenCalled()
   })
 })
