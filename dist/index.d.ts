@@ -140,7 +140,7 @@ interface ForceGraphNode {
     label: string;
     /** Style-map key; also shown in the legend. */
     kind: string;
-    /** Relative size weight (≥1); mapped to radius by sqrt scale, like docint's mentions. */
+    /** Relative size weight (≥1); mapped to radius by sqrt scale. */
     size?: number;
 }
 interface ForceGraphEdge {

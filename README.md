@@ -35,7 +35,7 @@ In your app's root CSS (e.g. `src/styles/globals.css`):
 ## Use
 
 ```tsx
-import { Button, CopyButton, Card, Input, Select, Badge, Spinner, Banner, cn } from '@infra/ui'
+import { Button, CopyButton, Card, Input, Select, Badge, Spinner, Banner, FileList, ForceGraph, cn } from '@infra/ui'
 ```
 
 ## Primitives

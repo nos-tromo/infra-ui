@@ -29,7 +29,7 @@ export interface ForceGraphNode {
   label: string
   /** Style-map key; also shown in the legend. */
   kind: string
-  /** Relative size weight (≥1); mapped to radius by sqrt scale, like docint's mentions. */
+  /** Relative size weight (≥1); mapped to radius by sqrt scale. */
   size?: number
 }
 
@@ -232,7 +232,8 @@ export function ForceGraph({
   }, [edges, visibleNodes, minDegree])
 
   // Positions persist across sim rebuilds (data changes) so growth merges
-  // into the existing layout instead of re-seeding it.
+  // into the existing layout instead of re-seeding it. Entries for departed nodes
+  // are retained (negligible overhead at ≤ few-hundred-node scale) so re-appearing nodes keep their spot.
   const positionsRef = useRef<Map<string, { x: number; y: number }>>(new Map())
 
   const sim = useMemo(() => {
