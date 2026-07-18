@@ -70,6 +70,8 @@ export interface ForceGraphLabels {
   fit: string // "Fit"
   expandSelected: string // "Expand node"
   removeSelected: string // "Remove node"
+  /** Rendered when >1 node is selected; the literal `{n}` is replaced with the count. */
+  removeSelectedMany: string // "Remove {n} nodes"
   maximize: string // "Expand graph"
   minimize: string // "Collapse graph"
 }
@@ -79,17 +81,20 @@ export interface ForceGraphProps {
   edges: ForceGraphEdge[]
   nodeStyles: Record<string, ForceGraphNodeStyle>
   edgeStyles?: Record<string, ForceGraphEdgeStyle>
-  selectedId?: string | null
-  /** Called with a node id on selection, or `null` when the background is
-   *  clicked to clear the selection. */
-  onSelectNode?: (id: string | null) => void
-  /** When set, selection shows an Expand button and double-click expands. */
+  /** Controlled selection set. */
+  selectedIds?: string[]
+  /** Called with the full new selection set on every selection mutation:
+   *  click ([id]), shift+click toggle, marquee (union with previous), or
+   *  background click ([]). */
+  onSelectionChange?: (ids: string[]) => void
+  /** When set and exactly one node is selected, shows an Expand button and
+   *  double-click expands. */
   onExpandNode?: (id: string) => void
   /** Node id currently being expanded (renders its Expand button disabled). */
   expandingId?: string | null
   /** When set, selection shows a Remove button and Backspace/Delete removes
-   *  the selected node (ignored while focus is in a text input). */
-  onDeleteNode?: (id: string) => void
+   *  the whole selected set (ignored while focus is in a text input). */
+  onDeleteNodes?: (ids: string[]) => void
   /** Status line above the canvas; consumer formats counts + hints. */
   statusText?: string
   /** Legend entries; omit to hide the legend. */
@@ -111,6 +116,7 @@ const DEFAULT_LABELS: ForceGraphLabels = {
   fit: 'Fit',
   expandSelected: 'Expand node',
   removeSelected: 'Remove node',
+  removeSelectedMany: 'Remove {n} nodes',
   maximize: 'Expand graph',
   minimize: 'Collapse graph'
 }
@@ -175,7 +181,10 @@ interface View {
 /**
  * Interactive, force-directed graph primitive. Nodes are draggable (with
  * collision), the canvas zooms (wheel) and pans (background drag), a click
- * selects a node, a double-click (or the Expand button) requests expansion,
+ * replaces the selection with a single node, shift+click toggles a node
+ * in/out of a multi-node selection, shift+drag on the background marquee-
+ * selects every node inside the drawn rectangle, a double-click (or the
+ * Expand button, shown only for a single selected node) requests expansion,
  * and layouts merge incrementally — nodes already on screen keep their
  * position when the data set grows, instead of the whole graph re-seeding.
  * Rendering is plain SVG over the dependency-free {@link createForceSimulation}
@@ -191,11 +200,11 @@ export function ForceGraph({
   edges,
   nodeStyles,
   edgeStyles,
-  selectedId,
-  onSelectNode,
+  selectedIds,
+  onSelectionChange,
   onExpandNode,
   expandingId,
-  onDeleteNode,
+  onDeleteNodes,
   statusText,
   legend,
   labels,
@@ -204,6 +213,9 @@ export function ForceGraph({
   apiRef
 }: ForceGraphProps) {
   const L = { ...DEFAULT_LABELS, ...labels }
+
+  const selectedIdsArr = selectedIds ?? []
+  const selectedSet = useMemo(() => new Set(selectedIdsArr), [selectedIdsArr])
 
   const svgRef = useRef<SVGSVGElement | null>(null)
 
@@ -280,6 +292,17 @@ export function ForceGraph({
   const movedRef = useRef(false)
   const panRef = useRef<{ startX: number; startY: number; view: View } | null>(null)
   const panMovedRef = useRef(false)
+  // Shift+drag on the background enters marquee mode instead of panning.
+  // `marqueeRef` holds the drag-start point in layout coords for the final
+  // rect→selection computation; `marqueeRect` (normalized min/max) drives the
+  // live rectangle render and is cleared on pointerup.
+  const marqueeRef = useRef<{ startX: number; startY: number } | null>(null)
+  const [marqueeRect, setMarqueeRect] = useState<{
+    x: number
+    y: number
+    width: number
+    height: number
+  } | null>(null)
   const rafRef = useRef(0)
   const runningRef = useRef(false)
 
@@ -354,11 +377,11 @@ export function ForceGraph({
     }
   }, [isMaximized])
 
-  // Backspace/Delete removes the selected node — skipped while the user is
-  // typing in a text field (input/textarea/select or contentEditable), so the
-  // shortcut doesn't fight with normal text editing elsewhere on the page.
+  // Backspace/Delete removes the whole selected set — skipped while the user
+  // is typing in a text field (input/textarea/select or contentEditable), so
+  // the shortcut doesn't fight with normal text editing elsewhere on the page.
   useEffect(() => {
-    if (selectedId == null || !onDeleteNode) return
+    if (selectedIdsArr.length === 0 || !onDeleteNodes) return
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Backspace' && e.key !== 'Delete') return
       const target = e.target as HTMLElement | null
@@ -367,11 +390,11 @@ export function ForceGraph({
         return
       }
       e.preventDefault()
-      onDeleteNode(selectedId)
+      onDeleteNodes(selectedIdsArr)
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [selectedId, onDeleteNode])
+  }, [selectedIdsArr, onDeleteNodes])
 
   // If the graph empties (e.g. collection switch) the overlay would otherwise
   // stay up while leaving body scroll locked — auto-collapse to keep the
@@ -477,42 +500,82 @@ export function ForceGraph({
     setView({ x: 0, y: 0, k: 1 })
   }, [])
 
-  // --- background pan ---
+  // --- background pan / shift+drag marquee select ---
   const onBackgroundPointerDown = useCallback(
     (e: React.PointerEvent<SVGRectElement>) => {
       e.currentTarget.setPointerCapture?.(e.pointerId)
+      if (e.shiftKey) {
+        const p = screenToLayout(e.clientX, e.clientY)
+        marqueeRef.current = { startX: p.x, startY: p.y }
+        setMarqueeRect({ x: p.x, y: p.y, width: 0, height: 0 })
+        return
+      }
       panRef.current = { startX: e.clientX, startY: e.clientY, view }
       panMovedRef.current = false
     },
-    [view]
+    [view, screenToLayout]
   )
 
-  const onBackgroundPointerMove = useCallback((e: React.PointerEvent<SVGRectElement>) => {
-    const pan = panRef.current
-    if (!pan) return
-    if (Math.hypot(e.clientX - pan.startX, e.clientY - pan.startY) > DRAG_THRESHOLD) {
-      panMovedRef.current = true
-    }
-    const svg = svgRef.current
-    const rect = svg?.getBoundingClientRect()
-    const w = rect?.width || WIDTH
-    const h = rect?.height || HEIGHT
-    const dx = ((e.clientX - pan.startX) / w) * WIDTH
-    const dy = ((e.clientY - pan.startY) / h) * HEIGHT
-    setView({ k: pan.view.k, x: pan.view.x + dx, y: pan.view.y + dy })
-  }, [])
+  const onBackgroundPointerMove = useCallback(
+    (e: React.PointerEvent<SVGRectElement>) => {
+      const marquee = marqueeRef.current
+      if (marquee) {
+        const p = screenToLayout(e.clientX, e.clientY)
+        setMarqueeRect({
+          x: Math.min(marquee.startX, p.x),
+          y: Math.min(marquee.startY, p.y),
+          width: Math.abs(p.x - marquee.startX),
+          height: Math.abs(p.y - marquee.startY)
+        })
+        return
+      }
+      const pan = panRef.current
+      if (!pan) return
+      if (Math.hypot(e.clientX - pan.startX, e.clientY - pan.startY) > DRAG_THRESHOLD) {
+        panMovedRef.current = true
+      }
+      const svg = svgRef.current
+      const rect = svg?.getBoundingClientRect()
+      const w = rect?.width || WIDTH
+      const h = rect?.height || HEIGHT
+      const dx = ((e.clientX - pan.startX) / w) * WIDTH
+      const dy = ((e.clientY - pan.startY) / h) * HEIGHT
+      setView({ k: pan.view.k, x: pan.view.x + dx, y: pan.view.y + dy })
+    },
+    [screenToLayout]
+  )
 
   const onBackgroundPointerUp = useCallback(
     (e: React.PointerEvent<SVGRectElement>) => {
       e.currentTarget.releasePointerCapture?.(e.pointerId)
+      if (marqueeRef.current) {
+        const rect = marqueeRect
+        marqueeRef.current = null
+        setMarqueeRect(null)
+        if (rect) {
+          const next = new Set(selectedIdsArr)
+          for (const n of sim.nodes) {
+            if (
+              n.x >= rect.x &&
+              n.x <= rect.x + rect.width &&
+              n.y >= rect.y &&
+              n.y <= rect.y + rect.height
+            ) {
+              next.add(n.id)
+            }
+          }
+          onSelectionChange?.([...next])
+        }
+        return
+      }
       const pan = panRef.current
       const movedAtUp =
         pan != null && Math.hypot(e.clientX - pan.startX, e.clientY - pan.startY) > DRAG_THRESHOLD
       const wasClick = pan != null && !panMovedRef.current && !movedAtUp
       panRef.current = null
-      if (wasClick) onSelectNode?.(null)
+      if (wasClick) onSelectionChange?.([])
     },
-    [onSelectNode]
+    [onSelectionChange, marqueeRect, selectedIdsArr, sim]
   )
 
   // --- node drag ---
@@ -558,28 +621,37 @@ export function ForceGraph({
     [sim]
   )
 
+  // Plain click replaces the selection with [id]; shift+click toggles id
+  // in/out of the current set.
   const handleSelect = useCallback(
-    (id: string) => {
+    (id: string, shiftKey: boolean) => {
       // Suppress the click that ends a drag gesture.
       if (movedRef.current) {
         movedRef.current = false
         return
       }
-      onSelectNode?.(id)
+      if (shiftKey) {
+        const next = new Set(selectedIdsArr)
+        if (next.has(id)) next.delete(id)
+        else next.add(id)
+        onSelectionChange?.([...next])
+      } else {
+        onSelectionChange?.([id])
+      }
     },
-    [onSelectNode]
+    [onSelectionChange, selectedIdsArr]
   )
 
-  // Highlight neighbors of the selected node so its relations stand out.
+  // Highlight neighbors of any selected node so their relations stand out.
   const neighborIds = useMemo(() => {
-    if (selectedId == null) return null
+    if (selectedSet.size === 0) return null
     const set = new Set<string>()
     for (const e of visibleEdges) {
-      if (e.source === selectedId) set.add(e.target)
-      else if (e.target === selectedId) set.add(e.source)
+      if (selectedSet.has(e.source)) set.add(e.target)
+      if (selectedSet.has(e.target)) set.add(e.source)
     }
     return set
-  }, [visibleEdges, selectedId])
+  }, [visibleEdges, selectedSet])
 
   const transform = `translate(${view.x} ${view.y}) scale(${view.k})`
 
@@ -729,8 +801,8 @@ export function ForceGraph({
               const b = sim.nodeById(e.target)
               if (!a || !b) return null
               const style = edgeStyles?.[e.kind]
-              const incident = selectedId != null && (e.source === selectedId || e.target === selectedId)
-              const dimmed = selectedId != null && !incident
+              const incident = selectedSet.size > 0 && (selectedSet.has(e.source) || selectedSet.has(e.target))
+              const dimmed = selectedSet.size > 0 && !incident
               const dx = b.x - a.x
               const dy = b.y - a.y
               const dist = Math.hypot(dx, dy) || 1
@@ -755,9 +827,9 @@ export function ForceGraph({
             {visibleNodes.map((n) => {
               const sn = sim.nodeById(n.id)
               if (!sn) return null
-              const isSelected = n.id === selectedId
+              const isSelected = selectedSet.has(n.id)
               const isNeighbor = neighborIds?.has(n.id) ?? false
-              const dimmed = selectedId != null && !isSelected && !isNeighbor
+              const dimmed = selectedSet.size > 0 && !isSelected && !isNeighbor
               const r = sn.r
               return (
                 <g
@@ -772,14 +844,14 @@ export function ForceGraph({
                   onPointerDown={(e) => onNodePointerDown(e, n.id)}
                   onPointerMove={(e) => onNodePointerMove(e, n.id)}
                   onPointerUp={(e) => onNodePointerUp(e, n.id)}
-                  onClick={() => handleSelect(n.id)}
+                  onClick={(e) => handleSelect(n.id, e.shiftKey)}
                   onDoubleClick={() => {
                     if (onExpandNode) onExpandNode(n.id)
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault()
-                      onSelectNode?.(n.id)
+                      onSelectionChange?.([n.id])
                     }
                   }}
                 >
@@ -806,6 +878,18 @@ export function ForceGraph({
                 </g>
               )
             })}
+            {marqueeRect && (
+              <rect
+                x={marqueeRect.x}
+                y={marqueeRect.y}
+                width={marqueeRect.width}
+                height={marqueeRect.height}
+                className="stroke-primary fill-primary"
+                fillOpacity={0.08}
+                strokeWidth={1 / view.k}
+                strokeDasharray={`${4 / view.k} ${4 / view.k}`}
+              />
+            )}
           </g>
         </svg>
 
@@ -820,26 +904,32 @@ export function ForceGraph({
           {isMaximized ? <CollapseIcon /> : <ExpandIcon />}
         </button>
 
-        {selectedId && (onExpandNode || onDeleteNode) && (
+        {selectedIdsArr.length > 0 && (onExpandNode || onDeleteNodes) && (
           <div className="absolute bottom-2 left-2 z-10 flex items-center gap-1.5">
-            {onExpandNode && (
+            {onExpandNode && selectedIdsArr.length === 1 && (
               <button
                 type="button"
-                disabled={expandingId === selectedId}
-                onClick={() => onExpandNode(selectedId)}
+                disabled={expandingId === selectedIdsArr[0]}
+                onClick={() => onExpandNode(selectedIdsArr[0])}
                 className="rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground disabled:opacity-40"
               >
                 {L.expandSelected}
               </button>
             )}
-            {onDeleteNode && (
+            {onDeleteNodes && (
               <button
                 type="button"
-                aria-label={L.removeSelected}
-                onClick={() => onDeleteNode(selectedId)}
+                aria-label={
+                  selectedIdsArr.length === 1
+                    ? L.removeSelected
+                    : L.removeSelectedMany.replace('{n}', String(selectedIdsArr.length))
+                }
+                onClick={() => onDeleteNodes(selectedIdsArr)}
                 className="rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground"
               >
-                {L.removeSelected}
+                {selectedIdsArr.length === 1
+                  ? L.removeSelected
+                  : L.removeSelectedMany.replace('{n}', String(selectedIdsArr.length))}
               </button>
             )}
           </div>
