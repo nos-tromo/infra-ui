@@ -691,7 +691,8 @@ export function ForceGraph({
                     y={r + 11 / view.k}
                     textAnchor="middle"
                     fontSize={11 / view.k}
-                    className="pointer-events-none fill-muted-foreground"
+                    className="pointer-events-none"
+                    fill={nodeStyles[n.kind]?.color ?? 'currentColor'}
                   >
                     {n.label.length > 24 ? `${n.label.slice(0, 23)}…` : n.label}
                   </text>

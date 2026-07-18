@@ -1079,7 +1079,8 @@ function ForceGraph({
                                   y: r + 11 / view.k,
                                   textAnchor: "middle",
                                   fontSize: 11 / view.k,
-                                  className: "pointer-events-none fill-muted-foreground",
+                                  className: "pointer-events-none",
+                                  fill: nodeStyles[n.kind]?.color ?? "currentColor",
                                   children: n.label.length > 24 ? `${n.label.slice(0, 23)}\u2026` : n.label
                                 }
                               )

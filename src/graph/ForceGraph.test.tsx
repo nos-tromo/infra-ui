@@ -16,6 +16,16 @@ describe('ForceGraph', () => {
     expect(container.querySelectorAll('line')).toHaveLength(1)
   })
 
+  it('node labels use their kind color, not the edge grey', () => {
+    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} />)
+    const alphaText = screen.getByRole('button', { name: /Alpha/ }).querySelector('text')
+    const betaText = screen.getByRole('button', { name: /Beta/ }).querySelector('text')
+    expect(alphaText?.getAttribute('fill')).toBe('#7c3aed')
+    expect(betaText?.getAttribute('fill')).toBe('#4ade80')
+    expect(alphaText?.getAttribute('class')).not.toContain('fill-muted-foreground')
+    expect(betaText?.getAttribute('class')).not.toContain('fill-muted-foreground')
+  })
+
   it('draws an arrowhead marker on directed edges only', () => {
     const { container } = render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} />)
     expect(container.querySelector('line')?.getAttribute('marker-end')).toBe('url(#fg-arrow)')
