@@ -46,6 +46,9 @@ export interface ForceGraphEdge {
 export interface ForceGraphNodeStyle {
   /** SVG fill for the node circle (hex/rgb — consumer-supplied palette). */
   color: string
+  /** SVG fill for the node label text; defaults to `color`. Pick a lighter
+   *  variant when `color` is too dark to read as text. */
+  labelColor?: string
 }
 
 export interface ForceGraphEdgeStyle {
@@ -756,7 +759,7 @@ export function ForceGraph({
                     strokeWidth={3 / view.k}
                     strokeLinejoin="round"
                     style={{ paintOrder: 'stroke' }}
-                    fill={nodeStyles[n.kind]?.color ?? 'currentColor'}
+                    fill={nodeStyles[n.kind]?.labelColor ?? nodeStyles[n.kind]?.color ?? 'currentColor'}
                   >
                     {n.label.length > 24 ? `${n.label.slice(0, 23)}…` : n.label}
                   </text>

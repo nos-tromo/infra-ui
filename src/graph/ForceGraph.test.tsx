@@ -146,6 +146,24 @@ describe('ForceGraph', () => {
     expect(group.firstElementChild?.tagName.toLowerCase()).toBe('title')
   })
 
+  it('uses labelColor for label text while the circle keeps color', () => {
+    const styles = {
+      author: { color: '#7c3aed', labelColor: '#a78bfa' },
+      topic: { color: '#4ade80' }
+    }
+    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={styles} />)
+    const alphaGroup = screen.getByRole('button', { name: /Alpha/ })
+    const alphaText = alphaGroup.querySelector('text')
+    const alphaCircle = alphaGroup.querySelector('circle')
+    expect(alphaText?.getAttribute('fill')).toBe('#a78bfa')
+    expect(alphaCircle?.getAttribute('fill')).toBe('#7c3aed')
+
+    const betaGroup = screen.getByRole('button', { name: /Beta/ })
+    const betaText = betaGroup.querySelector('text')
+    // No labelColor set — falls back to color.
+    expect(betaText?.getAttribute('fill')).toBe('#4ade80')
+  })
+
   it('apiRef exposes current positions for every node', () => {
     const ref = { current: null as ForceGraphHandle | null }
     render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} apiRef={ref} />)
