@@ -578,6 +578,19 @@ export function ForceGraph({
     [onSelectionChange, marqueeRect, selectedIdsArr, sim]
   )
 
+  const onBackgroundPointerCancel = useCallback(
+    (e: React.PointerEvent<SVGRectElement>) => {
+      e.currentTarget.releasePointerCapture?.(e.pointerId)
+      if (marqueeRef.current) {
+        marqueeRef.current = null
+        setMarqueeRect(null)
+        return
+      }
+      panRef.current = null
+    },
+    []
+  )
+
   // --- node drag ---
   const onNodePointerDown = useCallback(
     (e: React.PointerEvent, id: string) => {
@@ -611,6 +624,17 @@ export function ForceGraph({
   )
 
   const onNodePointerUp = useCallback(
+    (e: React.PointerEvent, id: string) => {
+      ;(e.currentTarget as Element).releasePointerCapture?.(e.pointerId)
+      if (draggingNodeRef.current === id) {
+        draggingNodeRef.current = null
+        sim.releaseNode(id)
+      }
+    },
+    [sim]
+  )
+
+  const onNodePointerCancel = useCallback(
     (e: React.PointerEvent, id: string) => {
       ;(e.currentTarget as Element).releasePointerCapture?.(e.pointerId)
       if (draggingNodeRef.current === id) {
@@ -780,6 +804,7 @@ export function ForceGraph({
             onPointerDown={onBackgroundPointerDown}
             onPointerMove={onBackgroundPointerMove}
             onPointerUp={onBackgroundPointerUp}
+            onPointerCancel={onBackgroundPointerCancel}
           />
           <g transform={transform}>
             <defs>
@@ -844,6 +869,7 @@ export function ForceGraph({
                   onPointerDown={(e) => onNodePointerDown(e, n.id)}
                   onPointerMove={(e) => onNodePointerMove(e, n.id)}
                   onPointerUp={(e) => onNodePointerUp(e, n.id)}
+                  onPointerCancel={(e) => onNodePointerCancel(e, n.id)}
                   onClick={(e) => handleSelect(n.id, e.shiftKey)}
                   onDoubleClick={() => {
                     if (onExpandNode) onExpandNode(n.id)

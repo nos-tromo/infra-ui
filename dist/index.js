@@ -910,6 +910,18 @@ function ForceGraph({
     },
     [onSelectionChange, marqueeRect, selectedIdsArr, sim]
   );
+  const onBackgroundPointerCancel = useCallback(
+    (e) => {
+      e.currentTarget.releasePointerCapture?.(e.pointerId);
+      if (marqueeRef.current) {
+        marqueeRef.current = null;
+        setMarqueeRect(null);
+        return;
+      }
+      panRef.current = null;
+    },
+    []
+  );
   const onNodePointerDown = useCallback(
     (e, id) => {
       e.stopPropagation();
@@ -939,6 +951,17 @@ function ForceGraph({
     [runLoop, screenToLayout, sim]
   );
   const onNodePointerUp = useCallback(
+    (e, id) => {
+      ;
+      e.currentTarget.releasePointerCapture?.(e.pointerId);
+      if (draggingNodeRef.current === id) {
+        draggingNodeRef.current = null;
+        sim.releaseNode(id);
+      }
+    },
+    [sim]
+  );
+  const onNodePointerCancel = useCallback(
     (e, id) => {
       ;
       e.currentTarget.releasePointerCapture?.(e.pointerId);
@@ -1111,7 +1134,8 @@ function ForceGraph({
                         fill: "transparent",
                         onPointerDown: onBackgroundPointerDown,
                         onPointerMove: onBackgroundPointerMove,
-                        onPointerUp: onBackgroundPointerUp
+                        onPointerUp: onBackgroundPointerUp,
+                        onPointerCancel: onBackgroundPointerCancel
                       }
                     ),
                     /* @__PURE__ */ jsxs4("g", { transform, children: [
@@ -1177,6 +1201,7 @@ function ForceGraph({
                             onPointerDown: (e) => onNodePointerDown(e, n.id),
                             onPointerMove: (e) => onNodePointerMove(e, n.id),
                             onPointerUp: (e) => onNodePointerUp(e, n.id),
+                            onPointerCancel: (e) => onNodePointerCancel(e, n.id),
                             onClick: (e) => handleSelect(n.id, e.shiftKey),
                             onDoubleClick: () => {
                               if (onExpandNode) onExpandNode(n.id);

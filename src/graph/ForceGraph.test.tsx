@@ -449,4 +449,58 @@ describe('ForceGraph', () => {
     expect(second.a.x).not.toBe(999999)
     expect(second.a.y).not.toBe(999999)
   })
+
+  it('shift+drag marquee cancelled (pointercancel) clears marquee rect without selection', () => {
+    const onSelectionChange = vi.fn()
+    const { container } = render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['b']}
+        onSelectionChange={onSelectionChange}
+      />
+    )
+    const g = container.querySelector('svg > g')!
+    const bgRect = container.querySelector('svg > rect')!
+
+    // Start a marquee (shift+pointerdown + pointermove)
+    fireEvent.pointerDown(bgRect, { clientX: 100, clientY: 100, shiftKey: true })
+    fireEvent.pointerMove(bgRect, { clientX: 150, clientY: 150, shiftKey: true })
+
+    // Marquee rect should be visible now
+    expect(g.querySelector('rect')).not.toBeNull()
+
+    // Fire pointercancel
+    fireEvent.pointerCancel(bgRect)
+
+    // Marquee rect should be cleared
+    expect(g.querySelector('rect')).toBeNull()
+
+    // onSelectionChange should NOT have been called (no selection committed)
+    expect(onSelectionChange).not.toHaveBeenCalled()
+  })
+
+  it('node drag cancelled (pointercancel) releases node without selection change', () => {
+    const onSelectionChange = vi.fn()
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        onSelectionChange={onSelectionChange}
+      />
+    )
+    const nodeGroup = screen.getByRole('button', { name: /Alpha/ })
+
+    // Start dragging a node
+    fireEvent.pointerDown(nodeGroup, { clientX: 100, clientY: 100 })
+    fireEvent.pointerMove(nodeGroup, { clientX: 150, clientY: 150 })
+
+    // Fire pointercancel
+    fireEvent.pointerCancel(nodeGroup)
+
+    // onSelectionChange should NOT have been called (drag was not a click)
+    expect(onSelectionChange).not.toHaveBeenCalled()
+  })
 })
