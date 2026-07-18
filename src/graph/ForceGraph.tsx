@@ -59,6 +59,7 @@ export interface ForceGraphLabels {
   edgeLength: string // "Edge length"
   zoom: string // "Zoom"
   reset: string // "Reset"
+  fit: string // "Fit"
   expandSelected: string // "Expand node"
   maximize: string // "Expand graph"
   minimize: string // "Collapse graph"
@@ -91,6 +92,7 @@ const DEFAULT_LABELS: ForceGraphLabels = {
   edgeLength: 'Edge length',
   zoom: 'Zoom',
   reset: 'Reset',
+  fit: 'Fit',
   expandSelected: 'Expand node',
   maximize: 'Expand graph',
   minimize: 'Collapse graph'
@@ -387,6 +389,35 @@ export function ForceGraph({
     })
   }, [])
 
+  // Fit the current node set into the viewBox: bounding box over the sim's
+  // live node positions (padded), scaled/centered so it fills WIDTH×HEIGHT.
+  // No-op when there are no nodes (nothing to fit around).
+  const fitToView = useCallback(() => {
+    const simNodes = sim.nodes
+    if (simNodes.length === 0) return
+    const PAD = 24
+    let minX = Infinity
+    let minY = Infinity
+    let maxX = -Infinity
+    let maxY = -Infinity
+    for (const n of simNodes) {
+      minX = Math.min(minX, n.x - n.r)
+      minY = Math.min(minY, n.y - n.r)
+      maxX = Math.max(maxX, n.x + n.r)
+      maxY = Math.max(maxY, n.y + n.r)
+    }
+    minX -= PAD
+    minY -= PAD
+    maxX += PAD
+    maxY += PAD
+    const w = Math.max(1, maxX - minX)
+    const h = Math.max(1, maxY - minY)
+    const k = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.min(WIDTH / w, HEIGHT / h)))
+    const cx = (minX + maxX) / 2
+    const cy = (minY + maxY) / 2
+    setView({ k, x: CENTER_X - cx * k, y: CENTER_Y - cy * k })
+  }, [sim])
+
   // Reset every graph control back to its default: edge filter (min edges → 0),
   // edge length (→ 1x), and zoom/pan (→ home).
   const resetControls = useCallback(() => {
@@ -562,6 +593,15 @@ export function ForceGraph({
               className="h-7 w-7 rounded-md border border-border text-sm leading-none"
             >
               −
+            </button>
+            <button
+              type="button"
+              aria-label={L.fit}
+              onClick={fitToView}
+              title="Fit graph to view"
+              className="h-7 px-2 rounded-md border border-border text-xs"
+            >
+              {L.fit}
             </button>
           </div>
 

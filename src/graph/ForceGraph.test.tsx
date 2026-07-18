@@ -105,4 +105,26 @@ describe('ForceGraph', () => {
     )
     expect(screen.getByRole('button', { name: 'Zurücksetzen' })).toBeInTheDocument()
   })
+
+  it('fit-to-view recenters after panning/zooming', () => {
+    const { container } = render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} />)
+    const g = container.querySelector('svg > g')
+    const before = g?.getAttribute('transform')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Zoom in' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Zoom in' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Zoom in' }))
+
+    const fitButton = screen.getByRole('button', { name: 'Fit' })
+    expect(() => fireEvent.click(fitButton)).not.toThrow()
+
+    const after = g?.getAttribute('transform')
+    expect(after).not.toBe(before)
+  })
+
+  it('fit-to-view is a no-op when there are no nodes', () => {
+    render(<ForceGraph nodes={[]} edges={[]} nodeStyles={STYLES} />)
+    const fitButton = screen.getByRole('button', { name: 'Fit' })
+    expect(() => fireEvent.click(fitButton)).not.toThrow()
+  })
 })
