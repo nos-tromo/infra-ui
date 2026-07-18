@@ -868,7 +868,7 @@ function ForceGraph({
       "data-maximized": isMaximized,
       className: cn(
         "space-y-2",
-        isMaximized && "fixed inset-0 z-50 flex flex-col bg-surface p-4",
+        isMaximized && "fixed inset-0 z-50 flex flex-col bg-background p-4",
         className
       ),
       children: [
@@ -960,7 +960,7 @@ function ForceGraph({
           "div",
           {
             className: cn(
-              "relative rounded-md border border-border bg-surface overflow-hidden",
+              "relative rounded-md border border-border bg-background overflow-hidden",
               isMaximized && "flex-1 min-h-0"
             ),
             children: [
@@ -1100,7 +1100,7 @@ function ForceGraph({
                   "aria-pressed": isMaximized,
                   title: isMaximized ? L.minimize : L.maximize,
                   onClick: () => setIsMaximized((m) => !m),
-                  className: "absolute left-2 top-2 z-10 rounded-md border border-border bg-surface/90 p-1.5 text-muted-foreground hover:text-foreground",
+                  className: "absolute left-2 top-2 z-10 rounded-md border border-border bg-background/90 p-1.5 text-muted-foreground hover:text-foreground",
                   children: isMaximized ? /* @__PURE__ */ jsx12(CollapseIcon, {}) : /* @__PURE__ */ jsx12(ExpandIcon, {})
                 }
               ),
@@ -1110,11 +1110,11 @@ function ForceGraph({
                   type: "button",
                   disabled: expandingId === selectedId,
                   onClick: () => onExpandNode(selectedId),
-                  className: "absolute bottom-2 left-2 z-10 rounded-md border border-border bg-surface/90 px-2 py-1 text-xs text-foreground disabled:opacity-40",
+                  className: "absolute bottom-2 left-2 z-10 rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground disabled:opacity-40",
                   children: L.expandSelected
                 }
               ),
-              legend && legend.length > 0 && /* @__PURE__ */ jsx12("div", { className: "absolute right-2 top-2 max-w-[12rem] rounded-md border border-border bg-surface/90 p-2 text-xs space-y-1", children: /* @__PURE__ */ jsx12("ul", { className: "space-y-0.5", children: legend.map(({ kind, label }) => /* @__PURE__ */ jsxs4("li", { className: "flex items-center gap-1.5", children: [
+              legend && legend.length > 0 && /* @__PURE__ */ jsx12("div", { className: "absolute right-2 top-2 max-w-[12rem] rounded-md border border-border bg-background/90 p-2 text-xs space-y-1", children: /* @__PURE__ */ jsx12("ul", { className: "space-y-0.5", children: legend.map(({ kind, label }) => /* @__PURE__ */ jsxs4("li", { className: "flex items-center gap-1.5", children: [
                 /* @__PURE__ */ jsx12(
                   "span",
                   {
