@@ -135,4 +135,79 @@ interface ShellProps {
  */
 declare function Shell({ title, actions, children, className }: ShellProps): react.JSX.Element;
 
-export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, mergeFiles };
+interface ForceGraphNode {
+    id: string;
+    label: string;
+    /** Style-map key; also shown in the legend. */
+    kind: string;
+    /** Relative size weight (≥1); mapped to radius by sqrt scale. */
+    size?: number;
+}
+interface ForceGraphEdge {
+    source: string;
+    target: string;
+    kind: string;
+    /** Draw an arrowhead source → target. */
+    directed?: boolean;
+    /** Stroke-width weight (≥1). */
+    weight?: number;
+}
+interface ForceGraphNodeStyle {
+    /** SVG fill for the node circle (hex/rgb — consumer-supplied palette). */
+    color: string;
+}
+interface ForceGraphEdgeStyle {
+    dashed?: boolean;
+    /** 0–1 stroke opacity when not dimmed (default 0.6). */
+    opacity?: number;
+}
+interface ForceGraphLabels {
+    minEdges: string;
+    edgeLength: string;
+    zoom: string;
+    reset: string;
+    expandSelected: string;
+    maximize: string;
+    minimize: string;
+}
+interface ForceGraphProps {
+    nodes: ForceGraphNode[];
+    edges: ForceGraphEdge[];
+    nodeStyles: Record<string, ForceGraphNodeStyle>;
+    edgeStyles?: Record<string, ForceGraphEdgeStyle>;
+    selectedId?: string | null;
+    onSelectNode?: (id: string) => void;
+    /** When set, selection shows an Expand button and double-click expands. */
+    onExpandNode?: (id: string) => void;
+    /** Node id currently being expanded (renders its Expand button disabled). */
+    expandingId?: string | null;
+    /** Status line above the canvas; consumer formats counts + hints. */
+    statusText?: string;
+    /** Legend entries; omit to hide the legend. */
+    legend?: Array<{
+        kind: string;
+        label: string;
+    }>;
+    /** Control captions — consumer passes translated strings; en defaults built in. */
+    labels?: Partial<ForceGraphLabels>;
+    /** Canvas height class when not maximized (default 'h-[60vh]'). */
+    heightClassName?: string;
+    className?: string;
+}
+/**
+ * Interactive, force-directed graph primitive. Nodes are draggable (with
+ * collision), the canvas zooms (wheel) and pans (background drag), a click
+ * selects a node, a double-click (or the Expand button) requests expansion,
+ * and layouts merge incrementally — nodes already on screen keep their
+ * position when the data set grows, instead of the whole graph re-seeding.
+ * Rendering is plain SVG over the dependency-free {@link createForceSimulation}
+ * layout.
+ *
+ * `nodes`/`edges` feed the simulation-building `useMemo` directly, so callers
+ * must pass referentially stable arrays per logical data change (memoize the
+ * mapper output on the API payload) — a fresh array identity every render
+ * rebuilds and reseeds the simulation on every frame.
+ */
+declare function ForceGraph({ nodes, edges, nodeStyles, edgeStyles, selectedId, onSelectNode, onExpandNode, expandingId, statusText, legend, labels, heightClassName, className }: ForceGraphProps): react.JSX.Element;
+
+export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, mergeFiles };

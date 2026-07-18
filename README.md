@@ -35,7 +35,7 @@ In your app's root CSS (e.g. `src/styles/globals.css`):
 ## Use
 
 ```tsx
-import { Button, CopyButton, Card, Input, Select, Badge, Spinner, Banner, cn } from '@infra/ui'
+import { Button, CopyButton, Card, Input, Select, Badge, Spinner, Banner, FileList, ForceGraph, cn } from '@infra/ui'
 ```
 
 ## Primitives
@@ -46,6 +46,21 @@ copies text to the clipboard) · `Card` · `Input` · `Select` ·
 
 All styling uses semantic design tokens only (`bg-primary`, `text-muted-foreground`,
 `border-border`, …), so an app re-themes everything by setting `--app-accent`.
+
+### ForceGraph
+
+Interactive SVG force-directed graph with zoom, pan, drag, node selection, and incremental merge support. Nodes and edges are token-themed, and the simulation layout is preserved across updates so expanding the graph with new nodes maintains the existing visual structure.
+
+```tsx
+<ForceGraph
+  nodes={[{ id: 'a', label: 'Alpha', kind: 'author' }]}
+  edges={[]}
+  nodeStyles={{ author: { color: '#7c3aed' } }}
+  onSelectNode={setSelected}
+/>
+```
+
+The `nodes` prop accepts new nodes that merge into the existing layout without resetting. The `labels` prop provides translated UI control captions for pan/zoom/select modes.
 
 ## Develop
 
