@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { cn } from '../cn'
 import {
   createForceSimulation,
@@ -54,11 +54,17 @@ export interface ForceGraphEdgeStyle {
   opacity?: number
 }
 
+export interface ForceGraphHandle {
+  /** Live layout snapshot (id → x/y) of every currently-visible node, e.g. for baking a layout into an export. */
+  getPositions(): Record<string, { x: number; y: number }>
+}
+
 export interface ForceGraphLabels {
   minEdges: string // "Min edges"
   edgeLength: string // "Edge length"
   zoom: string // "Zoom"
   reset: string // "Reset"
+  fit: string // "Fit"
   expandSelected: string // "Expand node"
   maximize: string // "Expand graph"
   minimize: string // "Collapse graph"
@@ -84,6 +90,8 @@ export interface ForceGraphProps {
   /** Canvas height class when not maximized (default 'h-[60vh]'). */
   heightClassName?: string
   className?: string
+  /** Imperative access to the live layout, e.g. for exports. */
+  apiRef?: React.Ref<ForceGraphHandle>
 }
 
 const DEFAULT_LABELS: ForceGraphLabels = {
@@ -91,6 +99,7 @@ const DEFAULT_LABELS: ForceGraphLabels = {
   edgeLength: 'Edge length',
   zoom: 'Zoom',
   reset: 'Reset',
+  fit: 'Fit',
   expandSelected: 'Expand node',
   maximize: 'Expand graph',
   minimize: 'Collapse graph'
@@ -180,7 +189,8 @@ export function ForceGraph({
   legend,
   labels,
   heightClassName,
-  className
+  className,
+  apiRef
 }: ForceGraphProps) {
   const L = { ...DEFAULT_LABELS, ...labels }
 
@@ -292,6 +302,18 @@ export function ForceGraph({
     }
   }, [runLoop])
 
+  useImperativeHandle(
+    apiRef,
+    () => ({
+      getPositions: () => {
+        const out: Record<string, { x: number; y: number }> = {}
+        for (const n of sim.nodes) out[n.id] = { x: n.x, y: n.y }
+        return out
+      }
+    }),
+    [sim]
+  )
+
   // Apply the edge-length multiplier to the live simulation (no reseed): scale
   // link rest-length and repulsion together so clusters open up, not just
   // directly-linked pairs. Re-runs on a fresh graph (sim) and on slider moves.
@@ -386,6 +408,35 @@ export function ForceGraph({
       return { k, x: CENTER_X - lx * k, y: CENTER_Y - ly * k }
     })
   }, [])
+
+  // Fit the current node set into the viewBox: bounding box over the sim's
+  // live node positions (padded), scaled/centered so it fills WIDTH×HEIGHT.
+  // No-op when there are no nodes (nothing to fit around).
+  const fitToView = useCallback(() => {
+    const simNodes = sim.nodes
+    if (simNodes.length === 0) return
+    const PAD = 24
+    let minX = Infinity
+    let minY = Infinity
+    let maxX = -Infinity
+    let maxY = -Infinity
+    for (const n of simNodes) {
+      minX = Math.min(minX, n.x - n.r)
+      minY = Math.min(minY, n.y - n.r)
+      maxX = Math.max(maxX, n.x + n.r)
+      maxY = Math.max(maxY, n.y + n.r)
+    }
+    minX -= PAD
+    minY -= PAD
+    maxX += PAD
+    maxY += PAD
+    const w = Math.max(1, maxX - minX)
+    const h = Math.max(1, maxY - minY)
+    const k = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.min(WIDTH / w, HEIGHT / h)))
+    const cx = (minX + maxX) / 2
+    const cy = (minY + maxY) / 2
+    setView({ k, x: CENTER_X - cx * k, y: CENTER_Y - cy * k })
+  }, [sim])
 
   // Reset every graph control back to its default: edge filter (min edges → 0),
   // edge length (→ 1x), and zoom/pan (→ home).
@@ -563,6 +614,15 @@ export function ForceGraph({
             >
               −
             </button>
+            <button
+              type="button"
+              aria-label={L.fit}
+              onClick={fitToView}
+              title="Fit graph to view"
+              className="h-7 px-2 rounded-md border border-border text-xs"
+            >
+              {L.fit}
+            </button>
           </div>
 
           <span aria-hidden="true" className="h-5 border-l border-border" />
@@ -680,6 +740,7 @@ export function ForceGraph({
                     }
                   }}
                 >
+                  <title>{`${n.label} (${n.kind})`}</title>
                   <circle
                     r={r}
                     fill={nodeStyles[n.kind]?.color ?? 'currentColor'}
@@ -691,7 +752,11 @@ export function ForceGraph({
                     y={r + 11 / view.k}
                     textAnchor="middle"
                     fontSize={11 / view.k}
-                    className="pointer-events-none fill-muted-foreground"
+                    className="pointer-events-none stroke-background"
+                    strokeWidth={3 / view.k}
+                    strokeLinejoin="round"
+                    style={{ paintOrder: 'stroke' }}
+                    fill={nodeStyles[n.kind]?.color ?? 'currentColor'}
                   >
                     {n.label.length > 24 ? `${n.label.slice(0, 23)}…` : n.label}
                   </text>

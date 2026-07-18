@@ -351,7 +351,7 @@ function Shell({ title, actions, children, className }) {
 }
 
 // src/graph/ForceGraph.tsx
-import { useCallback, useEffect as useEffect2, useMemo, useRef as useRef2, useState as useState2 } from "react";
+import { useCallback, useEffect as useEffect2, useImperativeHandle, useMemo, useRef as useRef2, useState as useState2 } from "react";
 
 // src/graph/forceSimulation.ts
 var DEFAULTS = {
@@ -566,6 +566,7 @@ var DEFAULT_LABELS = {
   edgeLength: "Edge length",
   zoom: "Zoom",
   reset: "Reset",
+  fit: "Fit",
   expandSelected: "Expand node",
   maximize: "Expand graph",
   minimize: "Collapse graph"
@@ -630,7 +631,8 @@ function ForceGraph({
   legend,
   labels,
   heightClassName,
-  className
+  className,
+  apiRef
 }) {
   const L = { ...DEFAULT_LABELS, ...labels };
   const svgRef = useRef2(null);
@@ -707,6 +709,17 @@ function ForceGraph({
       runningRef.current = false;
     };
   }, [runLoop]);
+  useImperativeHandle(
+    apiRef,
+    () => ({
+      getPositions: () => {
+        const out = {};
+        for (const n of sim.nodes) out[n.id] = { x: n.x, y: n.y };
+        return out;
+      }
+    }),
+    [sim]
+  );
   useEffect2(() => {
     sim.setOptions({
       linkDistance: BASE_LINK_DISTANCE * spread,
@@ -776,6 +789,31 @@ function ForceGraph({
       return { k, x: CENTER_X - lx * k, y: CENTER_Y - ly * k };
     });
   }, []);
+  const fitToView = useCallback(() => {
+    const simNodes = sim.nodes;
+    if (simNodes.length === 0) return;
+    const PAD = 24;
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (const n of simNodes) {
+      minX = Math.min(minX, n.x - n.r);
+      minY = Math.min(minY, n.y - n.r);
+      maxX = Math.max(maxX, n.x + n.r);
+      maxY = Math.max(maxY, n.y + n.r);
+    }
+    minX -= PAD;
+    minY -= PAD;
+    maxX += PAD;
+    maxY += PAD;
+    const w = Math.max(1, maxX - minX);
+    const h = Math.max(1, maxY - minY);
+    const k = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Math.min(WIDTH / w, HEIGHT / h)));
+    const cx = (minX + maxX) / 2;
+    const cy = (minY + maxY) / 2;
+    setView({ k, x: CENTER_X - cx * k, y: CENTER_Y - cy * k });
+  }, [sim]);
   const resetControls = useCallback(() => {
     setMinDegree(0);
     setSpread(1);
@@ -941,6 +979,17 @@ function ForceGraph({
                   className: "h-7 w-7 rounded-md border border-border text-sm leading-none",
                   children: "\u2212"
                 }
+              ),
+              /* @__PURE__ */ jsx12(
+                "button",
+                {
+                  type: "button",
+                  "aria-label": L.fit,
+                  onClick: fitToView,
+                  title: "Fit graph to view",
+                  className: "h-7 px-2 rounded-md border border-border text-xs",
+                  children: L.fit
+                }
               )
             ] }),
             /* @__PURE__ */ jsx12("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
@@ -1063,6 +1112,7 @@ function ForceGraph({
                               }
                             },
                             children: [
+                              /* @__PURE__ */ jsx12("title", { children: `${n.label} (${n.kind})` }),
                               /* @__PURE__ */ jsx12(
                                 "circle",
                                 {
@@ -1079,7 +1129,11 @@ function ForceGraph({
                                   y: r + 11 / view.k,
                                   textAnchor: "middle",
                                   fontSize: 11 / view.k,
-                                  className: "pointer-events-none fill-muted-foreground",
+                                  className: "pointer-events-none stroke-background",
+                                  strokeWidth: 3 / view.k,
+                                  strokeLinejoin: "round",
+                                  style: { paintOrder: "stroke" },
+                                  fill: nodeStyles[n.kind]?.color ?? "currentColor",
                                   children: n.label.length > 24 ? `${n.label.slice(0, 23)}\u2026` : n.label
                                 }
                               )

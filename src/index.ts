@@ -24,4 +24,5 @@ export {
   type ForceGraphNodeStyle,
   type ForceGraphEdgeStyle,
   type ForceGraphLabels,
+  type ForceGraphHandle,
 } from './graph/ForceGraph'
