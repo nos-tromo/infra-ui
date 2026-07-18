@@ -164,6 +164,28 @@ describe('ForceGraph', () => {
     expect(betaText?.getAttribute('fill')).toBe('#4ade80')
   })
 
+  it('clicking the background clears selection', () => {
+    const onSelect = vi.fn()
+    const { container } = render(
+      <ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" onSelectNode={onSelect} />
+    )
+    const bgRect = container.querySelector('svg > rect')!
+    fireEvent.pointerDown(bgRect, { clientX: 100, clientY: 100 })
+    fireEvent.pointerUp(bgRect, { clientX: 100, clientY: 100 })
+    expect(onSelect).toHaveBeenCalledWith(null)
+  })
+
+  it('does not clear selection when the background pointer moved (a pan, not a click)', () => {
+    const onSelect = vi.fn()
+    const { container } = render(
+      <ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" onSelectNode={onSelect} />
+    )
+    const bgRect = container.querySelector('svg > rect')!
+    fireEvent.pointerDown(bgRect, { clientX: 100, clientY: 100 })
+    fireEvent.pointerUp(bgRect, { clientX: 140, clientY: 140 })
+    expect(onSelect).not.toHaveBeenCalledWith(null)
+  })
+
   it('apiRef exposes current positions for every node', () => {
     const ref = { current: null as ForceGraphHandle | null }
     render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} apiRef={ref} />)

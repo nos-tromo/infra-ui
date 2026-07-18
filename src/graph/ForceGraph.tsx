@@ -79,7 +79,9 @@ export interface ForceGraphProps {
   nodeStyles: Record<string, ForceGraphNodeStyle>
   edgeStyles?: Record<string, ForceGraphEdgeStyle>
   selectedId?: string | null
-  onSelectNode?: (id: string) => void
+  /** Called with a node id on selection, or `null` when the background is
+   *  clicked to clear the selection. */
+  onSelectNode?: (id: string | null) => void
   /** When set, selection shows an Expand button and double-click expands. */
   onExpandNode?: (id: string) => void
   /** Node id currently being expanded (renders its Expand button disabled). */
@@ -271,6 +273,7 @@ export function ForceGraph({
   const dragStartRef = useRef<{ x: number; y: number } | null>(null)
   const movedRef = useRef(false)
   const panRef = useRef<{ startX: number; startY: number; view: View } | null>(null)
+  const panMovedRef = useRef(false)
   const rafRef = useRef(0)
   const runningRef = useRef(false)
 
@@ -454,6 +457,7 @@ export function ForceGraph({
     (e: React.PointerEvent<SVGRectElement>) => {
       e.currentTarget.setPointerCapture?.(e.pointerId)
       panRef.current = { startX: e.clientX, startY: e.clientY, view }
+      panMovedRef.current = false
     },
     [view]
   )
@@ -461,6 +465,9 @@ export function ForceGraph({
   const onBackgroundPointerMove = useCallback((e: React.PointerEvent<SVGRectElement>) => {
     const pan = panRef.current
     if (!pan) return
+    if (Math.hypot(e.clientX - pan.startX, e.clientY - pan.startY) > DRAG_THRESHOLD) {
+      panMovedRef.current = true
+    }
     const svg = svgRef.current
     const rect = svg?.getBoundingClientRect()
     const w = rect?.width || WIDTH
@@ -470,10 +477,18 @@ export function ForceGraph({
     setView({ k: pan.view.k, x: pan.view.x + dx, y: pan.view.y + dy })
   }, [])
 
-  const onBackgroundPointerUp = useCallback((e: React.PointerEvent<SVGRectElement>) => {
-    e.currentTarget.releasePointerCapture?.(e.pointerId)
-    panRef.current = null
-  }, [])
+  const onBackgroundPointerUp = useCallback(
+    (e: React.PointerEvent<SVGRectElement>) => {
+      e.currentTarget.releasePointerCapture?.(e.pointerId)
+      const pan = panRef.current
+      const movedAtUp =
+        pan != null && Math.hypot(e.clientX - pan.startX, e.clientY - pan.startY) > DRAG_THRESHOLD
+      const wasClick = pan != null && !panMovedRef.current && !movedAtUp
+      panRef.current = null
+      if (wasClick) onSelectNode?.(null)
+    },
+    [onSelectNode]
+  )
 
   // --- node drag ---
   const onNodePointerDown = useCallback(
