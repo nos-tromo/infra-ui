@@ -16,3 +16,12 @@ export { Badge, type BadgeProps } from './primitives/Badge'
 export { Spinner, type SpinnerProps } from './primitives/Spinner'
 export { Banner, type BannerProps } from './primitives/Banner'
 export { Shell, type ShellProps } from './layout/Shell'
+export {
+  ForceGraph,
+  type ForceGraphNode,
+  type ForceGraphEdge,
+  type ForceGraphProps,
+  type ForceGraphNodeStyle,
+  type ForceGraphEdgeStyle,
+  type ForceGraphLabels,
+} from './graph/ForceGraph'
