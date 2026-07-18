@@ -46,6 +46,9 @@ export interface ForceGraphEdge {
 export interface ForceGraphNodeStyle {
   /** SVG fill for the node circle (hex/rgb — consumer-supplied palette). */
   color: string
+  /** SVG fill for the node label text; defaults to `color`. Pick a lighter
+   *  variant when `color` is too dark to read as text. */
+  labelColor?: string
 }
 
 export interface ForceGraphEdgeStyle {
@@ -66,6 +69,7 @@ export interface ForceGraphLabels {
   reset: string // "Reset"
   fit: string // "Fit"
   expandSelected: string // "Expand node"
+  removeSelected: string // "Remove node"
   maximize: string // "Expand graph"
   minimize: string // "Collapse graph"
 }
@@ -76,11 +80,16 @@ export interface ForceGraphProps {
   nodeStyles: Record<string, ForceGraphNodeStyle>
   edgeStyles?: Record<string, ForceGraphEdgeStyle>
   selectedId?: string | null
-  onSelectNode?: (id: string) => void
+  /** Called with a node id on selection, or `null` when the background is
+   *  clicked to clear the selection. */
+  onSelectNode?: (id: string | null) => void
   /** When set, selection shows an Expand button and double-click expands. */
   onExpandNode?: (id: string) => void
   /** Node id currently being expanded (renders its Expand button disabled). */
   expandingId?: string | null
+  /** When set, selection shows a Remove button and Backspace/Delete removes
+   *  the selected node (ignored while focus is in a text input). */
+  onDeleteNode?: (id: string) => void
   /** Status line above the canvas; consumer formats counts + hints. */
   statusText?: string
   /** Legend entries; omit to hide the legend. */
@@ -101,6 +110,7 @@ const DEFAULT_LABELS: ForceGraphLabels = {
   reset: 'Reset',
   fit: 'Fit',
   expandSelected: 'Expand node',
+  removeSelected: 'Remove node',
   maximize: 'Expand graph',
   minimize: 'Collapse graph'
 }
@@ -185,6 +195,7 @@ export function ForceGraph({
   onSelectNode,
   onExpandNode,
   expandingId,
+  onDeleteNode,
   statusText,
   legend,
   labels,
@@ -268,6 +279,7 @@ export function ForceGraph({
   const dragStartRef = useRef<{ x: number; y: number } | null>(null)
   const movedRef = useRef(false)
   const panRef = useRef<{ startX: number; startY: number; view: View } | null>(null)
+  const panMovedRef = useRef(false)
   const rafRef = useRef(0)
   const runningRef = useRef(false)
 
@@ -341,6 +353,25 @@ export function ForceGraph({
       document.body.style.overflow = prevOverflow
     }
   }, [isMaximized])
+
+  // Backspace/Delete removes the selected node — skipped while the user is
+  // typing in a text field (input/textarea/select or contentEditable), so the
+  // shortcut doesn't fight with normal text editing elsewhere on the page.
+  useEffect(() => {
+    if (selectedId == null || !onDeleteNode) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Backspace' && e.key !== 'Delete') return
+      const target = e.target as HTMLElement | null
+      const tag = target?.tagName?.toLowerCase()
+      if (tag === 'input' || tag === 'textarea' || tag === 'select' || target?.isContentEditable) {
+        return
+      }
+      e.preventDefault()
+      onDeleteNode(selectedId)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [selectedId, onDeleteNode])
 
   // If the graph empties (e.g. collection switch) the overlay would otherwise
   // stay up while leaving body scroll locked — auto-collapse to keep the
@@ -451,6 +482,7 @@ export function ForceGraph({
     (e: React.PointerEvent<SVGRectElement>) => {
       e.currentTarget.setPointerCapture?.(e.pointerId)
       panRef.current = { startX: e.clientX, startY: e.clientY, view }
+      panMovedRef.current = false
     },
     [view]
   )
@@ -458,6 +490,9 @@ export function ForceGraph({
   const onBackgroundPointerMove = useCallback((e: React.PointerEvent<SVGRectElement>) => {
     const pan = panRef.current
     if (!pan) return
+    if (Math.hypot(e.clientX - pan.startX, e.clientY - pan.startY) > DRAG_THRESHOLD) {
+      panMovedRef.current = true
+    }
     const svg = svgRef.current
     const rect = svg?.getBoundingClientRect()
     const w = rect?.width || WIDTH
@@ -467,10 +502,18 @@ export function ForceGraph({
     setView({ k: pan.view.k, x: pan.view.x + dx, y: pan.view.y + dy })
   }, [])
 
-  const onBackgroundPointerUp = useCallback((e: React.PointerEvent<SVGRectElement>) => {
-    e.currentTarget.releasePointerCapture?.(e.pointerId)
-    panRef.current = null
-  }, [])
+  const onBackgroundPointerUp = useCallback(
+    (e: React.PointerEvent<SVGRectElement>) => {
+      e.currentTarget.releasePointerCapture?.(e.pointerId)
+      const pan = panRef.current
+      const movedAtUp =
+        pan != null && Math.hypot(e.clientX - pan.startX, e.clientY - pan.startY) > DRAG_THRESHOLD
+      const wasClick = pan != null && !panMovedRef.current && !movedAtUp
+      panRef.current = null
+      if (wasClick) onSelectNode?.(null)
+    },
+    [onSelectNode]
+  )
 
   // --- node drag ---
   const onNodePointerDown = useCallback(
@@ -756,7 +799,7 @@ export function ForceGraph({
                     strokeWidth={3 / view.k}
                     strokeLinejoin="round"
                     style={{ paintOrder: 'stroke' }}
-                    fill={nodeStyles[n.kind]?.color ?? 'currentColor'}
+                    fill={nodeStyles[n.kind]?.labelColor ?? nodeStyles[n.kind]?.color ?? 'currentColor'}
                   >
                     {n.label.length > 24 ? `${n.label.slice(0, 23)}…` : n.label}
                   </text>
@@ -777,15 +820,29 @@ export function ForceGraph({
           {isMaximized ? <CollapseIcon /> : <ExpandIcon />}
         </button>
 
-        {selectedId && onExpandNode && (
-          <button
-            type="button"
-            disabled={expandingId === selectedId}
-            onClick={() => onExpandNode(selectedId)}
-            className="absolute bottom-2 left-2 z-10 rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground disabled:opacity-40"
-          >
-            {L.expandSelected}
-          </button>
+        {selectedId && (onExpandNode || onDeleteNode) && (
+          <div className="absolute bottom-2 left-2 z-10 flex items-center gap-1.5">
+            {onExpandNode && (
+              <button
+                type="button"
+                disabled={expandingId === selectedId}
+                onClick={() => onExpandNode(selectedId)}
+                className="rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground disabled:opacity-40"
+              >
+                {L.expandSelected}
+              </button>
+            )}
+            {onDeleteNode && (
+              <button
+                type="button"
+                aria-label={L.removeSelected}
+                onClick={() => onDeleteNode(selectedId)}
+                className="rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground"
+              >
+                {L.removeSelected}
+              </button>
+            )}
+          </div>
         )}
 
         {legend && legend.length > 0 && (

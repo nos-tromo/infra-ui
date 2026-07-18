@@ -155,6 +155,9 @@ interface ForceGraphEdge {
 interface ForceGraphNodeStyle {
     /** SVG fill for the node circle (hex/rgb — consumer-supplied palette). */
     color: string;
+    /** SVG fill for the node label text; defaults to `color`. Pick a lighter
+     *  variant when `color` is too dark to read as text. */
+    labelColor?: string;
 }
 interface ForceGraphEdgeStyle {
     dashed?: boolean;
@@ -175,6 +178,7 @@ interface ForceGraphLabels {
     reset: string;
     fit: string;
     expandSelected: string;
+    removeSelected: string;
     maximize: string;
     minimize: string;
 }
@@ -184,11 +188,16 @@ interface ForceGraphProps {
     nodeStyles: Record<string, ForceGraphNodeStyle>;
     edgeStyles?: Record<string, ForceGraphEdgeStyle>;
     selectedId?: string | null;
-    onSelectNode?: (id: string) => void;
+    /** Called with a node id on selection, or `null` when the background is
+     *  clicked to clear the selection. */
+    onSelectNode?: (id: string | null) => void;
     /** When set, selection shows an Expand button and double-click expands. */
     onExpandNode?: (id: string) => void;
     /** Node id currently being expanded (renders its Expand button disabled). */
     expandingId?: string | null;
+    /** When set, selection shows a Remove button and Backspace/Delete removes
+     *  the selected node (ignored while focus is in a text input). */
+    onDeleteNode?: (id: string) => void;
     /** Status line above the canvas; consumer formats counts + hints. */
     statusText?: string;
     /** Legend entries; omit to hide the legend. */
@@ -218,6 +227,6 @@ interface ForceGraphProps {
  * mapper output on the API payload) — a fresh array identity every render
  * rebuilds and reseeds the simulation on every frame.
  */
-declare function ForceGraph({ nodes, edges, nodeStyles, edgeStyles, selectedId, onSelectNode, onExpandNode, expandingId, statusText, legend, labels, heightClassName, className, apiRef }: ForceGraphProps): react.JSX.Element;
+declare function ForceGraph({ nodes, edges, nodeStyles, edgeStyles, selectedId, onSelectNode, onExpandNode, expandingId, onDeleteNode, statusText, legend, labels, heightClassName, className, apiRef }: ForceGraphProps): react.JSX.Element;
 
 export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, mergeFiles };

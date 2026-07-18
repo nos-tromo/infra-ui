@@ -146,6 +146,83 @@ describe('ForceGraph', () => {
     expect(group.firstElementChild?.tagName.toLowerCase()).toBe('title')
   })
 
+  it('uses labelColor for label text while the circle keeps color', () => {
+    const styles = {
+      author: { color: '#7c3aed', labelColor: '#a78bfa' },
+      topic: { color: '#4ade80' }
+    }
+    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={styles} />)
+    const alphaGroup = screen.getByRole('button', { name: /Alpha/ })
+    const alphaText = alphaGroup.querySelector('text')
+    const alphaCircle = alphaGroup.querySelector('circle')
+    expect(alphaText?.getAttribute('fill')).toBe('#a78bfa')
+    expect(alphaCircle?.getAttribute('fill')).toBe('#7c3aed')
+
+    const betaGroup = screen.getByRole('button', { name: /Beta/ })
+    const betaText = betaGroup.querySelector('text')
+    // No labelColor set — falls back to color.
+    expect(betaText?.getAttribute('fill')).toBe('#4ade80')
+  })
+
+  it('clicking the background clears selection', () => {
+    const onSelect = vi.fn()
+    const { container } = render(
+      <ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" onSelectNode={onSelect} />
+    )
+    const bgRect = container.querySelector('svg > rect')!
+    fireEvent.pointerDown(bgRect, { clientX: 100, clientY: 100 })
+    fireEvent.pointerUp(bgRect, { clientX: 100, clientY: 100 })
+    expect(onSelect).toHaveBeenCalledWith(null)
+  })
+
+  it('does not clear selection when the background pointer moved (a pan, not a click)', () => {
+    const onSelect = vi.fn()
+    const { container } = render(
+      <ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" onSelectNode={onSelect} />
+    )
+    const bgRect = container.querySelector('svg > rect')!
+    fireEvent.pointerDown(bgRect, { clientX: 100, clientY: 100 })
+    fireEvent.pointerUp(bgRect, { clientX: 140, clientY: 140 })
+    expect(onSelect).not.toHaveBeenCalledWith(null)
+  })
+
+  it('shows a Remove button for the selected node and fires onDeleteNode', () => {
+    const onDelete = vi.fn()
+    render(
+      <ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" onDeleteNode={onDelete} />
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Remove node' }))
+    expect(onDelete).toHaveBeenCalledWith('a')
+  })
+
+  it('Backspace deletes the selected node', () => {
+    const onDelete = vi.fn()
+    render(
+      <ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" onDeleteNode={onDelete} />
+    )
+    fireEvent.keyDown(window, { key: 'Backspace' })
+    expect(onDelete).toHaveBeenCalledWith('a')
+  })
+
+  it('Backspace inside an input does not delete the selected node', () => {
+    const onDelete = vi.fn()
+    render(
+      <div>
+        <input data-testid="text-input" />
+        <ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" onDeleteNode={onDelete} />
+      </div>
+    )
+    const input = screen.getByTestId('text-input')
+    fireEvent.keyDown(input, { key: 'Backspace' })
+    expect(onDelete).not.toHaveBeenCalled()
+  })
+
+  it('hides the Remove button and ignores Backspace when onDeleteNode is not provided', () => {
+    render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} selectedId="a" />)
+    expect(screen.queryByRole('button', { name: 'Remove node' })).toBeNull()
+    expect(() => fireEvent.keyDown(window, { key: 'Backspace' })).not.toThrow()
+  })
+
   it('apiRef exposes current positions for every node', () => {
     const ref = { current: null as ForceGraphHandle | null }
     render(<ForceGraph nodes={NODES} edges={EDGES} nodeStyles={STYLES} apiRef={ref} />)
