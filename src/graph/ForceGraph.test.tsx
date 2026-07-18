@@ -1,11 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
-// Explicit extension: on case-insensitive filesystems (default macOS/Windows),
-// an extension-less './ForceGraph' resolves ambiguously against the sibling
-// './forceGraph.ts' (same name, differing only in case) — Vite's default
-// extension-try order finds the case-folded '.ts' match before ever trying
-// '.tsx'. The explicit extension pins this import to the right file.
-import { ForceGraph } from './ForceGraph.tsx'
+import { ForceGraph } from './ForceGraph'
 
 const NODES = [
   { id: 'a', label: 'Alpha', kind: 'author' },

@@ -6,7 +6,7 @@
  * of an already-placed neighbor (deterministic index-derived angle) or, when
  * unconnected, take fresh phyllotaxis slots around the center.
  */
-import { phyllotaxisSeed } from './forceGraph'
+import { phyllotaxisSeed } from './forceSimulation'
 
 const BLOOM_RADIUS = 30
 const GOLDEN = Math.PI * (3 - Math.sqrt(5))

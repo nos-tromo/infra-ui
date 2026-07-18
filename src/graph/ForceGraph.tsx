@@ -4,7 +4,7 @@ import {
   createForceSimulation,
   type ForceLink,
   type ForceNode
-} from './forceGraph'
+} from './forceSimulation'
 import { seedPositions } from './mergePositions'
 
 const WIDTH = 960

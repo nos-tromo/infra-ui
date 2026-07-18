@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createForceSimulation, phyllotaxisSeed, type ForceNode } from './forceGraph'
+import { createForceSimulation, phyllotaxisSeed, type ForceNode } from './forceSimulation'
 
 function mkNodes(n: number): ForceNode[] {
   const seeds = phyllotaxisSeed(n, 0, 0)
