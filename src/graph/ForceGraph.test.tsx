@@ -504,3 +504,138 @@ describe('ForceGraph', () => {
     expect(onSelectionChange).not.toHaveBeenCalled()
   })
 })
+
+describe('expandActions', () => {
+  const ACTIONS = [
+    { id: 'topics', label: 'Expand topics' },
+    { id: 'ties', label: 'Expand ties' }
+  ]
+
+  it('renders one chip per action when exactly one node is selected', () => {
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a']}
+        expandActions={ACTIONS}
+        onExpandAction={vi.fn()}
+      />
+    )
+    expect(screen.getByRole('button', { name: 'Expand topics' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Expand ties' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Expand node' })).toBeNull()
+  })
+
+  it('fires onExpandAction with action id and node id', () => {
+    const onExpandAction = vi.fn()
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a']}
+        expandActions={ACTIONS}
+        onExpandAction={onExpandAction}
+      />
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Expand ties' }))
+    expect(onExpandAction).toHaveBeenCalledWith('ties', 'a')
+  })
+
+  it('hides action chips at zero and at two selected', () => {
+    const onExpandAction = vi.fn()
+    const { rerender } = render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={[]}
+        expandActions={ACTIONS}
+        onExpandAction={onExpandAction}
+      />
+    )
+    expect(screen.queryByRole('button', { name: 'Expand topics' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Expand ties' })).toBeNull()
+
+    rerender(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a', 'b']}
+        expandActions={ACTIONS}
+        onExpandAction={onExpandAction}
+      />
+    )
+    expect(screen.queryByRole('button', { name: 'Expand topics' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Expand ties' })).toBeNull()
+  })
+
+  it('disables chips while the selected node is expanding', () => {
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a']}
+        expandActions={ACTIONS}
+        onExpandAction={vi.fn()}
+        expandingId="a"
+      />
+    )
+    expect(screen.getByRole('button', { name: 'Expand topics' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Expand ties' })).toBeDisabled()
+  })
+
+  it('double-click fires the FIRST action', () => {
+    const onExpandAction = vi.fn()
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        expandActions={ACTIONS}
+        onExpandAction={onExpandAction}
+      />
+    )
+    fireEvent.doubleClick(screen.getByRole('button', { name: /Beta/ }))
+    expect(onExpandAction).toHaveBeenCalledWith('topics', 'b')
+  })
+
+  it('expandActions wins over onExpandNode when both supplied', () => {
+    const onExpandAction = vi.fn()
+    const onExpandNode = vi.fn()
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a']}
+        expandActions={ACTIONS}
+        onExpandAction={onExpandAction}
+        onExpandNode={onExpandNode}
+      />
+    )
+    expect(screen.queryByRole('button', { name: 'Expand node' })).toBeNull()
+    fireEvent.doubleClick(screen.getByRole('button', { name: /Beta/ }))
+    expect(onExpandAction).toHaveBeenCalledWith('topics', 'b')
+    expect(onExpandNode).not.toHaveBeenCalled()
+  })
+
+  it('absent expandActions preserves v0.4.0 single-expand behavior', () => {
+    const onExpandNode = vi.fn()
+    render(
+      <ForceGraph
+        nodes={NODES}
+        edges={EDGES}
+        nodeStyles={STYLES}
+        selectedIds={['a']}
+        onExpandNode={onExpandNode}
+      />
+    )
+    expect(screen.getByRole('button', { name: 'Expand node' })).toBeInTheDocument()
+    fireEvent.doubleClick(screen.getByRole('button', { name: /Beta/ }))
+    expect(onExpandNode).toHaveBeenCalledWith('b')
+  })
+})
