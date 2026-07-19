@@ -27,3 +27,10 @@ export {
   type ForceGraphHandle,
   type ForceGraphExpandAction,
 } from './graph/ForceGraph'
+export {
+  toGraphJson,
+  toGraphML,
+  toGraphHtml,
+  downloadText,
+  type GraphHtmlExportOptions,
+} from './graph/graphExport'

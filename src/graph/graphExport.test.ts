@@ -281,8 +281,10 @@ describe('downloadText', () => {
   beforeEach(() => {
     createObjectURL = vi.fn(() => 'blob:mock-url')
     revokeObjectURL = vi.fn()
-    ;(globalThis as any).URL.createObjectURL = createObjectURL
-    ;(globalThis as any).URL.revokeObjectURL = revokeObjectURL
+    ;(URL as unknown as { createObjectURL: typeof createObjectURL }).createObjectURL =
+      createObjectURL
+    ;(URL as unknown as { revokeObjectURL: typeof revokeObjectURL }).revokeObjectURL =
+      revokeObjectURL
     clickSpy = vi.fn()
     const originalCreateElement = document.createElement.bind(document)
     vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
