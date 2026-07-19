@@ -57,6 +57,11 @@ export interface ForceGraphEdgeStyle {
   opacity?: number
 }
 
+export interface ForceGraphExpandAction {
+  id: string
+  label: string
+}
+
 export interface ForceGraphHandle {
   /** Live layout snapshot (id → x/y) of every currently-visible node, e.g. for baking a layout into an export. */
   getPositions(): Record<string, { x: number; y: number }>
@@ -88,10 +93,21 @@ export interface ForceGraphProps {
    *  background click ([]). */
   onSelectionChange?: (ids: string[]) => void
   /** When set and exactly one node is selected, shows an Expand button and
-   *  double-click expands. */
+   *  double-click expands. Superseded by `expandActions` when that prop is
+   *  also supplied with `onExpandAction` (see below) — `expandActions` wins. */
   onExpandNode?: (id: string) => void
-  /** Node id currently being expanded (renders its Expand button disabled). */
+  /** Node id currently being expanded (renders its Expand button, or all
+   *  action chips, disabled). */
   expandingId?: string | null
+  /** Multiple named expand choices for the single selected node. When
+   *  non-empty AND `onExpandAction` is set AND exactly one node is selected,
+   *  renders one chip per action instead of the single `onExpandNode` Expand
+   *  button — `onExpandNode`'s button is not rendered even if also supplied.
+   *  Double-click also fires the FIRST action instead of `onExpandNode`. */
+  expandActions?: ForceGraphExpandAction[]
+  /** Fired when an expand-action chip is clicked, or on double-click (with
+   *  the first action) when `expandActions` is active: `(actionId, nodeId)`. */
+  onExpandAction?: (actionId: string, nodeId: string) => void
   /** When set, selection shows a Remove button and Backspace/Delete removes
    *  the whole selected set (ignored while focus is in a text input). */
   onDeleteNodes?: (ids: string[]) => void
@@ -204,6 +220,8 @@ export function ForceGraph({
   onSelectionChange,
   onExpandNode,
   expandingId,
+  expandActions,
+  onExpandAction,
   onDeleteNodes,
   statusText,
   legend,
@@ -216,6 +234,7 @@ export function ForceGraph({
 
   const selectedIdsArr = selectedIds ?? []
   const selectedSet = useMemo(() => new Set(selectedIdsArr), [selectedIdsArr])
+  const actionsActive = !!(expandActions && expandActions.length > 0 && onExpandAction)
 
   const svgRef = useRef<SVGSVGElement | null>(null)
 
@@ -872,7 +891,8 @@ export function ForceGraph({
                   onPointerCancel={(e) => onNodePointerCancel(e, n.id)}
                   onClick={(e) => handleSelect(n.id, e.shiftKey)}
                   onDoubleClick={() => {
-                    if (onExpandNode) onExpandNode(n.id)
+                    if (actionsActive) onExpandAction!(expandActions![0].id, n.id)
+                    else if (onExpandNode) onExpandNode(n.id)
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -930,18 +950,31 @@ export function ForceGraph({
           {isMaximized ? <CollapseIcon /> : <ExpandIcon />}
         </button>
 
-        {selectedIdsArr.length > 0 && (onExpandNode || onDeleteNodes) && (
+        {selectedIdsArr.length > 0 && (onExpandNode || onExpandAction || onDeleteNodes) && (
           <div className="absolute bottom-2 left-2 z-10 flex items-center gap-1.5">
-            {onExpandNode && selectedIdsArr.length === 1 && (
-              <button
-                type="button"
-                disabled={expandingId === selectedIdsArr[0]}
-                onClick={() => onExpandNode(selectedIdsArr[0])}
-                className="rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground disabled:opacity-40"
-              >
-                {L.expandSelected}
-              </button>
-            )}
+            {actionsActive && selectedIdsArr.length === 1
+              ? expandActions!.map((action) => (
+                  <button
+                    key={action.id}
+                    type="button"
+                    disabled={expandingId === selectedIdsArr[0]}
+                    onClick={() => onExpandAction!(action.id, selectedIdsArr[0])}
+                    className="rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground disabled:opacity-40"
+                  >
+                    {action.label}
+                  </button>
+                ))
+              : onExpandNode &&
+                selectedIdsArr.length === 1 && (
+                  <button
+                    type="button"
+                    disabled={expandingId === selectedIdsArr[0]}
+                    onClick={() => onExpandNode(selectedIdsArr[0])}
+                    className="rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground disabled:opacity-40"
+                  >
+                    {L.expandSelected}
+                  </button>
+                )}
             {onDeleteNodes && (
               <button
                 type="button"
