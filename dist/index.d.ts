@@ -252,4 +252,68 @@ interface ForceGraphProps {
  */
 declare function ForceGraph({ nodes, edges, nodeStyles, edgeStyles, selectedIds, onSelectionChange, onExpandNode, expandingId, expandActions, onExpandAction, onDeleteNodes, statusText, legend, labels, heightClassName, className, apiRef }: ForceGraphProps): react.JSX.Element;
 
-export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, mergeFiles };
+/**
+ * Client-side export of a `ForceGraph`-shaped graph — JSON, GraphML, and a
+ * self-contained interactive HTML snapshot.
+ *
+ * Pure, no React, no network calls. Feed these directly with the
+ * `{nodes, edges}` shape `ForceGraph` consumes — id/label/kind (nodes) and
+ * source/target/kind/weight/directed (edges) — so this module needs no
+ * per-app knowledge of node/edge shape.
+ */
+
+/**
+ * Pretty-printed (2-space) JSON passthrough of `{nodes, edges}`.
+ */
+declare function toGraphJson(nodes: ForceGraphNode[], edges: ForceGraphEdge[]): string;
+/**
+ * Serialize a `{nodes, edges}` graph as GraphML (Gephi/yEd-compatible).
+ *
+ * Declares `<key>` attrs for node `label`/`kind` (string) and edge `kind`
+ * (string) / `weight` (double). `edgedefault` is `"undirected"`; individual
+ * edges carry `directed="true"` when the source edge does. All attribute
+ * and text values are XML-escaped since labels are user-derived data.
+ */
+declare function toGraphML(nodes: ForceGraphNode[], edges: ForceGraphEdge[]): string;
+interface Point {
+    x: number;
+    y: number;
+}
+interface GraphHtmlExportOptions {
+    title: string;
+    nodes: ForceGraphNode[];
+    edges: ForceGraphEdge[];
+    positions: Record<string, Point>;
+    nodeStyles: Record<string, {
+        color: string;
+    }>;
+    edgeStyles?: Record<string, {
+        dashed?: boolean;
+        opacity?: number;
+    }>;
+    legend?: {
+        kind: string;
+        label: string;
+    }[];
+}
+/**
+ * Render a single self-contained, "interactive-lite" HTML document: a dark
+ * page embedding an inline SVG snapshot of the graph with the layout baked
+ * from `positions`, plus a small vanilla-JS pan/zoom script.
+ *
+ * No external requests of any kind — everything (CSS, JS, graph data) is
+ * inlined. No physics, no fetch, no node expansion: this is a static export
+ * of what the user was already looking at, not a live client.
+ */
+declare function toGraphHtml(opts: GraphHtmlExportOptions): string;
+/**
+ * Trigger a client-side download of `text` as `filename` via a transient
+ * Blob object URL — no backend round-trip.
+ *
+ * Defers URL.revokeObjectURL() via setTimeout(..., 0) to ensure the download
+ * dispatch completes before the URL is revoked (older browsers may drop the
+ * download if the URL is revoked too eagerly).
+ */
+declare function downloadText(filename: string, text: string, mimeType: string): void;
+
+export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML };
