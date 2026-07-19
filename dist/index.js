@@ -629,6 +629,8 @@ function ForceGraph({
   onSelectionChange,
   onExpandNode,
   expandingId,
+  expandActions,
+  onExpandAction,
   onDeleteNodes,
   statusText,
   legend,
@@ -640,6 +642,7 @@ function ForceGraph({
   const L = { ...DEFAULT_LABELS, ...labels };
   const selectedIdsArr = selectedIds ?? [];
   const selectedSet = useMemo(() => new Set(selectedIdsArr), [selectedIdsArr]);
+  const actionsActive = !!(expandActions && expandActions.length > 0 && onExpandAction);
   const svgRef = useRef2(null);
   const [minDegree, setMinDegree] = useState2(0);
   const [spread, setSpread] = useState2(1);
@@ -1204,7 +1207,8 @@ function ForceGraph({
                             onPointerCancel: (e) => onNodePointerCancel(e, n.id),
                             onClick: (e) => handleSelect(n.id, e.shiftKey),
                             onDoubleClick: () => {
-                              if (onExpandNode) onExpandNode(n.id);
+                              if (actionsActive) onExpandAction(expandActions[0].id, n.id);
+                              else if (onExpandNode) onExpandNode(n.id);
                             },
                             onKeyDown: (e) => {
                               if (e.key === "Enter" || e.key === " ") {
@@ -1272,8 +1276,18 @@ function ForceGraph({
                   children: isMaximized ? /* @__PURE__ */ jsx12(CollapseIcon, {}) : /* @__PURE__ */ jsx12(ExpandIcon, {})
                 }
               ),
-              selectedIdsArr.length > 0 && (onExpandNode || onDeleteNodes) && /* @__PURE__ */ jsxs4("div", { className: "absolute bottom-2 left-2 z-10 flex items-center gap-1.5", children: [
-                onExpandNode && selectedIdsArr.length === 1 && /* @__PURE__ */ jsx12(
+              selectedIdsArr.length > 0 && (onExpandNode || onExpandAction || onDeleteNodes) && /* @__PURE__ */ jsxs4("div", { className: "absolute bottom-2 left-2 z-10 flex items-center gap-1.5", children: [
+                actionsActive && selectedIdsArr.length === 1 ? expandActions.map((action) => /* @__PURE__ */ jsx12(
+                  "button",
+                  {
+                    type: "button",
+                    disabled: expandingId === selectedIdsArr[0],
+                    onClick: () => onExpandAction(action.id, selectedIdsArr[0]),
+                    className: "rounded-md border border-border bg-background/90 px-2 py-1 text-xs text-foreground disabled:opacity-40",
+                    children: action.label
+                  },
+                  action.id
+                )) : onExpandNode && selectedIdsArr.length === 1 && /* @__PURE__ */ jsx12(
                   "button",
                   {
                     type: "button",

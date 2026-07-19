@@ -164,6 +164,10 @@ interface ForceGraphEdgeStyle {
     /** 0–1 stroke opacity when not dimmed (default 0.6). */
     opacity?: number;
 }
+interface ForceGraphExpandAction {
+    id: string;
+    label: string;
+}
 interface ForceGraphHandle {
     /** Live layout snapshot (id → x/y) of every currently-visible node, e.g. for baking a layout into an export. */
     getPositions(): Record<string, {
@@ -196,10 +200,21 @@ interface ForceGraphProps {
      *  background click ([]). */
     onSelectionChange?: (ids: string[]) => void;
     /** When set and exactly one node is selected, shows an Expand button and
-     *  double-click expands. */
+     *  double-click expands. Superseded by `expandActions` when that prop is
+     *  also supplied with `onExpandAction` (see below) — `expandActions` wins. */
     onExpandNode?: (id: string) => void;
-    /** Node id currently being expanded (renders its Expand button disabled). */
+    /** Node id currently being expanded (renders its Expand button, or all
+     *  action chips, disabled). */
     expandingId?: string | null;
+    /** Multiple named expand choices for the single selected node. When
+     *  non-empty AND `onExpandAction` is set AND exactly one node is selected,
+     *  renders one chip per action instead of the single `onExpandNode` Expand
+     *  button — `onExpandNode`'s button is not rendered even if also supplied.
+     *  Double-click also fires the FIRST action instead of `onExpandNode`. */
+    expandActions?: ForceGraphExpandAction[];
+    /** Fired when an expand-action chip is clicked, or on double-click (with
+     *  the first action) when `expandActions` is active: `(actionId, nodeId)`. */
+    onExpandAction?: (actionId: string, nodeId: string) => void;
     /** When set, selection shows a Remove button and Backspace/Delete removes
      *  the whole selected set (ignored while focus is in a text input). */
     onDeleteNodes?: (ids: string[]) => void;
@@ -235,6 +250,6 @@ interface ForceGraphProps {
  * mapper output on the API payload) — a fresh array identity every render
  * rebuilds and reseeds the simulation on every frame.
  */
-declare function ForceGraph({ nodes, edges, nodeStyles, edgeStyles, selectedIds, onSelectionChange, onExpandNode, expandingId, onDeleteNodes, statusText, legend, labels, heightClassName, className, apiRef }: ForceGraphProps): react.JSX.Element;
+declare function ForceGraph({ nodes, edges, nodeStyles, edgeStyles, selectedIds, onSelectionChange, onExpandNode, expandingId, expandActions, onExpandAction, onDeleteNodes, statusText, legend, labels, heightClassName, className, apiRef }: ForceGraphProps): react.JSX.Element;
 
-export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, mergeFiles };
+export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, mergeFiles };
