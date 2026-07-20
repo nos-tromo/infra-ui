@@ -4,7 +4,7 @@
 
 **Goal:** Build the shared design-system package `@infra/ui` — Tailwind v4 tokens, the `cn` helper, and seven generic UI primitives extracted from Nextext's look — to a tested, buildable, tagged `v0.1.0` that other apps can install as a pinned pnpm Git dependency.
 
-**Architecture:** A new standalone Git repo at `/home/user/dev/infra/infra-ui`. Primitives are Tailwind-native `.tsx` (zero runtime CSS) using **only semantic design tokens**, so a consuming app re-themes everything by overriding one CSS variable. Variant-bearing primitives use `class-variance-authority` (cva); all className merging uses `cn` (clsx + tailwind-merge). `tsup` compiles `dist/` (ESM + types) and runs on install via the `prepare` lifecycle, so consumers never pre-build. A small Vite demo renders a kitchen-sink for visual review.
+**Architecture:** A new standalone Git repo `infra-ui/` in the `infra/` workspace. Primitives are Tailwind-native `.tsx` (zero runtime CSS) using **only semantic design tokens**, so a consuming app re-themes everything by overriding one CSS variable. Variant-bearing primitives use `class-variance-authority` (cva); all className merging uses `cn` (clsx + tailwind-merge). `tsup` compiles `dist/` (ESM + types) and runs on install via the `prepare` lifecycle, so consumers never pre-build. A small Vite demo renders a kitchen-sink for visual review.
 
 **Tech Stack:** React 19, TypeScript 6, Tailwind v4 (`@theme`), cva, clsx, tailwind-merge, tsup, Vitest + Testing Library (happy-dom), Vite (demo only), pnpm.
 
@@ -14,7 +14,7 @@
 
 Every task's requirements implicitly include these (exact values from the spec):
 
-- **Repo:** `/home/user/dev/infra/infra-ui` — a brand-new Git repo (Task 1 runs `git init`). All commits in this plan land here, **not** in docint.
+- **Repo:** `infra-ui/` in the `infra/` workspace — a brand-new Git repo (Task 1 runs `git init`). All commits in this plan land here, **not** in docint.
 - **Package name:** `@infra/ui`. Install URL for consumers: `github:nos-tromo/infra-ui#vX.Y.Z`.
 - **Versions (match the consuming apps):** react / react-dom declared as **peerDependencies** with a permissive `^19.0.0` range (the dev install pins `^19.2.0` to match the apps), Tailwind `^4.3.1`, TypeScript `^6.0.3`, Vite `^8.0.16`, Vitest `^4.1.8`, clsx `^2.1.1`, tailwind-merge `^3.6.0`, pnpm `@9.12.0`.
 - **Dark-only, no shadows.** Do not add light-mode rules or `shadow-*` utilities.
@@ -62,15 +62,15 @@ infra-ui/
 ## Task 1: Scaffold repo + `cn` helper
 
 **Files:**
-- Create: `/home/user/dev/infra/infra-ui/package.json`
-- Create: `/home/user/dev/infra/infra-ui/tsconfig.json`
-- Create: `/home/user/dev/infra/infra-ui/vitest.config.ts`
-- Create: `/home/user/dev/infra/infra-ui/eslint.config.js`
-- Create: `/home/user/dev/infra/infra-ui/.prettierrc`
-- Create: `/home/user/dev/infra/infra-ui/.gitignore`
-- Create: `/home/user/dev/infra/infra-ui/src/test/setup.ts`
-- Create: `/home/user/dev/infra/infra-ui/src/cn.ts`
-- Test: `/home/user/dev/infra/infra-ui/src/cn.test.ts`
+- Create: `package.json`
+- Create: `tsconfig.json`
+- Create: `vitest.config.ts`
+- Create: `eslint.config.js`
+- Create: `.prettierrc`
+- Create: `.gitignore`
+- Create: `src/test/setup.ts`
+- Create: `src/cn.ts`
+- Test: `src/cn.test.ts`
 
 **Interfaces:**
 - Produces: `cn(...inputs: ClassValue[]): string` from `src/cn.ts` — used by every primitive.
@@ -78,8 +78,8 @@ infra-ui/
 - [ ] **Step 1: Create the repo and initialize git**
 
 ```bash
-mkdir -p /home/user/dev/infra/infra-ui
-cd /home/user/dev/infra/infra-ui
+mkdir -p infra-ui
+cd infra-ui
 git init
 ```
 
@@ -203,7 +203,7 @@ dist
 
 - [ ] **Step 5: Install dependencies**
 
-Run: `cd /home/user/dev/infra/infra-ui && pnpm install`
+Run: `pnpm install`
 Expected: completes, creates `pnpm-lock.yaml` and `node_modules`.
 
 - [ ] **Step 6: Write the failing test** — `src/cn.test.ts`
@@ -245,7 +245,6 @@ Expected: PASS (2 tests).
 - [ ] **Step 10: Commit**
 
 ```bash
-cd /home/user/dev/infra/infra-ui
 git add -A
 git commit -m "chore: scaffold @infra/ui package and add cn helper"
 ```
@@ -255,11 +254,11 @@ git commit -m "chore: scaffold @infra/ui package and add cn helper"
 ## Task 2: Build pipeline + token stylesheet + barrel
 
 **Files:**
-- Create: `/home/user/dev/infra/infra-ui/tsup.config.ts`
-- Create: `/home/user/dev/infra/infra-ui/src/theme.css`
-- Test: `/home/user/dev/infra/infra-ui/src/theme.test.ts`
-- Create: `/home/user/dev/infra/infra-ui/src/index.ts`
-- Modify: `/home/user/dev/infra/infra-ui/package.json` (add `build` + `prepare` scripts, `exports`, `files`, `sideEffects`)
+- Create: `tsup.config.ts`
+- Create: `src/theme.css`
+- Test: `src/theme.test.ts`
+- Create: `src/index.ts`
+- Modify: `package.json` (add `build` + `prepare` scripts, `exports`, `files`, `sideEffects`)
 
 **Interfaces:**
 - Consumes: `cn` (Task 1).
@@ -371,7 +370,7 @@ Add these top-level keys:
 
 - [ ] **Step 8: Verify the build produces dist**
 
-Run: `cd /home/user/dev/infra/infra-ui && pnpm build && ls dist`
+Run: `pnpm build && ls dist`
 Expected: exit 0; `dist/index.js` and `dist/index.d.ts` present.
 
 - [ ] **Step 9: Verify typecheck and tests still pass**
@@ -382,7 +381,6 @@ Expected: both PASS.
 - [ ] **Step 10: Commit**
 
 ```bash
-cd /home/user/dev/infra/infra-ui
 git add -A
 git commit -m "build: add tsup pipeline, theme.css tokens, and package barrel"
 ```
@@ -392,9 +390,9 @@ git commit -m "build: add tsup pipeline, theme.css tokens, and package barrel"
 ## Task 3: `Button` primitive (cva template)
 
 **Files:**
-- Create: `/home/user/dev/infra/infra-ui/src/primitives/Button.tsx`
-- Test: `/home/user/dev/infra/infra-ui/src/primitives/Button.test.tsx`
-- Modify: `/home/user/dev/infra/infra-ui/src/index.ts` (append export)
+- Create: `src/primitives/Button.tsx`
+- Test: `src/primitives/Button.test.tsx`
+- Modify: `src/index.ts` (append export)
 
 **Interfaces:**
 - Consumes: `cn` (Task 1).
@@ -484,7 +482,6 @@ Expected: PASS (Button's 4 tests included).
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /home/user/dev/infra/infra-ui
 git add -A
 git commit -m "feat: add Button primitive with cva variants"
 ```
@@ -494,9 +491,9 @@ git commit -m "feat: add Button primitive with cva variants"
 ## Task 4: `Card` primitive
 
 **Files:**
-- Create: `/home/user/dev/infra/infra-ui/src/primitives/Card.tsx`
-- Test: `/home/user/dev/infra/infra-ui/src/primitives/Card.test.tsx`
-- Modify: `/home/user/dev/infra/infra-ui/src/index.ts` (append export)
+- Create: `src/primitives/Card.tsx`
+- Test: `src/primitives/Card.test.tsx`
+- Modify: `src/index.ts` (append export)
 
 **Interfaces:**
 - Consumes: `cn` (Task 1).
@@ -556,7 +553,6 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /home/user/dev/infra/infra-ui
 git add -A
 git commit -m "feat: add Card primitive"
 ```
@@ -566,11 +562,11 @@ git commit -m "feat: add Card primitive"
 ## Task 5: `Input` and `Select` form fields
 
 **Files:**
-- Create: `/home/user/dev/infra/infra-ui/src/primitives/Input.tsx`
-- Test: `/home/user/dev/infra/infra-ui/src/primitives/Input.test.tsx`
-- Create: `/home/user/dev/infra/infra-ui/src/primitives/Select.tsx`
-- Test: `/home/user/dev/infra/infra-ui/src/primitives/Select.test.tsx`
-- Modify: `/home/user/dev/infra/infra-ui/src/index.ts` (append two exports)
+- Create: `src/primitives/Input.tsx`
+- Test: `src/primitives/Input.test.tsx`
+- Create: `src/primitives/Select.tsx`
+- Test: `src/primitives/Select.test.tsx`
+- Modify: `src/index.ts` (append two exports)
 
 **Interfaces:**
 - Consumes: `cn` (Task 1).
@@ -671,7 +667,6 @@ Expected: PASS.
 - [ ] **Step 7: Commit**
 
 ```bash
-cd /home/user/dev/infra/infra-ui
 git add -A
 git commit -m "feat: add Input and Select form-field primitives"
 ```
@@ -681,9 +676,9 @@ git commit -m "feat: add Input and Select form-field primitives"
 ## Task 6: `Badge` primitive
 
 **Files:**
-- Create: `/home/user/dev/infra/infra-ui/src/primitives/Badge.tsx`
-- Test: `/home/user/dev/infra/infra-ui/src/primitives/Badge.test.tsx`
-- Modify: `/home/user/dev/infra/infra-ui/src/index.ts` (append export)
+- Create: `src/primitives/Badge.tsx`
+- Test: `src/primitives/Badge.test.tsx`
+- Modify: `src/index.ts` (append export)
 
 **Interfaces:**
 - Consumes: `cn` (Task 1); cva pattern (Task 3).
@@ -752,7 +747,6 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /home/user/dev/infra/infra-ui
 git add -A
 git commit -m "feat: add Badge primitive with cva variants"
 ```
@@ -762,9 +756,9 @@ git commit -m "feat: add Badge primitive with cva variants"
 ## Task 7: `Spinner` primitive
 
 **Files:**
-- Create: `/home/user/dev/infra/infra-ui/src/primitives/Spinner.tsx`
-- Test: `/home/user/dev/infra/infra-ui/src/primitives/Spinner.test.tsx`
-- Modify: `/home/user/dev/infra/infra-ui/src/index.ts` (append export)
+- Create: `src/primitives/Spinner.tsx`
+- Test: `src/primitives/Spinner.test.tsx`
+- Modify: `src/index.ts` (append export)
 
 **Interfaces:**
 - Consumes: `cn` (Task 1).
@@ -830,7 +824,6 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /home/user/dev/infra/infra-ui
 git add -A
 git commit -m "feat: add Spinner primitive"
 ```
@@ -840,9 +833,9 @@ git commit -m "feat: add Spinner primitive"
 ## Task 8: `Banner` primitive
 
 **Files:**
-- Create: `/home/user/dev/infra/infra-ui/src/primitives/Banner.tsx`
-- Test: `/home/user/dev/infra/infra-ui/src/primitives/Banner.test.tsx`
-- Modify: `/home/user/dev/infra/infra-ui/src/index.ts` (append export)
+- Create: `src/primitives/Banner.tsx`
+- Test: `src/primitives/Banner.test.tsx`
+- Modify: `src/index.ts` (append export)
 
 **Interfaces:**
 - Consumes: `cn` (Task 1); cva pattern (Task 3).
@@ -913,7 +906,6 @@ Expected: all PASS; `dist/index.js` rebuilt with all seven primitives.
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /home/user/dev/infra/infra-ui
 git add -A
 git commit -m "feat: add Banner primitive"
 ```
@@ -923,12 +915,12 @@ git commit -m "feat: add Banner primitive"
 ## Task 9: Demo kitchen-sink (visual review)
 
 **Files:**
-- Create: `/home/user/dev/infra/infra-ui/demo/index.html`
-- Create: `/home/user/dev/infra/infra-ui/demo/styles.css`
-- Create: `/home/user/dev/infra/infra-ui/demo/main.tsx`
-- Create: `/home/user/dev/infra/infra-ui/vite.config.ts`
-- Create: `/home/user/dev/infra/infra-ui/postcss.config.js`
-- Modify: `/home/user/dev/infra/infra-ui/package.json` (add `demo` + `demo:build` scripts)
+- Create: `demo/index.html`
+- Create: `demo/styles.css`
+- Create: `demo/main.tsx`
+- Create: `vite.config.ts`
+- Create: `postcss.config.js`
+- Modify: `package.json` (add `demo` + `demo:build` scripts)
 
 **Interfaces:**
 - Consumes: every primitive from `src/index.ts`. This is the same Tailwind-v4 `@source` integration consumers use, validated end-to-end (here `@source` points at `../src/primitives`; consumers point at `dist`).
@@ -1042,7 +1034,7 @@ createRoot(document.getElementById('root')!).render(
 
 - [ ] **Step 7: Verify the demo compiles**
 
-Run: `cd /home/user/dev/infra/infra-ui && pnpm demo:build`
+Run: `pnpm demo:build`
 Expected: exit 0; Vite reports a successful production build (this proves the Tailwind `@source` wiring resolves every primitive's classes).
 
 - [ ] **Step 8: (Manual) eyeball the look**
@@ -1053,7 +1045,6 @@ Expected: dark background, near-white text, **blue** primary buttons (the unset-
 - [ ] **Step 9: Commit**
 
 ```bash
-cd /home/user/dev/infra/infra-ui
 git add -A
 git commit -m "feat: add Vite demo kitchen-sink for visual review"
 ```
@@ -1063,7 +1054,7 @@ git commit -m "feat: add Vite demo kitchen-sink for visual review"
 ## Task 10: README + publish `v0.1.0` to GitHub
 
 **Files:**
-- Create: `/home/user/dev/infra/infra-ui/README.md`
+- Create: `README.md`
 
 **Interfaces:**
 - Produces: the pushed tag `v0.1.0` on GitHub, making `pnpm add github:nos-tromo/infra-ui#v0.1.0` resolvable by Phase 1 (docint).
@@ -1127,20 +1118,18 @@ pnpm build        # tsup -> dist/
 - [ ] **Step 2: Commit the README**
 
 ```bash
-cd /home/user/dev/infra/infra-ui
 git add -A
 git commit -m "docs: add README with install and Tailwind @source wiring"
 ```
 
 - [ ] **Step 3: Create the GitHub repo** (confirm with user first)
 
-Run: `cd /home/user/dev/infra/infra-ui && gh repo create nos-tromo/infra-ui --private --source=. --remote=origin`
+Run: `gh repo create nos-tromo/infra-ui --private --source=. --remote=origin`
 Expected: repo created, `origin` remote added.
 
 - [ ] **Step 4: Push `main`**
 
 ```bash
-cd /home/user/dev/infra/infra-ui
 git branch -M main
 git push -u origin main
 ```
@@ -1149,7 +1138,6 @@ Expected: branch pushed.
 - [ ] **Step 5: Tag and push `v0.1.0`**
 
 ```bash
-cd /home/user/dev/infra/infra-ui
 git tag v0.1.0
 git push origin v0.1.0
 ```
