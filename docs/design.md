@@ -3,7 +3,7 @@
 - **Date:** 2026-06-18
 - **Status:** Design — awaiting user review
 - **Scope:** A reusable "meta frontend" design layer (tokens + UI primitives) extracted
-  from Nextext's look and consumed by every first-party React SPA in `/home/user/dev/infra/`.
+  from Nextext's look and consumed by every first-party React SPA in the `infra/` workspace.
 
 > **Note on location:** This spec currently lives in the `docint` repo because `docint` is
 > one of the two consumers and `infra-ui` does not exist yet. It is cross-repo in nature and
@@ -57,7 +57,7 @@ red reserved for danger.
 ### 4.1 Package shape
 
 ```
-infra-ui/                       # /home/user/dev/infra/infra-ui
+infra-ui/                       # repo root
   package.json                  # name "@infra/ui"; peerDeps react/react-dom; "prepare": "tsup"
   tsconfig.json
   tsup.config.ts                # builds dist/ (ESM + .d.ts) on install
@@ -202,7 +202,7 @@ v1.5.
 
 ## 8. Choosable details (confirm during review)
 
-- Package name `@infra/ui` and repo path `/home/user/dev/infra/infra-ui`.
+- Package name `@infra/ui` and repo path `infra-ui/` in the `infra/` workspace.
 - GitHub slug in the install URL: `nos-tromo/infra-ui` (assumed from the git user).
 - docint accent = emerald `hsl(160 84% 39%)`; Nextext keeps blue `hsl(217 91% 60%)`.
 - Whether `SegmentedControl` joins v1 (to fold in docint's `MergeModeToggle`) or waits for v1.5.
