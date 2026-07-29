@@ -1,27 +1,5 @@
-// @vitest-environment jsdom
 import { renderHook, act } from '@testing-library/react'
 import { useTheme, THEME_STORAGE_KEY } from './useTheme'
-
-// Mock localStorage since jsdom doesn't provide it by default
-const localStorageMock = (() => {
-  let store: Record<string, string> = {}
-  return {
-    getItem: (key: string) => store[key] || null,
-    setItem: (key: string, value: string) => {
-      store[key] = value.toString()
-    },
-    removeItem: (key: string) => {
-      delete store[key]
-    },
-    clear: () => {
-      store = {}
-    },
-  }
-})()
-
-Object.defineProperty(window, 'localStorage', {
-  value: localStorageMock,
-})
 
 function mockMatchMedia(prefersDark: boolean) {
   const listeners = new Set<(e: { matches: boolean }) => void>()
