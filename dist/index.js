@@ -1609,6 +1609,59 @@ function downloadText(filename, text, mimeType) {
   anchor.click();
   setTimeout(() => URL.revokeObjectURL(url), 0);
 }
+
+// src/theme/useTheme.ts
+import { useCallback as useCallback2, useEffect as useEffect3, useState as useState3 } from "react";
+var THEME_STORAGE_KEY = "infra-ui-theme";
+function readMode() {
+  try {
+    const v = localStorage.getItem(THEME_STORAGE_KEY);
+    return v === "light" || v === "dark" ? v : "system";
+  } catch {
+    return "system";
+  }
+}
+function systemPrefersDark() {
+  return typeof matchMedia !== "undefined" && matchMedia("(prefers-color-scheme: dark)").matches;
+}
+function apply(mode) {
+  const root = document.documentElement;
+  if (mode === "system") delete root.dataset.theme;
+  else root.dataset.theme = mode;
+}
+function useTheme() {
+  const [mode, setMode] = useState3(readMode);
+  const [osDark, setOsDark] = useState3(systemPrefersDark);
+  useEffect3(() => {
+    apply(mode);
+  }, [mode]);
+  useEffect3(() => {
+    const mql = matchMedia("(prefers-color-scheme: dark)");
+    const onMedia = (e) => setOsDark(e.matches);
+    const onStorage = (e) => {
+      if (e.key === THEME_STORAGE_KEY) setMode(readMode());
+    };
+    mql.addEventListener("change", onMedia);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      mql.removeEventListener("change", onMedia);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
+  const cycle = useCallback2(() => {
+    setMode((prev) => {
+      const next = prev === "system" ? "light" : prev === "light" ? "dark" : "system";
+      try {
+        if (next === "system") localStorage.removeItem(THEME_STORAGE_KEY);
+        else localStorage.setItem(THEME_STORAGE_KEY, next);
+      } catch {
+      }
+      return next;
+    });
+  }, []);
+  const resolved = mode === "system" ? osDark ? "dark" : "light" : mode;
+  return { mode, resolved, cycle };
+}
 export {
   Badge,
   Banner,
@@ -1622,10 +1675,12 @@ export {
   Select,
   Shell,
   Spinner,
+  THEME_STORAGE_KEY,
   cn,
   downloadText,
   mergeFiles,
   toGraphHtml,
   toGraphJson,
-  toGraphML
+  toGraphML,
+  useTheme
 };

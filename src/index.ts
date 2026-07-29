@@ -34,3 +34,4 @@ export {
   downloadText,
   type GraphHtmlExportOptions,
 } from './graph/graphExport'
+export { useTheme, THEME_STORAGE_KEY, type ThemeMode } from './theme/useTheme'

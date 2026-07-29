@@ -316,4 +316,17 @@ declare function toGraphHtml(opts: GraphHtmlExportOptions): string;
  */
 declare function downloadText(filename: string, text: string, mimeType: string): void;
 
-export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML };
+declare const THEME_STORAGE_KEY = "infra-ui-theme";
+type ThemeMode = 'light' | 'dark' | 'system';
+/**
+ * Owns the federation theme contract: localStorage `infra-ui-theme`
+ * ('light' | 'dark'; absent = follow the OS), mirrored to `data-theme`
+ * on <html>. Nothing else may touch the key or the attribute.
+ */
+declare function useTheme(): {
+    mode: ThemeMode;
+    resolved: "light" | "dark";
+    cycle: () => void;
+};
+
+export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, THEME_STORAGE_KEY, type ThemeMode, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
