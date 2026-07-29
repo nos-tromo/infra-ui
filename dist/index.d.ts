@@ -122,6 +122,8 @@ interface AppHeaderProps extends HTMLAttributes<HTMLElement> {
     title: string;
     /** Signed-in user; block is omitted entirely when absent (e.g. standalone dev). */
     user?: string;
+    /** App version, rendered muted next to the title; omitted entirely when absent. */
+    version?: string;
     /** Portal URL; the gateway serves the portal at the origin root. */
     homeHref?: string;
     /** i18n hook for the home link text. */
@@ -133,7 +135,7 @@ interface AppHeaderProps extends HTMLAttributes<HTMLElement> {
         dark: string;
     };
 }
-declare function AppHeader({ title, user, homeHref, homeLabel, themeLabels, className, ...props }: AppHeaderProps): react.JSX.Element;
+declare function AppHeader({ title, user, version, homeHref, homeLabel, themeLabels, className, ...props }: AppHeaderProps): react.JSX.Element;
 
 interface ShellProps {
     /** Heading rendered on the left of the sticky header. */

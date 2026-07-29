@@ -7,6 +7,8 @@ export interface AppHeaderProps extends HTMLAttributes<HTMLElement> {
   title: string
   /** Signed-in user; block is omitted entirely when absent (e.g. standalone dev). */
   user?: string
+  /** App version, rendered muted next to the title; omitted entirely when absent. */
+  version?: string
   /** Portal URL; the gateway serves the portal at the origin root. */
   homeHref?: string
   /** i18n hook for the home link text. */
@@ -20,6 +22,7 @@ const MODE_ICON = { system: '◐', light: '☀', dark: '☾' } as const
 export function AppHeader({
   title,
   user,
+  version,
   homeHref = '/',
   homeLabel = 'Apps',
   themeLabels = { system: 'system', light: 'light', dark: 'dark' },
@@ -43,6 +46,11 @@ export function AppHeader({
         {homeLabel}
       </a>
       <span className="text-sm font-semibold">{title}</span>
+      {version && (
+        <span data-testid="appheader-version" className="text-xs text-muted-foreground">
+          {version}
+        </span>
+      )}
       <span className="flex-1" />
       {user && (
         <span data-testid="appheader-user" className="text-sm text-muted-foreground">

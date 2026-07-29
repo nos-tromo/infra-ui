@@ -43,3 +43,14 @@ test('honors homeHref, homeLabel, and themeLabels overrides', () => {
   expect(screen.getByRole('link', { name: 'Übersicht' })).toHaveAttribute('href', '/portal/')
   expect(screen.getByRole('button', { name: /System/ })).toBeInTheDocument()
 })
+
+test('renders version when provided', () => {
+  render(<AppHeader title="chorus" version="v1.2.3" />)
+  expect(screen.getByTestId('appheader-version')).toBeInTheDocument()
+  expect(screen.getByText('v1.2.3')).toBeInTheDocument()
+})
+
+test('omits version element when absent', () => {
+  render(<AppHeader title="chorus" />)
+  expect(screen.queryByTestId('appheader-version')).not.toBeInTheDocument()
+})
