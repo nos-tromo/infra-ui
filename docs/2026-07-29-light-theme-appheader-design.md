@@ -37,7 +37,15 @@ consume semantic tokens exclusively.
 - `--app-accent` remains the one per-app knob. Each app's accent is checked
   against both backgrounds during adoption; if one fails AA on the light
   background, that app sets a light-variant accent override
-  (`:root:not([data-theme='dark']) { --app-accent: … }`) in its own CSS —
+  (in its own CSS) — CORRECTED 2026-07-29: the naive `:root:not([data-theme='dark'])` selector also matches system-mode users whose OS prefers dark (no data-theme attribute is set in system mode), shipping the darkened light-accent onto dark backgrounds below AA. The correct pattern pairs the override with a media-guarded restore:
+
+  ```css
+  :root:not([data-theme='dark']) { --app-accent: <darker>; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) { --app-accent: <original>; }
+  }
+  ```
+  —
   the package does not grow a second knob.
 
 ## 2. Theme state — `useTheme` (new, headless)
