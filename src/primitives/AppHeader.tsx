@@ -38,19 +38,21 @@ export function AppHeader({
       )}
       {...props}
     >
-      <a
-        href={homeHref}
-        className="inline-flex items-center gap-1.5 rounded-[--radius] px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
-      >
-        <span aria-hidden>←</span>
-        {homeLabel}
-      </a>
-      <span className="text-sm font-semibold">{title}</span>
-      {version && (
-        <span data-testid="appheader-version" className="text-xs text-muted-foreground">
-          {version}
-        </span>
-      )}
+      <div className="flex items-baseline gap-3">
+        <a
+          href={homeHref}
+          className="inline-flex items-center gap-1.5 rounded-[--radius] px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+        >
+          <span aria-hidden>←</span>
+          {homeLabel}
+        </a>
+        <span className="text-sm font-semibold">{title}</span>
+        {version && (
+          <span data-testid="appheader-version" className="text-xs text-muted-foreground">
+            {version}
+          </span>
+        )}
+      </div>
       <span className="flex-1" />
       {user && (
         <span data-testid="appheader-user" className="text-sm text-muted-foreground">

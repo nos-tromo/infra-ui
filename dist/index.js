@@ -441,19 +441,21 @@ function AppHeader({
       ),
       ...props,
       children: [
-        /* @__PURE__ */ jsxs3(
-          "a",
-          {
-            href: homeHref,
-            className: "inline-flex items-center gap-1.5 rounded-[--radius] px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
-            children: [
-              /* @__PURE__ */ jsx11("span", { "aria-hidden": true, children: "\u2190" }),
-              homeLabel
-            ]
-          }
-        ),
-        /* @__PURE__ */ jsx11("span", { className: "text-sm font-semibold", children: title }),
-        version && /* @__PURE__ */ jsx11("span", { "data-testid": "appheader-version", className: "text-xs text-muted-foreground", children: version }),
+        /* @__PURE__ */ jsxs3("div", { className: "flex items-baseline gap-3", children: [
+          /* @__PURE__ */ jsxs3(
+            "a",
+            {
+              href: homeHref,
+              className: "inline-flex items-center gap-1.5 rounded-[--radius] px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
+              children: [
+                /* @__PURE__ */ jsx11("span", { "aria-hidden": true, children: "\u2190" }),
+                homeLabel
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsx11("span", { className: "text-sm font-semibold", children: title }),
+          version && /* @__PURE__ */ jsx11("span", { "data-testid": "appheader-version", className: "text-xs text-muted-foreground", children: version })
+        ] }),
         /* @__PURE__ */ jsx11("span", { className: "flex-1" }),
         user && /* @__PURE__ */ jsx11("span", { "data-testid": "appheader-user", className: "text-sm text-muted-foreground", children: user }),
         /* @__PURE__ */ jsx11(
