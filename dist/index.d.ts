@@ -117,6 +117,24 @@ interface BannerProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeo
 }
 declare function Banner({ className, variant, ...props }: BannerProps): react.JSX.Element;
 
+interface AppHeaderProps extends HTMLAttributes<HTMLElement> {
+    /** App display name, rendered next to the home link. */
+    title: string;
+    /** Signed-in user; block is omitted entirely when absent (e.g. standalone dev). */
+    user?: string;
+    /** Portal URL; the gateway serves the portal at the origin root. */
+    homeHref?: string;
+    /** i18n hook for the home link text. */
+    homeLabel?: string;
+    /** i18n hook for the toggle's accessible names, keyed by mode. */
+    themeLabels?: {
+        system: string;
+        light: string;
+        dark: string;
+    };
+}
+declare function AppHeader({ title, user, homeHref, homeLabel, themeLabels, className, ...props }: AppHeaderProps): react.JSX.Element;
+
 interface ShellProps {
     /** Heading rendered on the left of the sticky header. */
     title: ReactNode;
@@ -316,4 +334,17 @@ declare function toGraphHtml(opts: GraphHtmlExportOptions): string;
  */
 declare function downloadText(filename: string, text: string, mimeType: string): void;
 
-export { Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML };
+declare const THEME_STORAGE_KEY = "infra-ui-theme";
+type ThemeMode = 'light' | 'dark' | 'system';
+/**
+ * Owns the federation theme contract: localStorage `infra-ui-theme`
+ * ('light' | 'dark'; absent = follow the OS), mirrored to `data-theme`
+ * on <html>. Nothing else may touch the key or the attribute.
+ */
+declare function useTheme(): {
+    mode: ThemeMode;
+    resolved: "light" | "dark";
+    cycle: () => void;
+};
+
+export { AppHeader, type AppHeaderProps, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, THEME_STORAGE_KEY, type ThemeMode, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };

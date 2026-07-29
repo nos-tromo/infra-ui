@@ -1,12 +1,14 @@
 @theme {
-  /* fixed family neutrals (from Nextext) */
-  --color-background: hsl(240 6% 8%);
-  --color-foreground: hsl(0 0% 98%);
-  --color-muted: hsl(240 4% 16%);
-  --color-muted-foreground: hsl(240 5% 65%);
-  --color-border: hsl(240 4% 22%);
-  --color-accent: hsl(240 5% 26%);
-  --color-danger: hsl(0 72% 55%);
+  /* semantic family neutrals — LIGHT defaults; dark overrides below.
+     WCAG AA pairs enforced by src/contrast.test.ts — adjust L values
+     minimally if a pair fails, never rename tokens. */
+  --color-background: hsl(0 0% 100%);
+  --color-foreground: hsl(240 6% 10%);
+  --color-muted: hsl(240 5% 96%);
+  --color-muted-foreground: hsl(240 4% 38%);
+  --color-border: hsl(240 5% 84%);
+  --color-accent: hsl(240 5% 90%);
+  --color-danger: hsl(0 72% 40%);
 
   /* the ONE per-app knob — falls back to the family blue if unset */
   --color-primary: var(--app-accent, hsl(217 91% 60%));
@@ -16,4 +18,35 @@
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
   --radius: 0.5rem;
+}
+
+:root {
+  color-scheme: light;
+}
+
+/* Dark palette — explicit choice via data-theme (set by useTheme /
+   the FOUC snippet), or OS preference when no explicit choice is set.
+   The two blocks below must stay value-identical. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-background: hsl(240 6% 8%);
+  --color-foreground: hsl(0 0% 98%);
+  --color-muted: hsl(240 4% 16%);
+  --color-muted-foreground: hsl(240 5% 68%);
+  --color-border: hsl(240 4% 22%);
+  --color-accent: hsl(240 5% 26%);
+  --color-danger: hsl(0 72% 65%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --color-background: hsl(240 6% 8%);
+    --color-foreground: hsl(0 0% 98%);
+    --color-muted: hsl(240 4% 16%);
+    --color-muted-foreground: hsl(240 5% 68%);
+    --color-border: hsl(240 4% 22%);
+    --color-accent: hsl(240 5% 26%);
+    --color-danger: hsl(0 72% 65%);
+  }
 }

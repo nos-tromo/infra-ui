@@ -25,3 +25,22 @@ test('declares the fixed family tokens', () => {
 test('exposes the per-app accent override hook with a blue family default', () => {
   expect(css).toContain('--color-primary: var(--app-accent, hsl(217 91% 60%))')
 })
+
+test('dark palette exists under both the data-theme attribute and the media fallback', () => {
+  expect(css).toContain(":root[data-theme='dark']")
+  expect(css).toContain(':root:not([data-theme])')
+})
+
+test('attribute and media dark blocks are value-identical', () => {
+  const attr = css.slice(css.indexOf(":root[data-theme='dark']"), css.indexOf('@media'))
+  const media = css.slice(css.indexOf('@media'))
+  const decls = (s: string) => [...s.matchAll(/--[\w-]+:\s*[^;]+;/g)].map((m) => m[0]).sort()
+  expect(decls(media)).toEqual(decls(attr))
+})
+
+test('color-scheme is declared to prevent browser auto-dark heuristics', () => {
+  const lightOccurrences = (css.match(/color-scheme:\s*light;/g) || []).length
+  const darkOccurrences = (css.match(/color-scheme:\s*dark;/g) || []).length
+  expect(lightOccurrences).toBe(1)
+  expect(darkOccurrences).toBe(2)
+})

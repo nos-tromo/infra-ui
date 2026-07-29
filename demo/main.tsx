@@ -1,6 +1,7 @@
 import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
+  AppHeader,
   Badge,
   Banner,
   Button,
@@ -83,7 +84,9 @@ function Sink() {
   }
 
   return (
-    <main className="mx-auto flex max-w-3xl flex-col gap-6 p-10">
+    <>
+      <AppHeader title="kitchen sink" user="jane.doe" />
+      <main className="mx-auto flex max-w-3xl flex-col gap-6 p-10">
       <h1 className="text-lg font-semibold">@infra/ui kitchen sink</h1>
 
       <section className="flex flex-wrap items-center gap-3">
@@ -144,6 +147,7 @@ function Sink() {
         />
       </section>
     </main>
+    </>
   )
 }
 

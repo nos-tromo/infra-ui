@@ -15,6 +15,7 @@ export { Select } from './primitives/Select'
 export { Badge, type BadgeProps } from './primitives/Badge'
 export { Spinner, type SpinnerProps } from './primitives/Spinner'
 export { Banner, type BannerProps } from './primitives/Banner'
+export { AppHeader, type AppHeaderProps } from './primitives/AppHeader'
 export { Shell, type ShellProps } from './layout/Shell'
 export {
   ForceGraph,
@@ -34,3 +35,4 @@ export {
   downloadText,
   type GraphHtmlExportOptions,
 } from './graph/graphExport'
+export { useTheme, THEME_STORAGE_KEY, type ThemeMode } from './theme/useTheme'
