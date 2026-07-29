@@ -1,9 +1,13 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { AppHeader } from './AppHeader'
+import * as themeModule from '../theme/useTheme'
+
+const resetStore = themeModule.__resetStoreForTesting
 
 afterEach(() => {
   localStorage.clear()
   delete document.documentElement.dataset.theme
+  resetStore()
 })
 
 test('renders home link, title, and user', () => {

@@ -340,6 +340,8 @@ type ThemeMode = 'light' | 'dark' | 'system';
  * Owns the federation theme contract: localStorage `infra-ui-theme`
  * ('light' | 'dark'; absent = follow the OS), mirrored to `data-theme`
  * on <html>. Nothing else may touch the key or the attribute.
+ *
+ * Uses a shared module-level store so all instances within a tab sync immediately.
  */
 declare function useTheme(): {
     mode: ThemeMode;

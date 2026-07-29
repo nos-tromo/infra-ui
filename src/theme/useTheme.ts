@@ -1,8 +1,13 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useSyncExternalStore, useCallback } from 'react'
 
 export const THEME_STORAGE_KEY = 'infra-ui-theme'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
+
+interface ThemeSnapshot {
+  mode: ThemeMode
+  osDark: boolean
+}
 
 function readMode(): ThemeMode {
   try {
@@ -23,46 +28,92 @@ function apply(mode: ThemeMode) {
   else root.dataset.theme = mode
 }
 
+// Module-level store for shared theme state
+let mode: ThemeMode = readMode()
+let osDark: boolean = systemPrefersDark()
+let cachedSnapshot: ThemeSnapshot = { mode, osDark }
+
+const listeners = new Set<() => void>()
+let mql: MediaQueryList | null = null
+
+function updateSnapshot() {
+  cachedSnapshot = { mode, osDark }
+}
+
+function notifyListeners() {
+  updateSnapshot()
+  listeners.forEach((listener) => listener())
+}
+
+function initializeListeners() {
+  if (mql !== null) return // Already initialized
+
+  mode = readMode() // Read persisted mode on first initialization
+  mql = matchMedia('(prefers-color-scheme: dark)')
+  osDark = mql.matches // Read initial value
+  updateSnapshot()
+  apply(mode) // Apply the mode to the DOM
+  const onMedia = (e: { matches: boolean }) => {
+    osDark = e.matches
+    notifyListeners()
+  }
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === THEME_STORAGE_KEY) {
+      mode = readMode()
+      apply(mode)
+      notifyListeners()
+    }
+  }
+  mql.addEventListener('change', onMedia)
+  window.addEventListener('storage', onStorage)
+}
+
+function subscribe(listener: () => void) {
+  initializeListeners()
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+function getSnapshot(): ThemeSnapshot {
+  return cachedSnapshot
+}
+
+function getServerSnapshot(): ThemeSnapshot {
+  return { mode: 'system', osDark: false }
+}
+
 /**
  * Owns the federation theme contract: localStorage `infra-ui-theme`
  * ('light' | 'dark'; absent = follow the OS), mirrored to `data-theme`
  * on <html>. Nothing else may touch the key or the attribute.
+ *
+ * Uses a shared module-level store so all instances within a tab sync immediately.
  */
 export function useTheme() {
-  const [mode, setMode] = useState<ThemeMode>(readMode)
-  const [osDark, setOsDark] = useState(systemPrefersDark)
-
-  useEffect(() => {
-    apply(mode)
-  }, [mode])
-
-  useEffect(() => {
-    const mql = matchMedia('(prefers-color-scheme: dark)')
-    const onMedia = (e: { matches: boolean }) => setOsDark(e.matches)
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === THEME_STORAGE_KEY) setMode(readMode())
-    }
-    mql.addEventListener('change', onMedia)
-    window.addEventListener('storage', onStorage)
-    return () => {
-      mql.removeEventListener('change', onMedia)
-      window.removeEventListener('storage', onStorage)
-    }
-  }, [])
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 
   const cycle = useCallback(() => {
-    setMode((prev) => {
-      const next: ThemeMode = prev === 'system' ? 'light' : prev === 'light' ? 'dark' : 'system'
-      try {
-        if (next === 'system') localStorage.removeItem(THEME_STORAGE_KEY)
-        else localStorage.setItem(THEME_STORAGE_KEY, next)
-      } catch {
-        /* storage unavailable — in-memory only */
-      }
-      return next
-    })
+    const next: ThemeMode = mode === 'system' ? 'light' : mode === 'light' ? 'dark' : 'system'
+    mode = next
+    try {
+      if (next === 'system') localStorage.removeItem(THEME_STORAGE_KEY)
+      else localStorage.setItem(THEME_STORAGE_KEY, next)
+    } catch {
+      /* storage unavailable — in-memory only */
+    }
+    apply(next)
+    notifyListeners()
   }, [])
 
-  const resolved: 'light' | 'dark' = mode === 'system' ? (osDark ? 'dark' : 'light') : mode
-  return { mode, resolved, cycle }
+  const resolved: 'light' | 'dark' = snapshot.mode === 'system' ? (snapshot.osDark ? 'dark' : 'light') : snapshot.mode
+  return { mode: snapshot.mode, resolved, cycle }
+}
+
+// Test-only: reset the store to initial state
+export function __resetStoreForTesting() {
+  mode = 'system'
+  osDark = false
+  cachedSnapshot = { mode, osDark }
+  listeners.clear()
+  mql = null
 }

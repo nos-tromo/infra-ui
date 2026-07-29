@@ -339,7 +339,7 @@ function Banner({ className, variant, ...props }) {
 }
 
 // src/theme/useTheme.ts
-import { useCallback, useEffect as useEffect2, useState as useState2 } from "react";
+import { useSyncExternalStore, useCallback } from "react";
 var THEME_STORAGE_KEY = "infra-ui-theme";
 function readMode() {
   try {
@@ -352,43 +352,70 @@ function readMode() {
 function systemPrefersDark() {
   return typeof matchMedia !== "undefined" && matchMedia("(prefers-color-scheme: dark)").matches;
 }
-function apply(mode) {
+function apply(mode2) {
   const root = document.documentElement;
-  if (mode === "system") delete root.dataset.theme;
-  else root.dataset.theme = mode;
+  if (mode2 === "system") delete root.dataset.theme;
+  else root.dataset.theme = mode2;
+}
+var mode = readMode();
+var osDark = systemPrefersDark();
+var cachedSnapshot = { mode, osDark };
+var listeners = /* @__PURE__ */ new Set();
+var mql = null;
+function updateSnapshot() {
+  cachedSnapshot = { mode, osDark };
+}
+function notifyListeners() {
+  updateSnapshot();
+  listeners.forEach((listener) => listener());
+}
+function initializeListeners() {
+  if (mql !== null) return;
+  mode = readMode();
+  mql = matchMedia("(prefers-color-scheme: dark)");
+  osDark = mql.matches;
+  updateSnapshot();
+  apply(mode);
+  const onMedia = (e) => {
+    osDark = e.matches;
+    notifyListeners();
+  };
+  const onStorage = (e) => {
+    if (e.key === THEME_STORAGE_KEY) {
+      mode = readMode();
+      apply(mode);
+      notifyListeners();
+    }
+  };
+  mql.addEventListener("change", onMedia);
+  window.addEventListener("storage", onStorage);
+}
+function subscribe(listener) {
+  initializeListeners();
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+function getSnapshot() {
+  return cachedSnapshot;
+}
+function getServerSnapshot() {
+  return { mode: "system", osDark: false };
 }
 function useTheme() {
-  const [mode, setMode] = useState2(readMode);
-  const [osDark, setOsDark] = useState2(systemPrefersDark);
-  useEffect2(() => {
-    apply(mode);
-  }, [mode]);
-  useEffect2(() => {
-    const mql = matchMedia("(prefers-color-scheme: dark)");
-    const onMedia = (e) => setOsDark(e.matches);
-    const onStorage = (e) => {
-      if (e.key === THEME_STORAGE_KEY) setMode(readMode());
-    };
-    mql.addEventListener("change", onMedia);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      mql.removeEventListener("change", onMedia);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, []);
+  const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const cycle = useCallback(() => {
-    setMode((prev) => {
-      const next = prev === "system" ? "light" : prev === "light" ? "dark" : "system";
-      try {
-        if (next === "system") localStorage.removeItem(THEME_STORAGE_KEY);
-        else localStorage.setItem(THEME_STORAGE_KEY, next);
-      } catch {
-      }
-      return next;
-    });
+    const next = mode === "system" ? "light" : mode === "light" ? "dark" : "system";
+    mode = next;
+    try {
+      if (next === "system") localStorage.removeItem(THEME_STORAGE_KEY);
+      else localStorage.setItem(THEME_STORAGE_KEY, next);
+    } catch {
+    }
+    apply(next);
+    notifyListeners();
   }, []);
-  const resolved = mode === "system" ? osDark ? "dark" : "light" : mode;
-  return { mode, resolved, cycle };
+  const resolved = snapshot.mode === "system" ? snapshot.osDark ? "dark" : "light" : snapshot.mode;
+  return { mode: snapshot.mode, resolved, cycle };
 }
 
 // src/primitives/AppHeader.tsx
@@ -403,7 +430,7 @@ function AppHeader({
   className,
   ...props
 }) {
-  const { mode, cycle } = useTheme();
+  const { mode: mode2, cycle } = useTheme();
   return /* @__PURE__ */ jsxs3(
     "header",
     {
@@ -432,10 +459,10 @@ function AppHeader({
           {
             type: "button",
             onClick: cycle,
-            "aria-label": `Theme: ${themeLabels[mode]}`,
-            title: `Theme: ${themeLabels[mode]}`,
+            "aria-label": `Theme: ${themeLabels[mode2]}`,
+            title: `Theme: ${themeLabels[mode2]}`,
             className: "inline-flex h-8 w-8 items-center justify-center rounded-[--radius] text-muted-foreground hover:bg-muted hover:text-foreground",
-            children: /* @__PURE__ */ jsx11("span", { "aria-hidden": true, children: MODE_ICON[mode] })
+            children: /* @__PURE__ */ jsx11("span", { "aria-hidden": true, children: MODE_ICON[mode2] })
           }
         )
       ]
@@ -456,7 +483,7 @@ function Shell({ title, actions, children, className }) {
 }
 
 // src/graph/ForceGraph.tsx
-import { useCallback as useCallback2, useEffect as useEffect3, useImperativeHandle, useMemo, useRef as useRef2, useState as useState3 } from "react";
+import { useCallback as useCallback2, useEffect as useEffect2, useImperativeHandle, useMemo, useRef as useRef2, useState as useState2 } from "react";
 
 // src/graph/forceSimulation.ts
 var DEFAULTS = {
@@ -749,9 +776,9 @@ function ForceGraph({
   const selectedSet = useMemo(() => new Set(selectedIdsArr), [selectedIdsArr]);
   const actionsActive = !!(expandActions && expandActions.length > 0 && onExpandAction);
   const svgRef = useRef2(null);
-  const [minDegree, setMinDegree] = useState3(0);
-  const [spread, setSpread] = useState3(1);
-  const [isMaximized, setIsMaximized] = useState3(false);
+  const [minDegree, setMinDegree] = useState2(0);
+  const [spread, setSpread] = useState2(1);
+  const [isMaximized, setIsMaximized] = useState2(false);
   const degreeById = useMemo(() => {
     const deg = /* @__PURE__ */ new Map();
     for (const e of edges) {
@@ -765,7 +792,7 @@ function ForceGraph({
     for (const n of nodes) m = Math.max(m, degreeById.get(n.id) ?? 0);
     return m;
   }, [nodes, degreeById]);
-  useEffect3(() => {
+  useEffect2(() => {
     setMinDegree((d) => Math.min(d, maxDegree));
   }, [maxDegree]);
   const visibleNodes = useMemo(
@@ -791,15 +818,15 @@ function ForceGraph({
     }));
     return createForceSimulation(simNodes, simLinks, { centerX: CENTER_X, centerY: CENTER_Y });
   }, [visibleNodes, visibleEdges]);
-  const [, setFrame] = useState3(0);
-  const [view, setView] = useState3({ x: 0, y: 0, k: 1 });
+  const [, setFrame] = useState2(0);
+  const [view, setView] = useState2({ x: 0, y: 0, k: 1 });
   const draggingNodeRef = useRef2(null);
   const dragStartRef = useRef2(null);
   const movedRef = useRef2(false);
   const panRef = useRef2(null);
   const panMovedRef = useRef2(false);
   const marqueeRef = useRef2(null);
-  const [marqueeRect, setMarqueeRect] = useState3(null);
+  const [marqueeRect, setMarqueeRect] = useState2(null);
   const rafRef = useRef2(0);
   const runningRef = useRef2(false);
   const runLoop = useCallback2(() => {
@@ -818,7 +845,7 @@ function ForceGraph({
     };
     rafRef.current = requestAnimationFrame(step);
   }, [sim]);
-  useEffect3(() => {
+  useEffect2(() => {
     runLoop();
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -836,7 +863,7 @@ function ForceGraph({
     }),
     [sim]
   );
-  useEffect3(() => {
+  useEffect2(() => {
     sim.setOptions({
       linkDistance: BASE_LINK_DISTANCE * spread,
       repulsion: BASE_REPULSION * spread
@@ -844,7 +871,7 @@ function ForceGraph({
     sim.reheat();
     runLoop();
   }, [sim, spread, runLoop]);
-  useEffect3(() => {
+  useEffect2(() => {
     if (!isMaximized) return;
     const onKeyDown = (e) => {
       if (e.key === "Escape") setIsMaximized(false);
@@ -857,7 +884,7 @@ function ForceGraph({
       document.body.style.overflow = prevOverflow;
     };
   }, [isMaximized]);
-  useEffect3(() => {
+  useEffect2(() => {
     if (selectedIdsArr.length === 0 || !onDeleteNodes) return;
     const onKeyDown = (e) => {
       if (e.key !== "Backspace" && e.key !== "Delete") return;
@@ -872,7 +899,7 @@ function ForceGraph({
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [selectedIdsArr, onDeleteNodes]);
-  useEffect3(() => {
+  useEffect2(() => {
     if (nodes.length === 0) setIsMaximized(false);
   }, [nodes.length]);
   const screenToLayout = useCallback2(
