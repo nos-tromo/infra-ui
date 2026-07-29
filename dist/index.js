@@ -349,19 +349,19 @@ function readMode() {
     return "system";
   }
 }
-function systemPrefersDark() {
-  return typeof matchMedia !== "undefined" && matchMedia("(prefers-color-scheme: dark)").matches;
-}
 function apply(mode2) {
   const root = document.documentElement;
   if (mode2 === "system") delete root.dataset.theme;
   else root.dataset.theme = mode2;
 }
-var mode = readMode();
-var osDark = systemPrefersDark();
+var mode = "system";
+var osDark = false;
 var cachedSnapshot = { mode, osDark };
+var initialized = false;
 var listeners = /* @__PURE__ */ new Set();
 var mql = null;
+var onMedia = null;
+var onStorage = null;
 function updateSnapshot() {
   cachedSnapshot = { mode, osDark };
 }
@@ -369,18 +369,19 @@ function notifyListeners() {
   updateSnapshot();
   listeners.forEach((listener) => listener());
 }
-function initializeListeners() {
-  if (mql !== null) return;
+function ensureInit() {
+  if (initialized) return;
+  initialized = true;
   mode = readMode();
   mql = matchMedia("(prefers-color-scheme: dark)");
   osDark = mql.matches;
   updateSnapshot();
   apply(mode);
-  const onMedia = (e) => {
+  onMedia = (e) => {
     osDark = e.matches;
     notifyListeners();
   };
-  const onStorage = (e) => {
+  onStorage = (e) => {
     if (e.key === THEME_STORAGE_KEY) {
       mode = readMode();
       apply(mode);
@@ -391,11 +392,12 @@ function initializeListeners() {
   window.addEventListener("storage", onStorage);
 }
 function subscribe(listener) {
-  initializeListeners();
+  ensureInit();
   listeners.add(listener);
   return () => listeners.delete(listener);
 }
 function getSnapshot() {
+  ensureInit();
   return cachedSnapshot;
 }
 function getServerSnapshot() {
@@ -404,6 +406,7 @@ function getServerSnapshot() {
 function useTheme() {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const cycle = useCallback(() => {
+    ensureInit();
     const next = mode === "system" ? "light" : mode === "light" ? "dark" : "system";
     mode = next;
     try {

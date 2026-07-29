@@ -18,23 +18,22 @@ function readMode(): ThemeMode {
   }
 }
 
-function systemPrefersDark(): boolean {
-  return typeof matchMedia !== 'undefined' && matchMedia('(prefers-color-scheme: dark)').matches
-}
-
 function apply(mode: ThemeMode) {
   const root = document.documentElement
   if (mode === 'system') delete root.dataset.theme
   else root.dataset.theme = mode
 }
 
-// Module-level store for shared theme state
-let mode: ThemeMode = readMode()
-let osDark: boolean = systemPrefersDark()
+// Module-level store for shared theme state (lazy-initialized for SSR)
+let mode: ThemeMode = 'system'
+let osDark: boolean = false
 let cachedSnapshot: ThemeSnapshot = { mode, osDark }
+let initialized = false
 
 const listeners = new Set<() => void>()
 let mql: MediaQueryList | null = null
+let onMedia: ((e: { matches: boolean }) => void) | null = null
+let onStorage: ((e: StorageEvent) => void) | null = null
 
 function updateSnapshot() {
   cachedSnapshot = { mode, osDark }
@@ -45,19 +44,20 @@ function notifyListeners() {
   listeners.forEach((listener) => listener())
 }
 
-function initializeListeners() {
-  if (mql !== null) return // Already initialized
+function ensureInit() {
+  if (initialized) return
+  initialized = true
 
   mode = readMode() // Read persisted mode on first initialization
   mql = matchMedia('(prefers-color-scheme: dark)')
   osDark = mql.matches // Read initial value
   updateSnapshot()
   apply(mode) // Apply the mode to the DOM
-  const onMedia = (e: { matches: boolean }) => {
+  onMedia = (e: { matches: boolean }) => {
     osDark = e.matches
     notifyListeners()
   }
-  const onStorage = (e: StorageEvent) => {
+  onStorage = (e: StorageEvent) => {
     if (e.key === THEME_STORAGE_KEY) {
       mode = readMode()
       apply(mode)
@@ -69,12 +69,13 @@ function initializeListeners() {
 }
 
 function subscribe(listener: () => void) {
-  initializeListeners()
+  ensureInit()
   listeners.add(listener)
   return () => listeners.delete(listener)
 }
 
 function getSnapshot(): ThemeSnapshot {
+  ensureInit()
   return cachedSnapshot
 }
 
@@ -93,6 +94,7 @@ export function useTheme() {
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 
   const cycle = useCallback(() => {
+    ensureInit()
     const next: ThemeMode = mode === 'system' ? 'light' : mode === 'light' ? 'dark' : 'system'
     mode = next
     try {
@@ -111,9 +113,21 @@ export function useTheme() {
 
 // Test-only: reset the store to initial state
 export function __resetStoreForTesting() {
+  // Clean up event listeners
+  if (mql !== null && onMedia !== null) {
+    mql.removeEventListener('change', onMedia)
+  }
+  if (onStorage !== null) {
+    window.removeEventListener('storage', onStorage)
+  }
+
+  // Reset state
   mode = 'system'
   osDark = false
   cachedSnapshot = { mode, osDark }
   listeners.clear()
   mql = null
+  onMedia = null
+  onStorage = null
+  initialized = false
 }
