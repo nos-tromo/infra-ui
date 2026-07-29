@@ -21,7 +21,7 @@ root (e.g. `docker/compose.yaml`).
 ## What this repo is
 
 `@infra/ui` — the shared React design system for the nos-tromo federation:
-Tailwind v4 tokens (`src/theme.css`) plus light/dark themeable, minimal UI primitives, consumed
+Tailwind v4 tokens (`src/theme.css`) plus light/dark themeable, minimal UI primitives (OS-preference default), consumed
 by the four app frontends (chorus, docint, Nextext, translator) as a
 **tag-pinned pnpm git dependency** (`github:nos-tromo/infra-ui#vX.Y.Z`).
 Build-time only — never a runtime service; it joins no Docker network and ships
