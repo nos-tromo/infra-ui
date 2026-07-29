@@ -424,6 +424,7 @@ var MODE_ICON = { system: "\u25D0", light: "\u2600", dark: "\u263E" };
 function AppHeader({
   title,
   user,
+  version,
   homeHref = "/",
   homeLabel = "Apps",
   themeLabels = { system: "system", light: "light", dark: "dark" },
@@ -452,6 +453,7 @@ function AppHeader({
           }
         ),
         /* @__PURE__ */ jsx11("span", { className: "text-sm font-semibold", children: title }),
+        version && /* @__PURE__ */ jsx11("span", { "data-testid": "appheader-version", className: "text-xs text-muted-foreground", children: version }),
         /* @__PURE__ */ jsx11("span", { className: "flex-1" }),
         user && /* @__PURE__ */ jsx11("span", { "data-testid": "appheader-user", className: "text-sm text-muted-foreground", children: user }),
         /* @__PURE__ */ jsx11(
