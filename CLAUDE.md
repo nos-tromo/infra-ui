@@ -21,7 +21,7 @@ root (e.g. `docker/compose.yaml`).
 ## What this repo is
 
 `@infra/ui` — the shared React design system for the nos-tromo federation:
-Tailwind v4 tokens (`src/theme.css`) plus dark, minimal UI primitives, consumed
+Tailwind v4 tokens (`src/theme.css`) plus light/dark themeable, minimal UI primitives, consumed
 by the four app frontends (chorus, docint, Nextext, translator) as a
 **tag-pinned pnpm git dependency** (`github:nos-tromo/infra-ui#vX.Y.Z`).
 Build-time only — never a runtime service; it joins no Docker network and ships
@@ -63,7 +63,7 @@ pnpm build        # tsup -> dist/ (commit dist/ whenever src/ changes)
 - **Peer deps, not deps.** `react`/`react-dom` (v19) stay peer dependencies;
   runtime deps are limited to the styling utilities (cva, clsx,
   tailwind-merge).
-- Primitive set: `Button`, `CopyButton`, `Card`, `Input`, `Select`, `Badge`,
+- Primitive set: `AppHeader`, `Button`, `CopyButton`, `Card`, `Input`, `Select`, `Badge`,
   `Spinner`, `Banner`, plus the `cn` helper. Every primitive has a unit test —
   keep that invariant when adding one.
 

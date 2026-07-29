@@ -1,7 +1,7 @@
 # @infra/ui
 
 Shared design system (Tailwind v4 tokens + UI primitives) for the infra React SPAs.
-Dark, minimal, Nextext-derived. Consumed as a tag-pinned pnpm Git dependency.
+Light/dark themeable, minimal, Nextext-derived. Consumed as a tag-pinned pnpm Git dependency.
 
 ## Install
 
@@ -35,17 +35,35 @@ In your app's root CSS (e.g. `src/styles/globals.css`):
 ## Use
 
 ```tsx
-import { Button, CopyButton, Card, Input, Select, Badge, Spinner, Banner, FileList, ForceGraph, cn } from '@infra/ui'
+import { AppHeader, Button, CopyButton, Card, Input, Select, Badge, Spinner, Banner, FileList, ForceGraph, cn } from '@infra/ui'
 ```
 
 ## Primitives
 
-`Button` (primary/secondary/ghost/danger · sm/md) · `CopyButton` (icon-only,
+`AppHeader` (portal link, identity, tri-state theme toggle) · `Button` (primary/secondary/ghost/danger · sm/md) · `CopyButton` (icon-only,
 copies text to the clipboard) · `Card` · `Input` · `Select` ·
 `Badge` (neutral/accent/danger) · `Spinner` · `Banner` (info/danger).
 
 All styling uses semantic design tokens only (`bg-primary`, `text-muted-foreground`,
 `border-border`, …), so an app re-themes everything by setting `--app-accent`.
+
+### Theming
+
+The `useTheme` hook provides a tri-state theme cycle (system → light → dark → system) and reflects the user's choice in `document.documentElement.dataset.theme`. To prevent flash-of-unstyled-content (FOUC) on page load, add this snippet to `index.html` before your app entrypoint:
+
+```html
+<script>
+  /* infra-ui theme: stamp explicit choice before first paint (FOUC guard) */
+  ;(function () {
+    try {
+      var t = localStorage.getItem('infra-ui-theme')
+      if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t
+    } catch (e) {}
+  })()
+</script>
+```
+
+The `AppHeader` primitive includes this toggle built in (three-way button with accessible names keyed by mode). Apps without a header can use the hook directly to build their own toggle.
 
 ### ForceGraph
 
