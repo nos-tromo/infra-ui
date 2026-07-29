@@ -37,3 +37,10 @@ test('attribute and media dark blocks are value-identical', () => {
   const decls = (s: string) => [...s.matchAll(/--[\w-]+:\s*[^;]+;/g)].map((m) => m[0]).sort()
   expect(decls(media)).toEqual(decls(attr))
 })
+
+test('color-scheme is declared to prevent browser auto-dark heuristics', () => {
+  const lightOccurrences = (css.match(/color-scheme:\s*light;/g) || []).length
+  const darkOccurrences = (css.match(/color-scheme:\s*dark;/g) || []).length
+  expect(lightOccurrences).toBe(1)
+  expect(darkOccurrences).toBe(2)
+})
