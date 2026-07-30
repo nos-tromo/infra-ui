@@ -30,12 +30,12 @@ toolchain (not the Python apps' ruff/pyrefly/common.mk conventions).
 
 ## The committed-`dist/` rule
 
-The built `dist/` (JS + `.d.ts`) is **committed to the repo** so every consumer
-gets the same prebuilt, deterministic types — there is no install-time rebuild
-(per-consumer `prepare` rebuilds proved unreliable and silently degraded the
-`.d.ts` to `any` in some CI environments). **After any change to `src/`, run
-`pnpm build` and commit the resulting `dist/` in the same change.** A PR that
-touches `src/` but not `dist/` is incomplete.
+The built `dist/` (JS + `.d.ts` + `tokens.css`) is **committed to the repo** so
+every consumer gets the same prebuilt, deterministic output — there is no
+install-time rebuild (per-consumer `prepare` rebuilds proved unreliable and
+silently degraded the `.d.ts` to `any` in some CI environments). **After any
+change to `src/`, run `pnpm build` and commit the resulting `dist/` in the
+same change.** A PR that touches `src/` but not `dist/` is incomplete.
 
 ## Commands
 
@@ -47,7 +47,8 @@ pnpm typecheck    # tsc --noEmit
 pnpm lint         # eslint
 pnpm format       # prettier --write
 pnpm demo         # Vite kitchen-sink demo for visual review
-pnpm build        # tsup -> dist/ (commit dist/ whenever src/ changes)
+pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.css
+                  # (commit dist/ whenever src/ changes)
 ```
 
 ## Design constraints
@@ -66,6 +67,14 @@ pnpm build        # tsup -> dist/ (commit dist/ whenever src/ changes)
 - Primitive set: `AppHeader`, `Button`, `CopyButton`, `Card`, `Input`, `Select`, `Badge`,
   `Spinner`, `Banner`, plus the `cn` helper. Every primitive has a unit test —
   keep that invariant when adding one.
+- **`dist/tokens.css` is generated, never hand-edited.** It's a plain-CSS
+  (non-Tailwind) export of the same tokens in `src/theme.css`, for build-free
+  static-HTML consumers (e.g. edge-plane's portal) that can't process a
+  Tailwind `@theme` block. `scripts/build-tokens.mjs` emits it from
+  `src/theme.css` as part of `pnpm build`; `src/tokens.test.ts` fails CI if the
+  committed file drifts from the source. Changing a token value only ever
+  means editing `src/theme.css` and rebuilding — never touching
+  `dist/tokens.css` directly.
 
 ## Releasing
 
