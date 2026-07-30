@@ -85,13 +85,36 @@ Selection is a set (`selectedIds`/`onSelectionChange`), not a single id: a plain
 
 Graph exporters (JSON/GraphML/self-contained interactive HTML) ship with the package (`toGraphJson`, `toGraphML`, `toGraphHtml`, `downloadText`).
 
+## Non-React consumers
+
+Federation members that serve build-free static HTML (no Tailwind, no
+bundler — e.g. edge-plane's portal pages) can't use `@import '@infra/ui/theme.css'`,
+since that file is a Tailwind v4 `@theme` block and only becomes real CSS
+custom properties once Tailwind processes it. For those consumers, `@infra/ui`
+also ships `dist/tokens.css`: the same semantic tokens as plain
+`:root { --color-... }` / `:root[data-theme='dark'] { ... }` /
+`@media (prefers-color-scheme: dark)` rules, no build step required.
+
+```html
+<link rel="stylesheet" href="tokens.css" />
+```
+
+Vendor the file into the consuming repo (see edge-plane's portal for the
+pattern: a committed copy plus a documented re-vendor step, the same
+approach used for other cross-repo shared files like `bundle-lib.sh`).
+`dist/tokens.css` is generated from `src/theme.css` by
+`scripts/build-tokens.mjs` as part of `pnpm build` — never hand-edit it, and
+never hand-copy token values into a consumer either; `src/tokens.test.ts`
+fails CI if the committed file drifts from `src/theme.css`.
+
 ## Develop
 
 ```bash
 pnpm install      # install deps (dist is committed, not built on install)
 pnpm test         # vitest (unit tests for every primitive)
 pnpm demo         # Vite kitchen-sink for visual review
-pnpm build        # tsup -> dist/  (commit dist/ whenever src/ changes)
+pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.css
+                  # (commit dist/ whenever src/ changes)
 ```
 
 ## Design docs
