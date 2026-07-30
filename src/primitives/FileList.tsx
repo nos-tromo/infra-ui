@@ -5,15 +5,22 @@ import { HoverIconAction } from './HoverIconAction'
 export interface FileLike {
   name: string
   size?: number
+  /** Path within a dropped/picked directory (browsers set this on `File`);
+   *  identity falls back to `name` when absent. */
+  webkitRelativePath?: string
 }
 
 /**
- * Append `incoming` to `existing`, skipping any file already present (matched
- * by `name` + `size`) and preserving the existing order. Use in a file-input
- * "add" handler so re-selecting the same file never produces duplicate rows.
+ * Append `incoming` to `existing`, skipping any file already present and
+ * preserving the existing order. Use in a file-input "add" handler so
+ * re-selecting the same file never produces duplicate rows.
+ *
+ * Identity is `webkitRelativePath || name` plus `size`: folder uploads carry a
+ * path, so two genuinely different files that share a name and byte length in
+ * different subfolders stay distinct instead of one silently vanishing.
  */
 export function mergeFiles<T extends FileLike>(existing: T[], incoming: T[]): T[] {
-  const key = (file: FileLike) => `${file.name}:${file.size ?? ''}`
+  const key = (file: FileLike) => `${file.webkitRelativePath || file.name}:${file.size ?? ''}`
   const seen = new Set(existing.map(key))
   const result = [...existing]
   for (const file of incoming) {
@@ -121,7 +128,7 @@ export function FileList({ files, onRemove, onClear, labels, className }: FileLi
       <ul className="max-h-64 divide-y divide-border overflow-y-auto">
         {files.map((file, index) => (
           <li
-            key={`${file.name}:${file.size ?? ''}`}
+            key={`${file.webkitRelativePath || file.name}:${file.size ?? ''}`}
             className="group flex items-center gap-3 px-3 py-1.5 text-sm"
           >
             <span className="w-6 shrink-0 text-right tabular-nums text-muted-foreground">

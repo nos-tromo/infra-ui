@@ -49,11 +49,18 @@ declare const CopyButton: react.ForwardRefExoticComponent<CopyButtonProps & reac
 interface FileLike {
     name: string;
     size?: number;
+    /** Path within a dropped/picked directory (browsers set this on `File`);
+     *  identity falls back to `name` when absent. */
+    webkitRelativePath?: string;
 }
 /**
- * Append `incoming` to `existing`, skipping any file already present (matched
- * by `name` + `size`) and preserving the existing order. Use in a file-input
- * "add" handler so re-selecting the same file never produces duplicate rows.
+ * Append `incoming` to `existing`, skipping any file already present and
+ * preserving the existing order. Use in a file-input "add" handler so
+ * re-selecting the same file never produces duplicate rows.
+ *
+ * Identity is `webkitRelativePath || name` plus `size`: folder uploads carry a
+ * path, so two genuinely different files that share a name and byte length in
+ * different subfolders stay distinct instead of one silently vanishing.
  */
 declare function mergeFiles<T extends FileLike>(existing: T[], incoming: T[]): T[];
 interface FileListLabels {

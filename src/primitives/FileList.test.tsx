@@ -21,6 +21,17 @@ describe('mergeFiles', () => {
     expect(mergeFiles([], [f('a', 1), f('a', 1)])).toHaveLength(1)
   })
 
+  test('keeps same-name same-size files apart by relative path', () => {
+    const a = { name: 'report.pdf', size: 10, webkitRelativePath: 'export/a/report.pdf' }
+    const b = { name: 'report.pdf', size: 10, webkitRelativePath: 'export/b/report.pdf' }
+    expect(mergeFiles([a], [b])).toHaveLength(2)
+  })
+
+  test('still dedups an identical path re-selected', () => {
+    const a = { name: 'report.pdf', size: 10, webkitRelativePath: 'export/a/report.pdf' }
+    expect(mergeFiles([a], [{ ...a }])).toHaveLength(1)
+  })
+
   test('handles empty inputs on either side', () => {
     expect(mergeFiles([], [f('a', 1)])).toEqual([f('a', 1)])
     expect(mergeFiles([f('a', 1)], [])).toEqual([f('a', 1)])

@@ -149,7 +149,7 @@ function CheckGlyph() {
 // src/primitives/FileList.tsx
 import { Fragment, jsx as jsx4, jsxs as jsxs2 } from "react/jsx-runtime";
 function mergeFiles(existing, incoming) {
-  const key = (file) => `${file.name}:${file.size ?? ""}`;
+  const key = (file) => `${file.webkitRelativePath || file.name}:${file.size ?? ""}`;
   const seen = new Set(existing.map(key));
   const result = [...existing];
   for (const file of incoming) {
@@ -231,7 +231,7 @@ function FileList({ files, onRemove, onClear, labels, className }) {
           )
         ]
       },
-      `${file.name}:${file.size ?? ""}`
+      `${file.webkitRelativePath || file.name}:${file.size ?? ""}`
     )) })
   ] });
 }
