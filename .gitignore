@@ -5,3 +5,6 @@ node_modules
 
 # Demo (Vite) build output — keep ignored; the package's root dist/ is tracked intentionally
 demo/dist/
+
+# superpowers SDD scratch (ledger, briefs, review packages) — never committed
+.superpowers/
