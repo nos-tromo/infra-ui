@@ -1,7 +1,9 @@
 # Dimensional tokens: exporting the type/shape/spacing scale
 
 Date: 2026-07-31
-Status: approved, not yet implemented
+Status: **implemented** — infra-ui v0.8.0, edge-plane v0.4.0/v0.4.1, and all
+four SPAs re-pinned. See "Outcome" at the end for what changed during
+execution.
 
 ## Problem
 
@@ -119,7 +121,7 @@ Every dimensional literal becomes a `var()`. A comment block at the top of the
 
 | selector | now | token | px |
 |---|---|---|---|
-| `h1` | `1.4rem` | `--text-xl` | 22.4 → **20** |
+| `h1` | `1.4rem` | ~~`--text-xl`~~ → `--text-2xl` | 22.4 → ~~20~~ **24** (corrected post-review — see Outcome; `--text-xl` was the only row that broke the nearest-step rule) |
 | `.tile .app`, `dialog h2`, `dialog .close` | `1.1rem` | `--text-lg` | 17.6 → **18** |
 | `.tile p`, `dialog.tile-dialog`, `.sub` | `.85rem` | `--text-sm` | 13.6 → **14** |
 | `#pwform input`, `#pwform button` | `.9rem` | `--text-sm` | 14.4 → **14** |
@@ -165,6 +167,11 @@ dialog padding    1.25rem 1.4rem  ->  1.25rem 1.5rem
   is still correct — a bespoke `.15rem` is precisely the drift being removed.
 
 Largest single movement anywhere: `h1` at −2.4px. Nothing else exceeds 1.6px.
+
+> **Corrected post-review.** That sentence presented a *choice* as arithmetic.
+> −2.4px was not forced: `--text-2xl` (24px) is nearer to 22.4px than
+> `--text-xl` (20px) is, so following this design's own "nearest step" rule
+> gives +1.6px. `h1` now uses `--text-2xl`; every row moves by ≤1.6px.
 
 ## Section 3 — guard, verification, rollout
 
@@ -256,3 +263,55 @@ serial.
 | Portal literal creeps back later | New CI guard, including inline attributes |
 | chorus/translator two-release jump carries unrelated changes | Read `v0.7.0`/`v0.7.1` notes before merging those two |
 | Gateway unavailable when verifying PR 2 | Documented offline harness fallback |
+
+## Outcome
+
+Shipped as: infra-ui `v0.8.0` (#29); edge-plane `v0.4.0` (#20) and `v0.4.1`
+(#21); pin bumps in chorus #110, translator #90, docint #371, Nextext #122.
+
+The core claim held. "Declaring these tokens changes nothing for the SPAs" was
+verified by building each of the four frontends before and after and comparing
+CSS bundle hashes — identical in all four, including the two that jumped two
+releases. `src/dimensional-tokens.test.ts` now pins each value to Tailwind's
+own `theme.css`, so an upstream default change fails there rather than silently
+shifting the portal.
+
+### Where this document was wrong
+
+An independent review after the rollout found two things worth recording,
+because both were stated here with more confidence than they had earned.
+
+**`h1` did not follow the stated rule.** §2 commits to "snap to the nearest
+step", but `h1` (22.4px) was mapped to `--text-xl` (20px, Δ2.4) when
+`--text-2xl` (24px, Δ1.6) is nearer. It was the only one of nine type rows
+that deviated, and the deviation was not flagged. The summary line "largest
+single movement anywhere: h1 at −2.4px" compounded it by presenting a choice as
+arithmetic. Corrected to `--text-2xl` in edge-plane v0.4.2, which also restores
+heading-to-tile-title separation from 2px to 6px.
+
+**The guard was weaker than §3 specified.** This document called for
+`allows: var(--text-*), var(--radius-*), 50%, inherit/initial` — a *membership*
+rule over the exported names. The implementation checked *syntax* instead
+("does the value start with `var(`"), so `font-size: var(--text-md)` — a token
+that does not exist — passed CI while the element silently inherited its
+parent's size. The review also found the guard blind to the `font:` shorthand
+(already used twice in the file) and to every `border-*-radius` longhand. All
+fixed in v0.4.2 by enumerating the eight names.
+
+The lesson worth carrying: a guard added against already-clean files proves
+nothing about what it will catch. The red→green sequence used here was right,
+but "green" only ever demonstrated that *the literals we already knew about*
+were gone — not that the rule was the one the design asked for.
+
+### Still open
+
+- `--radius` and `--radius-lg` both hold `0.5rem`. Collapsing them needs a
+  decision on infra-ui's shape scale: the library declares one `--radius` while
+  its primitives use `rounded-md` (6×) against `rounded-[--radius]` (2×).
+- **Spacing has no ratchet.** The eight spacing snaps were a one-time cleanup.
+  Because `--spacing` is deliberately unexported and spacing is deliberately
+  unguarded, it can drift straight back at the first hand-edit — unlike
+  type/radius, which is now enforced.
+- The four SPAs' own internal type usage was never audited. This work made the
+  *portal* consistent and gave the federation an exportable scale; it did not
+  check whether the frontends use it consistently.
