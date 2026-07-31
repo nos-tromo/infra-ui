@@ -121,7 +121,7 @@ Every dimensional literal becomes a `var()`. A comment block at the top of the
 
 | selector | now | token | px |
 |---|---|---|---|
-| `h1` | `1.4rem` | `--text-xl` | 22.4 → **20** |
+| `h1` | `1.4rem` | ~~`--text-xl`~~ → `--text-2xl` | 22.4 → ~~20~~ **24** (corrected post-review — see Outcome; `--text-xl` was the only row that broke the nearest-step rule) |
 | `.tile .app`, `dialog h2`, `dialog .close` | `1.1rem` | `--text-lg` | 17.6 → **18** |
 | `.tile p`, `dialog.tile-dialog`, `.sub` | `.85rem` | `--text-sm` | 13.6 → **14** |
 | `#pwform input`, `#pwform button` | `.9rem` | `--text-sm` | 14.4 → **14** |
@@ -167,6 +167,11 @@ dialog padding    1.25rem 1.4rem  ->  1.25rem 1.5rem
   is still correct — a bespoke `.15rem` is precisely the drift being removed.
 
 Largest single movement anywhere: `h1` at −2.4px. Nothing else exceeds 1.6px.
+
+> **Corrected post-review.** That sentence presented a *choice* as arithmetic.
+> −2.4px was not forced: `--text-2xl` (24px) is nearer to 22.4px than
+> `--text-xl` (20px) is, so following this design's own "nearest step" rule
+> gives +1.6px. `h1` now uses `--text-2xl`; every row moves by ≤1.6px.
 
 ## Section 3 — guard, verification, rollout
 
