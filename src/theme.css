@@ -18,6 +18,24 @@
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
   --radius: 0.5rem;
+
+  /* Dimensional scale, declared at Tailwind's own default values. The point is
+     not to change the scale — it is to make it exportable: build-free
+     consumers (edge-plane's static portal) cannot reach Tailwind's defaults,
+     so without this they hand-type every size and radius. Because @theme
+     merges with the default theme rather than replacing it, re-declaring a
+     default is a no-op for the four Tailwind consumers.
+     src/dimensional-tokens.test.ts pins each value to upstream.
+     Intentionally absent: --text-*--line-height (would change rendering) and
+     --spacing (a multiplier base, not a value — nothing would read it). */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
 }
 
 :root {
