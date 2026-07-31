@@ -315,3 +315,29 @@ were gone — not that the rule was the one the design asked for.
 - The four SPAs' own internal type usage was never audited. This work made the
   *portal* consistent and gave the federation an exportable scale; it did not
   check whether the frontends use it consistently.
+
+### Known limitations of the guard (edge-plane v0.4.2)
+
+Two findings from the post-rollout review were deliberately not fixed. Both are
+real; neither was worth the change it would have required at the time.
+
+- **The guard matches line by line.** A compliant declaration whose value wraps
+  across two lines (`font-size:` on one, `var(--text-sm)` on the next) is
+  flagged, as is a literal appearing inside a CSS comment or in page prose.
+  None occur today. The first will bite whoever reformats the `<style>` block,
+  and the error will insist they use a token they already used. Fixing it means
+  matching across declarations rather than lines — a different strategy, not a
+  wider regex.
+- **`check-tokens-vendor.sh` scans the whole file for the pinned ref, not just
+  the header.** Verified exploitable in principle: strip the ref from the header
+  and append a line containing `tag v9.9.9` anywhere in the body, and the check
+  passes. Real-world risk is near zero — the body is machine-generated CSS with
+  no `tag vX.Y.Z` or `commit <hex>` strings, and hex colours don't match because
+  the literal `commit ` prefix is required. Scoping both greps to the leading
+  comment block would make the invariant structural rather than circumstantial.
+
+Worth stating plainly, since no offline check can close it: neither script can
+detect a **stale** pinned ref or a **hand-edited body**. A self-recorded body
+hash would be circular, and the airgap rule forbids fetching upstream in CI. The
+vendoring header is a claim the repo makes about itself, and its honesty rests
+on the re-vendor procedure being followed — not on the checks.
