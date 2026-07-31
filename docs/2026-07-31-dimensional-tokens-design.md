@@ -36,7 +36,7 @@ This design addresses 2 and 3, which is where the actual drift risk lives.
 |---|---|
 | What is the exported scale authoritative over? | **Faithful re-export** of Tailwind's defaults. Not a redesign — the goal is exportability, not new values. |
 | What happens to portal values between steps? | **Snap to the nearest step.** ~15 values move, all by ≤2.4px. |
-| Spacing? | **Snapped** to the `.25rem` grid, as plain rem values (no `calc()`). |
+| Spacing? | Portal values **snapped** to the `.25rem` grid, as plain rem values (no `calc()`). The `--spacing` token itself is **not** exported — it is a multiplier base, not a value, so nothing would read it. |
 | Drift guard? | **Yes** — CI check in edge-plane. |
 | Blast radius? | **Six PRs**: infra-ui, edge-plane, and re-pins for all four SPAs. |
 | Token reference style in the portal? | **Direct** `var(--text-sm)` in each rule, with a comment block recording which step each role uses. No portal-local alias layer. |
@@ -73,8 +73,9 @@ Add to `src/theme.css`'s `@theme` block:
 --text-2xl:  1.5rem;
 --radius-md: 0.375rem;
 --radius-lg: 0.5rem;
---spacing:   0.25rem;
 ```
+
+Eight tokens, not nine: `--spacing` is deliberately excluded — see below.
 
 Why this is visually free: Tailwind v4's `@theme` **merges** with the default
 theme rather than replacing it — replacing requires an explicit
@@ -93,12 +94,19 @@ Deliberate exclusions:
   the new `--radius-lg`. Shipping both is mild redundancy, accepted here
   because collapsing them requires deciding infra-ui's shape scale (see
   Deferred).
-- **`--spacing` has no consumer today.** The SPAs already get `0.25rem` from
-  Tailwind's defaults, and the portal's spacing is snapped to plain rem values
-  rather than `calc(var(--spacing) * n)` — so this declaration changes nothing
-  for anyone. It is included to record the grid in the exported artifact, which
-  is the only place a build-free consumer could read it. Drop it if that
-  rationale doesn't hold up; nothing else in this design depends on it.
+- **`--spacing` is excluded**, because it is a different kind of token from
+  the rest. `--text-*` and `--radius-*` are *values* and substitute directly in
+  hand-written CSS (`font-size: var(--text-sm)` → `0.875rem`). `--spacing` is a
+  *multiplier base*: Tailwind's `p-4` compiles to `calc(var(--spacing) * 4)`,
+  so using it in the portal would mean writing
+  `padding: calc(var(--spacing) * 4)` instead of `1rem`.
+
+  Section 2 snaps the portal's spacing to the grid as plain rem values, so the
+  portal lands *on* the grid without ever *reading* the token — and the SPAs
+  already get `0.25rem` from Tailwind regardless. Exporting it would therefore
+  add a token no consumer reads, which later invites the reading "the system
+  defines this, so it must matter". Every other exported token is read by the
+  portal; this one would not be.
 
 Version: `0.7.1` → **`0.8.0`** (additive, non-breaking).
 
