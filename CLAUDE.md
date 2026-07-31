@@ -75,6 +75,24 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   committed file drifts from the source. Changing a token value only ever
   means editing `src/theme.css` and rebuilding — never touching
   `dist/tokens.css` directly.
+- **The dimensional tokens are pinned to Tailwind's defaults — they are not a
+  design choice.** `@theme` declares eight of them (`--text-xs`, `--text-sm`,
+  `--text-base`, `--text-lg`, `--text-xl`, `--text-2xl`, `--radius-md`,
+  `--radius-lg`) at exactly the values Tailwind already uses. The point is not
+  to set a scale but to *export* one: build-free consumers can't reach
+  Tailwind's defaults, so without these they hand-type every size and radius.
+  Because `@theme` merges with the default theme rather than replacing it,
+  re-declaring a default emits nothing new for the four Tailwind consumers —
+  which is what makes changing one dangerous. Editing a value here silently
+  restyles every SPA. `src/dimensional-tokens.test.ts` pins each to
+  `node_modules/tailwindcss/theme.css` and fails if they diverge, including
+  after a Tailwind upgrade that changes a default upstream.
+
+  Deliberately absent, and worth leaving absent: `--text-*--line-height`
+  (Tailwind keys these separately, so declaring them would change rendering)
+  and `--spacing` (a multiplier base — `p-4` compiles to
+  `calc(var(--spacing) * 4)` — so no hand-written rule would read it).
+  Background: `docs/2026-07-31-dimensional-tokens-design.md`.
 
 ## Releasing
 
