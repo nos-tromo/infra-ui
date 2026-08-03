@@ -31,6 +31,23 @@ test('theme toggle cycles and reflects the mode in its accessible name', () => {
   expect(document.documentElement.dataset.theme).toBe('light')
 })
 
+test('theme toggle draws its icon as an inline SVG, one per mode', () => {
+  render(<AppHeader title="docint" />)
+  const btn = screen.getByRole('button', { name: /system/i })
+  const iconOf = () => {
+    const svg = btn.querySelector('svg')
+    expect(svg).not.toBeNull()
+    expect(svg).toHaveAttribute('aria-hidden', 'true')
+    return svg!.innerHTML
+  }
+  const system = iconOf()
+  fireEvent.click(btn) // -> light
+  const light = iconOf()
+  fireEvent.click(btn) // -> dark
+  const dark = iconOf()
+  expect(new Set([system, light, dark]).size).toBe(3)
+})
+
 test('honors homeHref, homeLabel, and themeLabels overrides', () => {
   render(
     <AppHeader
