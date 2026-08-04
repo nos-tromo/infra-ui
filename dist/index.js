@@ -349,7 +349,7 @@ function Banner({ className, variant, ...props }) {
 // src/primitives/PageHeader.tsx
 import { jsx as jsx11, jsxs as jsxs4 } from "react/jsx-runtime";
 function PageHeader({ title, caption, actions, className, ...props }) {
-  return /* @__PURE__ */ jsxs4("header", { className: cn("mb-6", className), ...props, children: [
+  return /* @__PURE__ */ jsxs4("div", { className: cn("mb-6", className), ...props, children: [
     /* @__PURE__ */ jsxs4("div", { className: "flex items-center gap-3", children: [
       /* @__PURE__ */ jsx11("h1", { className: "text-2xl font-semibold", children: title }),
       actions && /* @__PURE__ */ jsx11("div", { className: "ml-auto flex items-center gap-2", children: actions })
