@@ -1,7 +1,7 @@
 import { forwardRef, type HTMLAttributes, type ReactNode } from 'react'
 import { cn } from '../cn'
 
-export interface CardProps extends HTMLAttributes<HTMLDivElement> {
+export interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   /** Optional tile heading, rendered accent-colored above the body. */
   title?: ReactNode
   /** Interactive tiles signal affordance with a hover-accent border. */
