@@ -12,7 +12,7 @@ export interface PageHeaderProps extends HTMLAttributes<HTMLElement> {
 
 export function PageHeader({ title, caption, actions, className, ...props }: PageHeaderProps) {
   return (
-    <header className={cn('mb-6', className)} {...props}>
+    <div className={cn('mb-6', className)} {...props}>
       <div className="flex items-center gap-3">
         <h1 className="text-2xl font-semibold">{title}</h1>
         {actions && <div className="ml-auto flex items-center gap-2">{actions}</div>}
@@ -22,6 +22,6 @@ export function PageHeader({ title, caption, actions, className, ...props }: Pag
           {caption}
         </p>
       )}
-    </header>
+    </div>
   )
 }
