@@ -20,6 +20,12 @@ export { AppHeader, type AppHeaderProps } from './primitives/AppHeader'
 export { UserMenu, type UserMenuProps } from './primitives/UserMenu'
 export { Shell, type ShellProps } from './layout/Shell'
 export {
+  AppShell,
+  SidebarGroup,
+  SIDEBAR_STORAGE_KEY,
+  type AppShellProps,
+} from './layout/AppShell'
+export {
   ForceGraph,
   type ForceGraphNode,
   type ForceGraphEdge,
