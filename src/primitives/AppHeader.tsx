@@ -38,7 +38,7 @@ export function AppHeader({
       <div className="flex items-baseline gap-3">
         <a
           href={homeHref}
-          className="inline-flex items-center gap-1.5 rounded-[--radius] px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+          className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <span aria-hidden>←</span>
           {homeLabel}

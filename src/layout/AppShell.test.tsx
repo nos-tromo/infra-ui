@@ -48,6 +48,17 @@ test('sidebar renders with a working collapse toggle that persists', () => {
   expect(localStorage.getItem(SIDEBAR_STORAGE_KEY)).toBe('1')
 })
 
+test('canvas corner treatment persists after sidebar collapse (driven by the sidebar prop, not visibility)', () => {
+  render(
+    <AppShell title="t" sidebar={<nav>side-nav</nav>}>
+      x
+    </AppShell>,
+  )
+  fireEvent.click(screen.getByRole('button', { name: /toggle sidebar/i }))
+  expect(screen.queryByText('side-nav')).not.toBeInTheDocument()
+  expect(screen.getByRole('main')).toHaveClass('rounded-tl-lg', 'border-l')
+})
+
 test('no sidebar toggle for header-only apps', () => {
   render(<AppShell title="t">x</AppShell>)
   expect(screen.queryByRole('button', { name: /toggle sidebar/i })).not.toBeInTheDocument()

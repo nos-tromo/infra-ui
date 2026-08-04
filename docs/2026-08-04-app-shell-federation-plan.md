@@ -563,7 +563,7 @@ export function SidebarGroup(props: {
 export const SIDEBAR_STORAGE_KEY = 'infra-ui-sidebar'
 ```
 
-  Structure: chrome root (`min-h-screen flex flex-col bg-chrome
+  Structure: chrome root (`h-screen flex flex-col bg-chrome
   text-foreground`), header row (`h-12 flex items-center gap-3 px-4`,
   no bottom border — chrome is one L-frame), body (`flex flex-1 min-h-0`),
   sidebar `w-72 shrink-0 overflow-y-auto p-4 flex flex-col gap-4`,
@@ -706,7 +706,7 @@ export function AppShell({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-chrome text-foreground">
+    <div className="flex h-screen flex-col bg-chrome text-foreground">
       <header className="flex h-12 items-center gap-3 px-4">
         {sidebar && (
           <button

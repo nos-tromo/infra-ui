@@ -56,7 +56,7 @@ export function ThemeToggle({
       onClick={cycle}
       aria-label={`Theme: ${labels[mode]}`}
       title={`Theme: ${labels[mode]}`}
-      className="inline-flex h-8 w-8 items-center justify-center rounded-[--radius] text-muted-foreground hover:bg-muted hover:text-foreground"
+      className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
     >
       {MODE_ICON[mode]}
     </button>

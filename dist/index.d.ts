@@ -160,6 +160,12 @@ interface AppHeaderProps extends HTMLAttributes<HTMLElement> {
 }
 declare function AppHeader({ title, user, version, homeHref, homeLabel, themeLabels, className, ...props }: AppHeaderProps): react.JSX.Element;
 
+interface ThemeToggleLabels {
+    system: string;
+    light: string;
+    dark: string;
+}
+
 interface UserMenuProps {
     /** Signed-in user name (from the trusted X-Auth-User header). */
     user: string;
@@ -170,12 +176,6 @@ interface UserMenuProps {
     menuLabel?: string;
 }
 declare function UserMenu({ user, signOutHref, signOutLabel, menuLabel, }: UserMenuProps): react.JSX.Element;
-
-interface ThemeToggleLabels {
-    system: string;
-    light: string;
-    dark: string;
-}
 
 declare const SIDEBAR_STORAGE_KEY = "infra-ui-sidebar";
 interface AppShellProps {
@@ -396,4 +396,4 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, Input, PageHeader, type PageHeaderProps, SIDEBAR_STORAGE_KEY, Select, SidebarGroup, Spinner, type SpinnerProps, THEME_STORAGE_KEY, type ThemeMode, UserMenu, type UserMenuProps, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, Input, PageHeader, type PageHeaderProps, SIDEBAR_STORAGE_KEY, Select, SidebarGroup, Spinner, type SpinnerProps, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, UserMenu, type UserMenuProps, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };

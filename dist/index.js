@@ -482,7 +482,7 @@ function ThemeToggle({
       onClick: cycle,
       "aria-label": `Theme: ${labels[mode2]}`,
       title: `Theme: ${labels[mode2]}`,
-      className: "inline-flex h-8 w-8 items-center justify-center rounded-[--radius] text-muted-foreground hover:bg-muted hover:text-foreground",
+      className: "inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground",
       children: MODE_ICON[mode2]
     }
   );
@@ -514,7 +514,7 @@ function AppHeader({
             "a",
             {
               href: homeHref,
-              className: "inline-flex items-center gap-1.5 rounded-[--radius] px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
+              className: "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
               children: [
                 /* @__PURE__ */ jsx13("span", { "aria-hidden": true, children: "\u2190" }),
                 homeLabel
@@ -633,7 +633,7 @@ function AppShell({
       return next;
     });
   };
-  return /* @__PURE__ */ jsxs8("div", { className: "flex min-h-screen flex-col bg-chrome text-foreground", children: [
+  return /* @__PURE__ */ jsxs8("div", { className: "flex h-screen flex-col bg-chrome text-foreground", children: [
     /* @__PURE__ */ jsxs8("header", { className: "flex h-12 items-center gap-3 px-4", children: [
       sidebar && /* @__PURE__ */ jsx15(
         "button",

@@ -17,6 +17,7 @@ export { Spinner, type SpinnerProps } from './primitives/Spinner'
 export { Banner, type BannerProps } from './primitives/Banner'
 export { PageHeader, type PageHeaderProps } from './primitives/PageHeader'
 export { AppHeader, type AppHeaderProps } from './primitives/AppHeader'
+export { type ThemeToggleLabels } from './primitives/ThemeToggle'
 export { UserMenu, type UserMenuProps } from './primitives/UserMenu'
 export {
   AppShell,

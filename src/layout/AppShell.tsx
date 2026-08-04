@@ -59,7 +59,7 @@ export function AppShell({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-chrome text-foreground">
+    <div className="flex h-screen flex-col bg-chrome text-foreground">
       <header className="flex h-12 items-center gap-3 px-4">
         {sidebar && (
           <button
