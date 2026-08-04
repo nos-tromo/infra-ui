@@ -239,14 +239,22 @@ FileList.displayName = "FileList";
 
 // src/primitives/Card.tsx
 import { forwardRef as forwardRef4 } from "react";
-import { jsx as jsx5 } from "react/jsx-runtime";
+import { jsx as jsx5, jsxs as jsxs3 } from "react/jsx-runtime";
 var Card = forwardRef4(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx5(
+  ({ className, title, interactive, children, ...props }, ref) => /* @__PURE__ */ jsxs3(
     "div",
     {
       ref,
-      className: cn("rounded-lg border border-border bg-muted/30 p-4", className),
-      ...props
+      className: cn(
+        "rounded-lg border border-border bg-muted p-4",
+        interactive && "transition-colors hover:border-primary",
+        className
+      ),
+      ...props,
+      children: [
+        title != null && /* @__PURE__ */ jsx5("div", { className: "text-lg font-semibold text-primary", children: title }),
+        children
+      ]
     }
   )
 );
@@ -338,6 +346,18 @@ function Banner({ className, variant, ...props }) {
   return /* @__PURE__ */ jsx10("div", { role, className: cn(banner({ variant }), className), ...props });
 }
 
+// src/primitives/PageHeader.tsx
+import { jsx as jsx11, jsxs as jsxs4 } from "react/jsx-runtime";
+function PageHeader({ title, caption, actions, className, ...props }) {
+  return /* @__PURE__ */ jsxs4("header", { className: cn("mb-6", className), ...props, children: [
+    /* @__PURE__ */ jsxs4("div", { className: "flex items-center gap-3", children: [
+      /* @__PURE__ */ jsx11("h1", { className: "text-2xl font-semibold", children: title }),
+      actions && /* @__PURE__ */ jsx11("div", { className: "ml-auto flex items-center gap-2", children: actions })
+    ] }),
+    caption && /* @__PURE__ */ jsx11("p", { "data-testid": "pageheader-caption", className: "mt-1 text-sm text-muted-foreground", children: caption })
+  ] });
+}
+
 // src/theme/useTheme.ts
 import { useSyncExternalStore, useCallback } from "react";
 var THEME_STORAGE_KEY = "infra-ui-theme";
@@ -418,21 +438,21 @@ function useTheme() {
   return { mode: snapshot.mode, resolved, cycle };
 }
 
-// src/primitives/AppHeader.tsx
-import { jsx as jsx11, jsxs as jsxs3 } from "react/jsx-runtime";
+// src/primitives/ThemeToggle.tsx
+import { jsx as jsx12, jsxs as jsxs5 } from "react/jsx-runtime";
 var ICON_PROPS = {
   viewBox: "0 0 16 16",
   className: "h-4 w-4",
   "aria-hidden": true
 };
 var MODE_ICON = {
-  system: /* @__PURE__ */ jsxs3("svg", { ...ICON_PROPS, children: [
-    /* @__PURE__ */ jsx11("circle", { cx: "8", cy: "8", r: "6.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
-    /* @__PURE__ */ jsx11("path", { d: "M8 1.75a6.25 6.25 0 0 0 0 12.5Z", fill: "currentColor" })
+  system: /* @__PURE__ */ jsxs5("svg", { ...ICON_PROPS, children: [
+    /* @__PURE__ */ jsx12("circle", { cx: "8", cy: "8", r: "6.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
+    /* @__PURE__ */ jsx12("path", { d: "M8 1.75a6.25 6.25 0 0 0 0 12.5Z", fill: "currentColor" })
   ] }),
-  light: /* @__PURE__ */ jsxs3("svg", { ...ICON_PROPS, children: [
-    /* @__PURE__ */ jsx11("circle", { cx: "8", cy: "8", r: "3.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
-    /* @__PURE__ */ jsx11(
+  light: /* @__PURE__ */ jsxs5("svg", { ...ICON_PROPS, children: [
+    /* @__PURE__ */ jsx12("circle", { cx: "8", cy: "8", r: "3.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
+    /* @__PURE__ */ jsx12(
       "path",
       {
         d: "M8 .75v2.5M8 12.75v2.5M.75 8h2.5M12.75 8h2.5M2.87 2.87l1.77 1.77M11.36 11.36l1.77 1.77M13.13 2.87l-1.77 1.77M4.64 11.36l-1.77 1.77",
@@ -443,7 +463,7 @@ var MODE_ICON = {
       }
     )
   ] }),
-  dark: /* @__PURE__ */ jsx11("svg", { ...ICON_PROPS, children: /* @__PURE__ */ jsx11(
+  dark: /* @__PURE__ */ jsx12("svg", { ...ICON_PROPS, children: /* @__PURE__ */ jsx12(
     "path",
     {
       d: "M13.54 9.83A6.25 6.25 0 1 1 6.17 2.46a5 5 0 0 0 7.37 7.37Z",
@@ -451,6 +471,25 @@ var MODE_ICON = {
     }
   ) })
 };
+function ThemeToggle({
+  labels = { system: "system", light: "light", dark: "dark" }
+}) {
+  const { mode: mode2, cycle } = useTheme();
+  return /* @__PURE__ */ jsx12(
+    "button",
+    {
+      type: "button",
+      onClick: cycle,
+      "aria-label": `Theme: ${labels[mode2]}`,
+      title: `Theme: ${labels[mode2]}`,
+      className: "inline-flex h-8 w-8 items-center justify-center rounded-[--radius] text-muted-foreground hover:bg-muted hover:text-foreground",
+      children: MODE_ICON[mode2]
+    }
+  );
+}
+
+// src/primitives/AppHeader.tsx
+import { jsx as jsx13, jsxs as jsxs6 } from "react/jsx-runtime";
 function AppHeader({
   title,
   user,
@@ -461,8 +500,7 @@ function AppHeader({
   className,
   ...props
 }) {
-  const { mode: mode2, cycle } = useTheme();
-  return /* @__PURE__ */ jsxs3(
+  return /* @__PURE__ */ jsxs6(
     "header",
     {
       className: cn(
@@ -471,53 +509,184 @@ function AppHeader({
       ),
       ...props,
       children: [
-        /* @__PURE__ */ jsxs3("div", { className: "flex items-baseline gap-3", children: [
-          /* @__PURE__ */ jsxs3(
+        /* @__PURE__ */ jsxs6("div", { className: "flex items-baseline gap-3", children: [
+          /* @__PURE__ */ jsxs6(
             "a",
             {
               href: homeHref,
               className: "inline-flex items-center gap-1.5 rounded-[--radius] px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
               children: [
-                /* @__PURE__ */ jsx11("span", { "aria-hidden": true, children: "\u2190" }),
+                /* @__PURE__ */ jsx13("span", { "aria-hidden": true, children: "\u2190" }),
                 homeLabel
               ]
             }
           ),
-          /* @__PURE__ */ jsx11("span", { className: "text-sm font-semibold", children: title }),
-          version && /* @__PURE__ */ jsx11("span", { "data-testid": "appheader-version", className: "text-xs text-muted-foreground", children: version })
+          /* @__PURE__ */ jsx13("span", { className: "text-sm font-semibold", children: title }),
+          version && /* @__PURE__ */ jsx13("span", { "data-testid": "appheader-version", className: "text-xs text-muted-foreground", children: version })
         ] }),
-        /* @__PURE__ */ jsx11("span", { className: "flex-1" }),
-        user && /* @__PURE__ */ jsx11("span", { "data-testid": "appheader-user", className: "text-sm text-muted-foreground", children: user }),
-        /* @__PURE__ */ jsx11(
-          "button",
-          {
-            type: "button",
-            onClick: cycle,
-            "aria-label": `Theme: ${themeLabels[mode2]}`,
-            title: `Theme: ${themeLabels[mode2]}`,
-            className: "inline-flex h-8 w-8 items-center justify-center rounded-[--radius] text-muted-foreground hover:bg-muted hover:text-foreground",
-            children: MODE_ICON[mode2]
-          }
-        )
+        /* @__PURE__ */ jsx13("span", { className: "flex-1" }),
+        user && /* @__PURE__ */ jsx13("span", { "data-testid": "appheader-user", className: "text-sm text-muted-foreground", children: user }),
+        /* @__PURE__ */ jsx13(ThemeToggle, { labels: themeLabels })
       ]
     }
   );
 }
 
-// src/layout/Shell.tsx
-import { jsx as jsx12, jsxs as jsxs4 } from "react/jsx-runtime";
-function Shell({ title, actions, children, className }) {
-  return /* @__PURE__ */ jsxs4("div", { className: cn("min-h-full", className), children: [
-    /* @__PURE__ */ jsxs4("header", { className: "sticky top-0 z-20 flex items-center justify-between gap-4 border-b border-border bg-background px-6 py-4", children: [
-      /* @__PURE__ */ jsx12("h1", { className: "text-lg font-semibold", children: title }),
-      actions
+// src/primitives/UserMenu.tsx
+import { useEffect as useEffect2, useRef as useRef2, useState as useState2 } from "react";
+import { jsx as jsx14, jsxs as jsxs7 } from "react/jsx-runtime";
+function UserMenu({
+  user,
+  signOutHref = "/auth/logout",
+  signOutLabel = "Sign out",
+  menuLabel = "Account"
+}) {
+  const [open, setOpen] = useState2(false);
+  const rootRef = useRef2(null);
+  useEffect2(() => {
+    if (!open) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const onDown = (e) => {
+      if (rootRef.current && !rootRef.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onDown);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onDown);
+    };
+  }, [open]);
+  return /* @__PURE__ */ jsxs7("div", { ref: rootRef, className: "relative", children: [
+    /* @__PURE__ */ jsxs7(
+      "button",
+      {
+        type: "button",
+        "aria-haspopup": "menu",
+        "aria-expanded": open,
+        "aria-label": `${menuLabel}: ${user}`,
+        onClick: () => setOpen((v) => !v),
+        className: cn(
+          "inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-3 text-sm",
+          "hover:border-primary hover:text-foreground",
+          open ? "text-foreground" : "text-muted-foreground"
+        ),
+        children: [
+          user,
+          /* @__PURE__ */ jsx14("span", { "aria-hidden": true, className: "text-xs", children: "\u25BE" })
+        ]
+      }
+    ),
+    open && /* @__PURE__ */ jsx14(
+      "div",
+      {
+        role: "menu",
+        className: "absolute right-0 top-full z-30 mt-1 min-w-40 rounded-lg border border-border bg-muted p-1",
+        children: /* @__PURE__ */ jsx14(
+          "a",
+          {
+            role: "menuitem",
+            href: signOutHref,
+            className: "block rounded-md px-3 py-1.5 text-sm text-foreground hover:bg-accent",
+            children: signOutLabel
+          }
+        )
+      }
+    )
+  ] });
+}
+
+// src/layout/AppShell.tsx
+import { useState as useState3 } from "react";
+import { jsx as jsx15, jsxs as jsxs8 } from "react/jsx-runtime";
+var SIDEBAR_STORAGE_KEY = "infra-ui-sidebar";
+function readCollapsed() {
+  try {
+    return localStorage.getItem(SIDEBAR_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+function AppShell({
+  title,
+  version,
+  user,
+  homeHref = "/",
+  homeLabel = "Apps",
+  themeLabels,
+  signOutHref,
+  signOutLabel,
+  sidebar,
+  sidebarToggleLabel = "Toggle sidebar",
+  children
+}) {
+  const [collapsed, setCollapsed] = useState3(readCollapsed);
+  const toggleSidebar = () => {
+    setCollapsed((v) => {
+      const next = !v;
+      try {
+        if (next) localStorage.setItem(SIDEBAR_STORAGE_KEY, "1");
+        else localStorage.removeItem(SIDEBAR_STORAGE_KEY);
+      } catch {
+      }
+      return next;
+    });
+  };
+  return /* @__PURE__ */ jsxs8("div", { className: "flex min-h-screen flex-col bg-chrome text-foreground", children: [
+    /* @__PURE__ */ jsxs8("header", { className: "flex h-12 items-center gap-3 px-4", children: [
+      sidebar && /* @__PURE__ */ jsx15(
+        "button",
+        {
+          type: "button",
+          "aria-label": sidebarToggleLabel,
+          "aria-expanded": !collapsed,
+          onClick: toggleSidebar,
+          className: "inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground",
+          children: /* @__PURE__ */ jsx15("span", { "aria-hidden": true, children: "\u2630" })
+        }
+      ),
+      /* @__PURE__ */ jsxs8(
+        "a",
+        {
+          href: homeHref,
+          className: "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
+          children: [
+            /* @__PURE__ */ jsx15("span", { "aria-hidden": true, children: "\u2190" }),
+            homeLabel
+          ]
+        }
+      ),
+      /* @__PURE__ */ jsx15("span", { className: "text-sm font-semibold", children: title }),
+      version && /* @__PURE__ */ jsx15("span", { className: "text-xs text-muted-foreground", children: version }),
+      /* @__PURE__ */ jsx15("span", { className: "flex-1" }),
+      /* @__PURE__ */ jsx15(ThemeToggle, { labels: themeLabels }),
+      user && /* @__PURE__ */ jsx15(UserMenu, { user, signOutHref, signOutLabel })
     ] }),
-    /* @__PURE__ */ jsx12("main", { className: "mx-auto max-w-5xl px-6 py-8", children })
+    /* @__PURE__ */ jsxs8("div", { className: "flex min-h-0 flex-1", children: [
+      sidebar && !collapsed && /* @__PURE__ */ jsx15("aside", { className: "flex w-72 shrink-0 flex-col gap-4 overflow-y-auto p-4", children: sidebar }),
+      /* @__PURE__ */ jsx15(
+        "main",
+        {
+          className: cn(
+            "min-w-0 flex-1 overflow-auto border-t border-border bg-background",
+            sidebar && "rounded-tl-lg border-l"
+          ),
+          children
+        }
+      )
+    ] })
+  ] });
+}
+function SidebarGroup({ label, children }) {
+  return /* @__PURE__ */ jsxs8("div", { className: "flex flex-col gap-1", children: [
+    label && /* @__PURE__ */ jsx15("div", { className: "px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground", children: label }),
+    children
   ] });
 }
 
 // src/graph/ForceGraph.tsx
-import { useCallback as useCallback2, useEffect as useEffect2, useImperativeHandle, useMemo, useRef as useRef2, useState as useState2 } from "react";
+import { useCallback as useCallback2, useEffect as useEffect3, useImperativeHandle, useMemo, useRef as useRef3, useState as useState4 } from "react";
 
 // src/graph/forceSimulation.ts
 var DEFAULTS = {
@@ -715,7 +884,7 @@ function seedPositions(nodes, edges, previous, centerX, centerY) {
 }
 
 // src/graph/ForceGraph.tsx
-import { jsx as jsx13, jsxs as jsxs5 } from "react/jsx-runtime";
+import { jsx as jsx16, jsxs as jsxs9 } from "react/jsx-runtime";
 var WIDTH = 960;
 var HEIGHT = 620;
 var CENTER_X = WIDTH / 2;
@@ -743,7 +912,7 @@ function radiusForSize(size) {
   return Math.min(34, 7 + Math.sqrt(Math.max(1, size ?? 1)) * 2.4);
 }
 function ExpandIcon() {
-  return /* @__PURE__ */ jsxs5(
+  return /* @__PURE__ */ jsxs9(
     "svg",
     {
       width: "16",
@@ -756,16 +925,16 @@ function ExpandIcon() {
       strokeLinejoin: "round",
       "aria-hidden": "true",
       children: [
-        /* @__PURE__ */ jsx13("polyline", { points: "15 3 21 3 21 9" }),
-        /* @__PURE__ */ jsx13("polyline", { points: "9 21 3 21 3 15" }),
-        /* @__PURE__ */ jsx13("path", { d: "M 21 3 L 14 10" }),
-        /* @__PURE__ */ jsx13("path", { d: "M 3 21 L 10 14" })
+        /* @__PURE__ */ jsx16("polyline", { points: "15 3 21 3 21 9" }),
+        /* @__PURE__ */ jsx16("polyline", { points: "9 21 3 21 3 15" }),
+        /* @__PURE__ */ jsx16("path", { d: "M 21 3 L 14 10" }),
+        /* @__PURE__ */ jsx16("path", { d: "M 3 21 L 10 14" })
       ]
     }
   );
 }
 function CollapseIcon() {
-  return /* @__PURE__ */ jsxs5(
+  return /* @__PURE__ */ jsxs9(
     "svg",
     {
       width: "16",
@@ -778,10 +947,10 @@ function CollapseIcon() {
       strokeLinejoin: "round",
       "aria-hidden": "true",
       children: [
-        /* @__PURE__ */ jsx13("polyline", { points: "4 14 10 14 10 20" }),
-        /* @__PURE__ */ jsx13("polyline", { points: "20 10 14 10 14 4" }),
-        /* @__PURE__ */ jsx13("path", { d: "M 14 10 L 21 3" }),
-        /* @__PURE__ */ jsx13("path", { d: "M 3 21 L 10 14" })
+        /* @__PURE__ */ jsx16("polyline", { points: "4 14 10 14 10 20" }),
+        /* @__PURE__ */ jsx16("polyline", { points: "20 10 14 10 14 4" }),
+        /* @__PURE__ */ jsx16("path", { d: "M 14 10 L 21 3" }),
+        /* @__PURE__ */ jsx16("path", { d: "M 3 21 L 10 14" })
       ]
     }
   );
@@ -809,10 +978,10 @@ function ForceGraph({
   const selectedIdsArr = selectedIds ?? [];
   const selectedSet = useMemo(() => new Set(selectedIdsArr), [selectedIdsArr]);
   const actionsActive = !!(expandActions && expandActions.length > 0 && onExpandAction);
-  const svgRef = useRef2(null);
-  const [minDegree, setMinDegree] = useState2(0);
-  const [spread, setSpread] = useState2(1);
-  const [isMaximized, setIsMaximized] = useState2(false);
+  const svgRef = useRef3(null);
+  const [minDegree, setMinDegree] = useState4(0);
+  const [spread, setSpread] = useState4(1);
+  const [isMaximized, setIsMaximized] = useState4(false);
   const degreeById = useMemo(() => {
     const deg = /* @__PURE__ */ new Map();
     for (const e of edges) {
@@ -826,7 +995,7 @@ function ForceGraph({
     for (const n of nodes) m = Math.max(m, degreeById.get(n.id) ?? 0);
     return m;
   }, [nodes, degreeById]);
-  useEffect2(() => {
+  useEffect3(() => {
     setMinDegree((d) => Math.min(d, maxDegree));
   }, [maxDegree]);
   const visibleNodes = useMemo(
@@ -838,7 +1007,7 @@ function ForceGraph({
     const ids = new Set(visibleNodes.map((n) => n.id));
     return edges.filter((e) => ids.has(e.source) && ids.has(e.target));
   }, [edges, visibleNodes, minDegree]);
-  const positionsRef = useRef2(/* @__PURE__ */ new Map());
+  const positionsRef = useRef3(/* @__PURE__ */ new Map());
   const sim = useMemo(() => {
     const seeds = seedPositions(visibleNodes, visibleEdges, positionsRef.current, CENTER_X, CENTER_Y);
     const simNodes = visibleNodes.map((n) => {
@@ -852,17 +1021,17 @@ function ForceGraph({
     }));
     return createForceSimulation(simNodes, simLinks, { centerX: CENTER_X, centerY: CENTER_Y });
   }, [visibleNodes, visibleEdges]);
-  const [, setFrame] = useState2(0);
-  const [view, setView] = useState2({ x: 0, y: 0, k: 1 });
-  const draggingNodeRef = useRef2(null);
-  const dragStartRef = useRef2(null);
-  const movedRef = useRef2(false);
-  const panRef = useRef2(null);
-  const panMovedRef = useRef2(false);
-  const marqueeRef = useRef2(null);
-  const [marqueeRect, setMarqueeRect] = useState2(null);
-  const rafRef = useRef2(0);
-  const runningRef = useRef2(false);
+  const [, setFrame] = useState4(0);
+  const [view, setView] = useState4({ x: 0, y: 0, k: 1 });
+  const draggingNodeRef = useRef3(null);
+  const dragStartRef = useRef3(null);
+  const movedRef = useRef3(false);
+  const panRef = useRef3(null);
+  const panMovedRef = useRef3(false);
+  const marqueeRef = useRef3(null);
+  const [marqueeRect, setMarqueeRect] = useState4(null);
+  const rafRef = useRef3(0);
+  const runningRef = useRef3(false);
   const runLoop = useCallback2(() => {
     if (typeof requestAnimationFrame !== "function" || runningRef.current) return;
     runningRef.current = true;
@@ -879,7 +1048,7 @@ function ForceGraph({
     };
     rafRef.current = requestAnimationFrame(step);
   }, [sim]);
-  useEffect2(() => {
+  useEffect3(() => {
     runLoop();
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
@@ -897,7 +1066,7 @@ function ForceGraph({
     }),
     [sim]
   );
-  useEffect2(() => {
+  useEffect3(() => {
     sim.setOptions({
       linkDistance: BASE_LINK_DISTANCE * spread,
       repulsion: BASE_REPULSION * spread
@@ -905,7 +1074,7 @@ function ForceGraph({
     sim.reheat();
     runLoop();
   }, [sim, spread, runLoop]);
-  useEffect2(() => {
+  useEffect3(() => {
     if (!isMaximized) return;
     const onKeyDown = (e) => {
       if (e.key === "Escape") setIsMaximized(false);
@@ -918,7 +1087,7 @@ function ForceGraph({
       document.body.style.overflow = prevOverflow;
     };
   }, [isMaximized]);
-  useEffect2(() => {
+  useEffect3(() => {
     if (selectedIdsArr.length === 0 || !onDeleteNodes) return;
     const onKeyDown = (e) => {
       if (e.key !== "Backspace" && e.key !== "Delete") return;
@@ -933,7 +1102,7 @@ function ForceGraph({
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [selectedIdsArr, onDeleteNodes]);
-  useEffect2(() => {
+  useEffect3(() => {
     if (nodes.length === 0) setIsMaximized(false);
   }, [nodes.length]);
   const screenToLayout = useCallback2(
@@ -1168,7 +1337,7 @@ function ForceGraph({
     return set;
   }, [visibleEdges, selectedSet]);
   const transform = `translate(${view.x} ${view.y}) scale(${view.k})`;
-  return /* @__PURE__ */ jsxs5(
+  return /* @__PURE__ */ jsxs9(
     "div",
     {
       "data-maximized": isMaximized,
@@ -1178,12 +1347,12 @@ function ForceGraph({
         className
       ),
       children: [
-        /* @__PURE__ */ jsxs5("div", { className: "space-y-2", children: [
-          statusText && /* @__PURE__ */ jsx13("p", { className: "text-sm text-muted-foreground", children: statusText }),
-          /* @__PURE__ */ jsxs5("div", { className: "flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-2", children: [
-            /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Minimum edges per node", children: [
-              /* @__PURE__ */ jsx13("span", { className: "text-xs text-muted-foreground", children: L.minEdges }),
-              /* @__PURE__ */ jsx13(
+        /* @__PURE__ */ jsxs9("div", { className: "space-y-2", children: [
+          statusText && /* @__PURE__ */ jsx16("p", { className: "text-sm text-muted-foreground", children: statusText }),
+          /* @__PURE__ */ jsxs9("div", { className: "flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-2", children: [
+            /* @__PURE__ */ jsxs9("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Minimum edges per node", children: [
+              /* @__PURE__ */ jsx16("span", { className: "text-xs text-muted-foreground", children: L.minEdges }),
+              /* @__PURE__ */ jsx16(
                 "button",
                 {
                   type: "button",
@@ -1194,8 +1363,8 @@ function ForceGraph({
                   children: "\u2212"
                 }
               ),
-              /* @__PURE__ */ jsx13("span", { "aria-live": "polite", className: "w-5 text-center text-xs tabular-nums", children: minDegree }),
-              /* @__PURE__ */ jsx13(
+              /* @__PURE__ */ jsx16("span", { "aria-live": "polite", className: "w-5 text-center text-xs tabular-nums", children: minDegree }),
+              /* @__PURE__ */ jsx16(
                 "button",
                 {
                   type: "button",
@@ -1207,10 +1376,10 @@ function ForceGraph({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx13("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
-            /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-2", children: [
-              /* @__PURE__ */ jsx13("span", { className: "text-xs text-muted-foreground", children: L.edgeLength }),
-              /* @__PURE__ */ jsx13(
+            /* @__PURE__ */ jsx16("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
+            /* @__PURE__ */ jsxs9("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsx16("span", { className: "text-xs text-muted-foreground", children: L.edgeLength }),
+              /* @__PURE__ */ jsx16(
                 "input",
                 {
                   type: "range",
@@ -1225,10 +1394,10 @@ function ForceGraph({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx13("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
-            /* @__PURE__ */ jsxs5("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Zoom", children: [
-              /* @__PURE__ */ jsx13("span", { className: "text-xs text-muted-foreground", children: L.zoom }),
-              /* @__PURE__ */ jsx13(
+            /* @__PURE__ */ jsx16("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
+            /* @__PURE__ */ jsxs9("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Zoom", children: [
+              /* @__PURE__ */ jsx16("span", { className: "text-xs text-muted-foreground", children: L.zoom }),
+              /* @__PURE__ */ jsx16(
                 "button",
                 {
                   type: "button",
@@ -1238,7 +1407,7 @@ function ForceGraph({
                   children: "+"
                 }
               ),
-              /* @__PURE__ */ jsx13(
+              /* @__PURE__ */ jsx16(
                 "button",
                 {
                   type: "button",
@@ -1248,7 +1417,7 @@ function ForceGraph({
                   children: "\u2212"
                 }
               ),
-              /* @__PURE__ */ jsx13(
+              /* @__PURE__ */ jsx16(
                 "button",
                 {
                   type: "button",
@@ -1260,8 +1429,8 @@ function ForceGraph({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx13("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
-            /* @__PURE__ */ jsx13(
+            /* @__PURE__ */ jsx16("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
+            /* @__PURE__ */ jsx16(
               "button",
               {
                 type: "button",
@@ -1273,7 +1442,7 @@ function ForceGraph({
             )
           ] })
         ] }),
-        /* @__PURE__ */ jsxs5(
+        /* @__PURE__ */ jsxs9(
           "div",
           {
             className: cn(
@@ -1281,7 +1450,7 @@ function ForceGraph({
               isMaximized && "flex-1 min-h-0"
             ),
             children: [
-              /* @__PURE__ */ jsxs5(
+              /* @__PURE__ */ jsxs9(
                 "svg",
                 {
                   ref: setSvgRef,
@@ -1293,7 +1462,7 @@ function ForceGraph({
                   role: "application",
                   "aria-label": "Force-directed graph",
                   children: [
-                    /* @__PURE__ */ jsx13(
+                    /* @__PURE__ */ jsx16(
                       "rect",
                       {
                         x: 0,
@@ -1307,8 +1476,8 @@ function ForceGraph({
                         onPointerCancel: onBackgroundPointerCancel
                       }
                     ),
-                    /* @__PURE__ */ jsxs5("g", { transform, children: [
-                      /* @__PURE__ */ jsx13("defs", { children: /* @__PURE__ */ jsx13(
+                    /* @__PURE__ */ jsxs9("g", { transform, children: [
+                      /* @__PURE__ */ jsx16("defs", { children: /* @__PURE__ */ jsx16(
                         "marker",
                         {
                           id: "fg-arrow",
@@ -1319,7 +1488,7 @@ function ForceGraph({
                           markerHeight: "7",
                           orient: "auto-start-reverse",
                           className: "fill-muted-foreground",
-                          children: /* @__PURE__ */ jsx13("path", { d: "M 0 0 L 10 5 L 0 10 z" })
+                          children: /* @__PURE__ */ jsx16("path", { d: "M 0 0 L 10 5 L 0 10 z" })
                         }
                       ) }),
                       visibleEdges.map((e, i) => {
@@ -1334,7 +1503,7 @@ function ForceGraph({
                         const dist = Math.hypot(dx, dy) || 1;
                         const tx = e.directed ? b.x - dx / dist * (b.r + 2) : b.x;
                         const ty = e.directed ? b.y - dy / dist * (b.r + 2) : b.y;
-                        return /* @__PURE__ */ jsx13(
+                        return /* @__PURE__ */ jsx16(
                           "line",
                           {
                             x1: a.x,
@@ -1357,7 +1526,7 @@ function ForceGraph({
                         const isNeighbor = neighborIds?.has(n.id) ?? false;
                         const dimmed = selectedSet.size > 0 && !isSelected && !isNeighbor;
                         const r = sn.r;
-                        return /* @__PURE__ */ jsxs5(
+                        return /* @__PURE__ */ jsxs9(
                           "g",
                           {
                             transform: `translate(${sn.x} ${sn.y})`,
@@ -1383,8 +1552,8 @@ function ForceGraph({
                               }
                             },
                             children: [
-                              /* @__PURE__ */ jsx13("title", { children: `${n.label} (${n.kind})` }),
-                              /* @__PURE__ */ jsx13(
+                              /* @__PURE__ */ jsx16("title", { children: `${n.label} (${n.kind})` }),
+                              /* @__PURE__ */ jsx16(
                                 "circle",
                                 {
                                   r,
@@ -1394,7 +1563,7 @@ function ForceGraph({
                                   strokeWidth: (isSelected ? 3 : 1.5) / view.k
                                 }
                               ),
-                              /* @__PURE__ */ jsx13(
+                              /* @__PURE__ */ jsx16(
                                 "text",
                                 {
                                   y: r + 11 / view.k,
@@ -1413,7 +1582,7 @@ function ForceGraph({
                           n.id
                         );
                       }),
-                      marqueeRect && /* @__PURE__ */ jsx13(
+                      marqueeRect && /* @__PURE__ */ jsx16(
                         "rect",
                         {
                           x: marqueeRect.x,
@@ -1430,7 +1599,7 @@ function ForceGraph({
                   ]
                 }
               ),
-              /* @__PURE__ */ jsx13(
+              /* @__PURE__ */ jsx16(
                 "button",
                 {
                   type: "button",
@@ -1439,11 +1608,11 @@ function ForceGraph({
                   title: isMaximized ? L.minimize : L.maximize,
                   onClick: () => setIsMaximized((m) => !m),
                   className: "absolute left-2 top-2 z-10 rounded-md border border-border bg-background/90 p-1.5 text-muted-foreground hover:text-foreground",
-                  children: isMaximized ? /* @__PURE__ */ jsx13(CollapseIcon, {}) : /* @__PURE__ */ jsx13(ExpandIcon, {})
+                  children: isMaximized ? /* @__PURE__ */ jsx16(CollapseIcon, {}) : /* @__PURE__ */ jsx16(ExpandIcon, {})
                 }
               ),
-              selectedIdsArr.length > 0 && (onExpandNode || onExpandAction || onDeleteNodes) && /* @__PURE__ */ jsxs5("div", { className: "absolute bottom-2 left-2 z-10 flex items-center gap-1.5", children: [
-                actionsActive && selectedIdsArr.length === 1 ? expandActions.map((action) => /* @__PURE__ */ jsx13(
+              selectedIdsArr.length > 0 && (onExpandNode || onExpandAction || onDeleteNodes) && /* @__PURE__ */ jsxs9("div", { className: "absolute bottom-2 left-2 z-10 flex items-center gap-1.5", children: [
+                actionsActive && selectedIdsArr.length === 1 ? expandActions.map((action) => /* @__PURE__ */ jsx16(
                   "button",
                   {
                     type: "button",
@@ -1453,7 +1622,7 @@ function ForceGraph({
                     children: action.label
                   },
                   action.id
-                )) : onExpandNode && selectedIdsArr.length === 1 && /* @__PURE__ */ jsx13(
+                )) : onExpandNode && selectedIdsArr.length === 1 && /* @__PURE__ */ jsx16(
                   "button",
                   {
                     type: "button",
@@ -1463,7 +1632,7 @@ function ForceGraph({
                     children: L.expandSelected
                   }
                 ),
-                onDeleteNodes && /* @__PURE__ */ jsx13(
+                onDeleteNodes && /* @__PURE__ */ jsx16(
                   "button",
                   {
                     type: "button",
@@ -1474,8 +1643,8 @@ function ForceGraph({
                   }
                 )
               ] }),
-              legend && legend.length > 0 && /* @__PURE__ */ jsx13("div", { className: "absolute right-2 top-2 max-w-[12rem] rounded-md border border-border bg-background/90 p-2 text-xs space-y-1", children: /* @__PURE__ */ jsx13("ul", { className: "space-y-0.5", children: legend.map(({ kind, label }) => /* @__PURE__ */ jsxs5("li", { className: "flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx13(
+              legend && legend.length > 0 && /* @__PURE__ */ jsx16("div", { className: "absolute right-2 top-2 max-w-[12rem] rounded-md border border-border bg-background/90 p-2 text-xs space-y-1", children: /* @__PURE__ */ jsx16("ul", { className: "space-y-0.5", children: legend.map(({ kind, label }) => /* @__PURE__ */ jsxs9("li", { className: "flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx16(
                   "span",
                   {
                     "aria-hidden": "true",
@@ -1483,7 +1652,7 @@ function ForceGraph({
                     style: { backgroundColor: nodeStyles[kind]?.color ?? "currentColor" }
                   }
                 ),
-                /* @__PURE__ */ jsx13("span", { className: "truncate", children: label })
+                /* @__PURE__ */ jsx16("span", { className: "truncate", children: label })
               ] }, kind)) }) })
             ]
           }
@@ -1777,6 +1946,7 @@ function downloadText(filename, text, mimeType) {
 }
 export {
   AppHeader,
+  AppShell,
   Badge,
   Banner,
   Button,
@@ -1786,10 +1956,13 @@ export {
   ForceGraph,
   HoverIconAction,
   Input,
+  PageHeader,
+  SIDEBAR_STORAGE_KEY,
   Select,
-  Shell,
+  SidebarGroup,
   Spinner,
   THEME_STORAGE_KEY,
+  UserMenu,
   cn,
   downloadText,
   mergeFiles,

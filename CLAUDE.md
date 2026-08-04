@@ -64,9 +64,13 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
 - **Peer deps, not deps.** `react`/`react-dom` (v19) stay peer dependencies;
   runtime deps are limited to the styling utilities (cva, clsx,
   tailwind-merge).
-- Primitive set: `AppHeader`, `Button`, `CopyButton`, `Card`, `Input`, `Select`, `Badge`,
-  `Spinner`, `Banner`, plus the `cn` helper. Every primitive has a unit test —
-  keep that invariant when adding one.
+- Primitive set: `AppShell`, `SidebarGroup`, `PageHeader`, `UserMenu`, `AppHeader`,
+  `Button`, `CopyButton`, `Card`, `Input`, `Select`, `Badge`, `Spinner`, `Banner`,
+  plus the `cn` helper. Every primitive has a unit test — keep that invariant
+  when adding one. `AppShell` is the chrome frame apps wrap their routed
+  content in (sidebar via `SidebarGroup`, `PageHeader` per route, `UserMenu`
+  for identity) and styles its frame background from the `--color-chrome`
+  token — declared in `src/theme.css` alongside the other semantic tokens.
 - **`dist/tokens.css` is generated, never hand-edited.** It's a plain-CSS
   (non-Tailwind) export of the same tokens in `src/theme.css`, for build-free
   static-HTML consumers (e.g. edge-plane's portal) that can't process a

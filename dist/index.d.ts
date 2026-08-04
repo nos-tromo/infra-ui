@@ -98,7 +98,13 @@ declare namespace FileList {
     var displayName: string;
 }
 
-declare const Card: react.ForwardRefExoticComponent<HTMLAttributes<HTMLDivElement> & react.RefAttributes<HTMLDivElement>>;
+interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
+    /** Optional tile heading, rendered accent-colored above the body. */
+    title?: ReactNode;
+    /** Interactive tiles signal affordance with a hover-accent border. */
+    interactive?: boolean;
+}
+declare const Card: react.ForwardRefExoticComponent<CardProps & react.RefAttributes<HTMLDivElement>>;
 
 declare const Input: react.ForwardRefExoticComponent<InputHTMLAttributes<HTMLInputElement> & react.RefAttributes<HTMLInputElement>>;
 
@@ -124,6 +130,16 @@ interface BannerProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeo
 }
 declare function Banner({ className, variant, ...props }: BannerProps): react.JSX.Element;
 
+interface PageHeaderProps extends HTMLAttributes<HTMLElement> {
+    /** Route title — exactly one PageHeader (one h1) per route. */
+    title: string;
+    /** One-line muted subtitle under the title. */
+    caption?: string;
+    /** Right-aligned controls on the title row (e.g. a primary Button). */
+    actions?: ReactNode;
+}
+declare function PageHeader({ title, caption, actions, className, ...props }: PageHeaderProps): react.JSX.Element;
+
 interface AppHeaderProps extends HTMLAttributes<HTMLElement> {
     /** App display name, rendered next to the home link. */
     title: string;
@@ -144,23 +160,45 @@ interface AppHeaderProps extends HTMLAttributes<HTMLElement> {
 }
 declare function AppHeader({ title, user, version, homeHref, homeLabel, themeLabels, className, ...props }: AppHeaderProps): react.JSX.Element;
 
-interface ShellProps {
-    /** Heading rendered on the left of the sticky header. */
-    title: ReactNode;
-    /** Optional right-aligned slot (e.g. a status bar or action buttons). */
-    actions?: ReactNode;
-    /** Page body rendered inside the centered main container. */
-    children?: ReactNode;
-    /** Extra classes merged onto the full-height root wrapper. */
-    className?: string;
+interface UserMenuProps {
+    /** Signed-in user name (from the trusted X-Auth-User header). */
+    user: string;
+    /** Gateway logout endpoint. */
+    signOutHref?: string;
+    /** i18n hooks. */
+    signOutLabel?: string;
+    menuLabel?: string;
 }
-/**
- * App shell: a full-height wrapper with a sticky top header (title + optional
- * actions slot) above a centered main content column. The header stays pinned
- * to the top and keeps an opaque `bg-background` so it remains visible — and
- * does not let content bleed through — while the page scrolls.
- */
-declare function Shell({ title, actions, children, className }: ShellProps): react.JSX.Element;
+declare function UserMenu({ user, signOutHref, signOutLabel, menuLabel, }: UserMenuProps): react.JSX.Element;
+
+interface ThemeToggleLabels {
+    system: string;
+    light: string;
+    dark: string;
+}
+
+declare const SIDEBAR_STORAGE_KEY = "infra-ui-sidebar";
+interface AppShellProps {
+    /** App display name in the chrome header. */
+    title: string;
+    version?: string;
+    /** Signed-in user; UserMenu is omitted entirely when absent. */
+    user?: string;
+    homeHref?: string;
+    homeLabel?: string;
+    themeLabels?: ThemeToggleLabels;
+    signOutHref?: string;
+    signOutLabel?: string;
+    /** Sidebar content; omit for header-only apps (Nextext, translator). */
+    sidebar?: ReactNode;
+    sidebarToggleLabel?: string;
+    children: ReactNode;
+}
+declare function AppShell({ title, version, user, homeHref, homeLabel, themeLabels, signOutHref, signOutLabel, sidebar, sidebarToggleLabel, children, }: AppShellProps): react.JSX.Element;
+declare function SidebarGroup({ label, children }: {
+    label?: string;
+    children: ReactNode;
+}): react.JSX.Element;
 
 interface ForceGraphNode {
     id: string;
@@ -358,4 +396,4 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, Input, Select, Shell, type ShellProps, Spinner, type SpinnerProps, THEME_STORAGE_KEY, type ThemeMode, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, Input, PageHeader, type PageHeaderProps, SIDEBAR_STORAGE_KEY, Select, SidebarGroup, Spinner, type SpinnerProps, THEME_STORAGE_KEY, type ThemeMode, UserMenu, type UserMenuProps, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
