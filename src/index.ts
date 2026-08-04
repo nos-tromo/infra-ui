@@ -15,6 +15,7 @@ export { Select } from './primitives/Select'
 export { Badge, type BadgeProps } from './primitives/Badge'
 export { Spinner, type SpinnerProps } from './primitives/Spinner'
 export { Banner, type BannerProps } from './primitives/Banner'
+export { PageHeader, type PageHeaderProps } from './primitives/PageHeader'
 export { AppHeader, type AppHeaderProps } from './primitives/AppHeader'
 export { Shell, type ShellProps } from './layout/Shell'
 export {
