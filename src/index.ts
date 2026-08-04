@@ -18,7 +18,6 @@ export { Banner, type BannerProps } from './primitives/Banner'
 export { PageHeader, type PageHeaderProps } from './primitives/PageHeader'
 export { AppHeader, type AppHeaderProps } from './primitives/AppHeader'
 export { UserMenu, type UserMenuProps } from './primitives/UserMenu'
-export { Shell, type ShellProps } from './layout/Shell'
 export {
   AppShell,
   SidebarGroup,
