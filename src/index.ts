@@ -9,7 +9,7 @@ export {
   type FileListLabels,
   type FileLike,
 } from './primitives/FileList'
-export { Card } from './primitives/Card'
+export { Card, type CardProps } from './primitives/Card'
 export { Input } from './primitives/Input'
 export { Select } from './primitives/Select'
 export { Badge, type BadgeProps } from './primitives/Badge'
