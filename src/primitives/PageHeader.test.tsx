@@ -6,6 +6,11 @@ test('renders the title as the page h1', () => {
   expect(screen.getByRole('heading', { level: 1, name: 'Dashboard' })).toBeInTheDocument()
 })
 
+test('exposes no banner role — the AppShell chrome header owns it', () => {
+  render(<PageHeader title="Dashboard" />)
+  expect(screen.queryByRole('banner')).toBeNull()
+})
+
 test('renders a muted caption when given', () => {
   render(<PageHeader title="Dashboard" caption="Corpus overview" />)
   expect(screen.getByText('Corpus overview')).toHaveClass('text-muted-foreground')
