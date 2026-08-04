@@ -1,7 +1,7 @@
 import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
-  AppHeader,
+  AppShell,
   Badge,
   Banner,
   Button,
@@ -12,7 +12,9 @@ import {
   type ForceGraphEdge,
   type ForceGraphNode,
   Input,
+  PageHeader,
   Select,
+  SidebarGroup,
   Spinner,
 } from '../src/index'
 import './styles.css'
@@ -84,70 +86,92 @@ function Sink() {
   }
 
   return (
-    <>
-      <AppHeader title="kitchen sink" user="jane.doe" />
-      <main className="mx-auto flex max-w-3xl flex-col gap-6 p-10">
-      <h1 className="text-lg font-semibold">@infra/ui kitchen sink</h1>
+    <AppShell
+      title="kitchen-sink"
+      version="v0.9.0"
+      user="jane.doe"
+      sidebar={
+        <SidebarGroup label="Sections">
+          <a
+            className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted"
+            href="#primitives"
+          >
+            Primitives
+          </a>
+        </SidebarGroup>
+      }
+    >
+      <div className="mx-auto flex max-w-3xl flex-col gap-6 p-8">
+        <PageHeader title="Primitives" caption="Every exported component, both themes" />
 
-      <section className="flex flex-wrap items-center gap-3">
-        <Button>Primary</Button>
-        <Button variant="secondary">Secondary</Button>
-        <Button variant="ghost">Ghost</Button>
-        <Button variant="danger">Danger</Button>
-        <Button size="sm">Small</Button>
-        <Button disabled>Disabled</Button>
-        <CopyButton text="Copied from the kitchen sink" />
-        <Spinner />
-      </section>
-
-      <section className="flex flex-wrap items-center gap-3">
-        <Badge>neutral</Badge>
-        <Badge variant="accent">accent</Badge>
-        <Badge variant="danger">danger</Badge>
-      </section>
-
-      <Card>
-        <div className="flex flex-col gap-3">
-          <Input placeholder="Text input" />
-          <Select defaultValue="a">
-            <option value="a">Option A</option>
-            <option value="b">Option B</option>
-          </Select>
+        <div id="primitives" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Card title="Documents" interactive>
+            1,284
+          </Card>
+          <Card title="Chunks">48,102</Card>
         </div>
-      </Card>
 
-      <Banner>Informational banner</Banner>
-      <Banner variant="danger">Something went wrong</Banner>
+        <section className="flex flex-wrap items-center gap-3">
+          <Button>Primary</Button>
+          <Button variant="secondary">Secondary</Button>
+          <Button variant="ghost">Ghost</Button>
+          <Button variant="danger">Danger</Button>
+          <Button size="sm">Small</Button>
+          <Button disabled>Disabled</Button>
+          <CopyButton text="Copied from the kitchen sink" />
+          <Spinner />
+        </section>
 
-      <FileList
-        files={demoFiles}
-        onRemove={(i) => setDemoFiles((fs) => fs.filter((_, j) => j !== i))}
-        onClear={() => setDemoFiles([])}
-      />
+        <section className="flex flex-wrap items-center gap-3">
+          <Badge>neutral</Badge>
+          <Badge variant="accent">accent</Badge>
+          <Badge variant="danger">danger</Badge>
+        </section>
 
-      <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium text-muted-foreground">Force graph</h2>
-        <ForceGraph
-          nodes={graphNodes}
-          edges={graphEdges}
-          nodeStyles={GRAPH_NODE_STYLES}
-          edgeStyles={GRAPH_EDGE_STYLES}
-          legend={GRAPH_LEGEND}
-          selectedIds={selectedNodeIds}
-          onSelectionChange={setSelectedNodeIds}
-          onExpandNode={expandGraphNode}
-          onDeleteNodes={(ids) => {
-            const removed = new Set(ids)
-            setGraphNodes((ns) => ns.filter((n) => !removed.has(n.id)))
-            setGraphEdges((es) => es.filter((e) => !removed.has(e.source) && !removed.has(e.target)))
-            setSelectedNodeIds((prev) => prev.filter((id) => !removed.has(id)))
-          }}
-          expandingId={expandingNodeId}
-          statusText={`${graphNodes.length} nodes, ${graphEdges.length} edges`}
+        <Card>
+          <div className="flex flex-col gap-3">
+            <Input placeholder="Text input" />
+            <Select defaultValue="a">
+              <option value="a">Option A</option>
+              <option value="b">Option B</option>
+            </Select>
+          </div>
+        </Card>
+
+        <Banner>Informational banner</Banner>
+        <Banner variant="danger">Something went wrong</Banner>
+
+        <FileList
+          files={demoFiles}
+          onRemove={(i) => setDemoFiles((fs) => fs.filter((_, j) => j !== i))}
+          onClear={() => setDemoFiles([])}
         />
-      </section>
-    </main>
-    </>
+
+        <section className="flex flex-col gap-2">
+          <h2 className="text-sm font-medium text-muted-foreground">Force graph</h2>
+          <ForceGraph
+            nodes={graphNodes}
+            edges={graphEdges}
+            nodeStyles={GRAPH_NODE_STYLES}
+            edgeStyles={GRAPH_EDGE_STYLES}
+            legend={GRAPH_LEGEND}
+            selectedIds={selectedNodeIds}
+            onSelectionChange={setSelectedNodeIds}
+            onExpandNode={expandGraphNode}
+            onDeleteNodes={(ids) => {
+              const removed = new Set(ids)
+              setGraphNodes((ns) => ns.filter((n) => !removed.has(n.id)))
+              setGraphEdges((es) =>
+                es.filter((e) => !removed.has(e.source) && !removed.has(e.target)),
+              )
+              setSelectedNodeIds((prev) => prev.filter((id) => !removed.has(id)))
+            }}
+            expandingId={expandingNodeId}
+            statusText={`${graphNodes.length} nodes, ${graphEdges.length} edges`}
+          />
+        </section>
+      </div>
+    </AppShell>
   )
 }
 

@@ -35,17 +35,73 @@ In your app's root CSS (e.g. `src/styles/globals.css`):
 ## Use
 
 ```tsx
-import { AppHeader, Button, CopyButton, Card, Input, Select, Badge, Spinner, Banner, FileList, ForceGraph, cn } from '@infra/ui'
+import {
+  AppShell,
+  SidebarGroup,
+  PageHeader,
+  UserMenu,
+  AppHeader,
+  Button,
+  CopyButton,
+  Card,
+  Input,
+  Select,
+  Badge,
+  Spinner,
+  Banner,
+  FileList,
+  ForceGraph,
+  cn,
+} from '@infra/ui'
+```
+
+### AppShell
+
+The app-wide chrome — collapsible sidebar, home link, theme toggle, and
+`UserMenu` — wraps every route's content. Sidebar sections are composed from
+`SidebarGroup`; apps without a sidebar (Nextext, translator) omit the `sidebar`
+prop entirely for a header-only shell.
+
+```tsx
+<AppShell
+  title="kitchen-sink"
+  version="v0.9.0"
+  user="jane.doe"
+  sidebar={
+    <SidebarGroup label="Sections">
+      <a
+        className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted"
+        href="#primitives"
+      >
+        Primitives
+      </a>
+    </SidebarGroup>
+  }
+>
+  <div className="p-8">
+    <PageHeader title="Primitives" caption="Every exported component, both themes" />
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <Card title="Documents" interactive>
+        1,284
+      </Card>
+      <Card title="Chunks">48,102</Card>
+    </div>
+  </div>
+</AppShell>
 ```
 
 ## Primitives
 
+`AppShell` (chrome frame: sidebar, home link, theme toggle, `UserMenu`) ·
+`SidebarGroup` (labeled sidebar section) · `PageHeader` (route title + caption,
+one per route) · `UserMenu` (identity + sign-out dropdown) ·
 `AppHeader` (portal link, identity, tri-state theme toggle) · `Button` (primary/secondary/ghost/danger · sm/md) · `CopyButton` (icon-only,
-copies text to the clipboard) · `Card` · `Input` · `Select` ·
+copies text to the clipboard) · `Card` (plain or tile-style with `title`/`interactive`) · `Input` · `Select` ·
 `Badge` (neutral/accent/danger) · `Spinner` · `Banner` (info/danger).
 
 All styling uses semantic design tokens only (`bg-primary`, `text-muted-foreground`,
-`border-border`, …), so an app re-themes everything by setting `--app-accent`.
+`border-border`, `bg-chrome` (the `AppShell` frame background), …), so an app
+re-themes everything by setting `--app-accent`.
 
 ### Theming
 

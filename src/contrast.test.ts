@@ -39,8 +39,10 @@ const darkBlock = css.slice(css.indexOf("[data-theme='dark']"))
 const PAIRS: Array<[string, string]> = [
   ['--color-foreground', '--color-background'],
   ['--color-foreground', '--color-muted'],
+  ['--color-foreground', '--color-chrome'],
   ['--color-muted-foreground', '--color-background'],
   ['--color-muted-foreground', '--color-muted'],
+  ['--color-muted-foreground', '--color-chrome'],
   ['--color-danger', '--color-background'],
   ['--color-danger', '--color-muted'],
 ]

@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 @import '../src/theme.css';
-@source '../src/primitives';
+@source '../src';
 
 body {
   @apply bg-background text-foreground;

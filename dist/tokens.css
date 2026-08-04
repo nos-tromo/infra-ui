@@ -14,6 +14,7 @@
   --color-border: hsl(240 5% 84%);
   --color-accent: hsl(240 5% 90%);
   --color-danger: hsl(0 72% 40%);
+  --color-chrome: hsl(240 5% 96%);
   --color-primary: var(--app-accent, hsl(217 91% 60%));
   --color-primary-foreground: hsl(0 0% 100%);
   --font-sans: 'Inter', system-ui, sans-serif;
@@ -38,6 +39,7 @@
   --color-border: hsl(240 4% 22%);
   --color-accent: hsl(240 5% 26%);
   --color-danger: hsl(0 72% 65%);
+  --color-chrome: hsl(240 4% 12%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -50,5 +52,6 @@
     --color-border: hsl(240 4% 22%);
     --color-accent: hsl(240 5% 26%);
     --color-danger: hsl(0 72% 65%);
+    --color-chrome: hsl(240 4% 12%);
   }
 }
