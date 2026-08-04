@@ -1,8 +1,13 @@
 # App-like look and feel — federation frontend overhaul (design)
 
 Date: 2026-08-04
-Status: approved (brainstorming session with visual mockups; shell direction
-"inset canvas" selected from three candidates)
+Status: **implemented, then corrected** — infra-ui v0.9.0/v0.9.1 and all four
+app adoptions landed 2026-08-04 (chorus #117, docint #404, Nextext #128,
+translator #97); the page-layout prescriptions below were then rejected in
+operator review the same day and replaced across a second round of PRs
+(chorus #118, docint #408, Nextext #129, translator #98). See Outcome at the
+end — the shell, tiles, user menu, and tokens survived unchanged; the layout
+half of this document did not.
 
 ## Goal
 
@@ -30,6 +35,10 @@ chat treatment.
    job lists) fill the canvas with responsive grids. Only reading and
    conversation content (chat threads, reports, transcripts) sits on a
    centered measure.
+   *Corrected in practice: the second sentence did not survive. Nothing sits
+   on a centered measure — conversation screens are left-bound and full-width
+   like every other surface; the only width clamp that survived operator
+   review is the individual message bubble (`max-w-prose`). See Outcome.*
 5. **Portal fully in scope.** It adopts the same frame and header pattern,
    not just token ride-alongs.
 6. **Shell direction: "inset canvas" (B2).** Chrome (header + sidebar) on a
@@ -101,6 +110,8 @@ shells, unify accent CSS declaration, route all panels/errors through
   two-column canvas — upload card (dropzone + collection field) beside a
   live jobs/status card; status boxes and the raw reconnect button become
   `Card`/`Banner`/`Button`.
+  *Rejected in practice — the side-by-side arrangement was replaced by a
+  stacked one (see Outcome).*
 - Dashboard: hand-rolled sections → tiles; `grid-cols-4` gains breakpoints.
 - Chat/Report keep two-pane `h-full` layouts; Chat gets the AI-SDK
   treatment (centered thread measure, user bubbles, composer card).
@@ -117,11 +128,14 @@ shells, unify accent CSS declaration, route all panels/errors through
 - Home becomes a full-width canvas: upload card beside the jobs list;
   results open as a proper panel on the reading measure instead of
   unbounded inline growth (existing tab bar kept).
+  *Rejected in practice — "beside" was replaced by stacked (see Outcome).*
 
 **translator**:
 - Adopt shell (header finally sticky); input/output panes become equal
   soft-fill cards growing into the canvas height; banners move next to the
   controls that produce them.
+  *Corrected in practice — unbounded growth buried the translate action at
+  the viewport edge; the pane row is capped at 32rem (see Outcome).*
 
 ## Portal (edge-plane)
 
@@ -156,3 +170,57 @@ One PR per repo, GitHub Flow, version bump mints the tag:
 
 Backend changes, route changes, new features beyond the user menu/sign-out,
 ForceGraph work, i18n changes, generic-error work.
+
+## Outcome (2026-08-04, post-rollout operator review)
+
+The shell, tiles, tokens, user menu, and sign-out shipped as designed and
+survived review unchanged. The **page-layout half of this document was
+rejected in practice** — in every case where it constrained the width or
+height of primary content. It took three rounds to converge, so the final
+rules are recorded here as the authority for the next rollout; where the
+body text above conflicts, this section wins.
+
+What was rejected, and what replaced it:
+
+- **Form-beside-status (docint Ingest, Nextext home).** As shipped, the
+  form column was pinned to `minmax(~26rem,~28rem)` — narrower than the
+  pre-overhaul pages — beside a status column that is empty whenever
+  nothing runs. Rejected. An equal 50/50 split was tried next and also
+  rejected: two half-width regions read as two sparse islands (the
+  dropzone stretched into emptiness while job rows — progress bar,
+  actions, downloads — were cramped). **Final: stacked.** The form card
+  and the jobs/status area are siblings in one column, both spanning the
+  full content width so their edges align (docint #408, Nextext #129).
+- **Centered conversation measure (chorus chat).** The chat column was the
+  only `mx-auto`-centered route while every tool screen was left-bound, so
+  alignment jumped when navigating. Rejected. **Final: full-width,
+  left-bound, docint-style** — the page is a full-height flex column, the
+  transcript scrolls (`flex-1 overflow-auto`), the composer is pinned at
+  the bottom, and the clear control lives in the `PageHeader` actions
+  slot. The tool screens' `max-w-lg` form clamps fell at the same time
+  (chorus #118). The only clamp that survived is the per-message bubble
+  (`max-w-prose`).
+- **Panes "growing into the canvas height" (translator).** Unbounded
+  growth pushed the translate action to the viewport edge, and the upload
+  link inside the input column threw the two pane bottoms out of
+  alignment. **Final: the pane row is capped at 32rem, both panes are
+  direct children of one grid row, and the upload control sits on a
+  shared action row beside the translate button** (translator #98).
+
+The generalizable lessons, stated once:
+
+1. **Never cap primary content narrower than the canvas.** No fixed narrow
+   columns, no centered measures, no `max-w-*` on the screen's main work
+   surface. Panels stacked on one page must share the same width so their
+   edges align.
+2. **Don't reserve horizontal space for conditional content.** A
+   side-by-side region that is usually empty (job status, results) strands
+   its neighbor in whitespace; stack it below instead and let it appear
+   when it has something to show.
+3. **Cap heights, not widths.** Where content would otherwise grow to the
+   viewport edge, bound the height so primary actions stay in view.
+
+Where this document went wrong procedurally: the mockup round validated the
+shell direction but never showed the four pages at real viewport width in
+their common state (nothing running, empty status). All three rejections
+were visible only there.
