@@ -1,0 +1,9 @@
+version: 2
+updates:
+  # github-actions only — the workflow refs are SHA-pinned, so dependabot is
+  # what keeps them current. The pnpm dependencies are managed by hand
+  # alongside the committed prebuilt dist/, which every bump has to rebuild.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
