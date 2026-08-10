@@ -1,13 +1,27 @@
 # @infra/ui
 
 Shared design system (Tailwind v4 tokens + UI primitives) for the infra React SPAs.
-Light/dark themeable, minimal, Nextext-derived. Consumed as a tag-pinned pnpm Git dependency.
+Light/dark themeable, minimal, Nextext-derived. Consumed as a **commit-SHA-pinned**
+pnpm tarball dependency.
 
 ## Install
 
-```bash
-pnpm add github:nos-tromo/infra-ui#v0.1.0
+Pin the codeload tarball of the commit a release tag points to — never the tag
+itself, and never the `github:` shorthand:
+
+```json
+"@infra/ui": "https://codeload.github.com/nos-tromo/infra-ui/tar.gz/<full-40-hex-sha>"
 ```
+
+A tag is a mutable ref: whoever can move it controls the code every install
+fetches, and pnpm records no integrity hash for tarball URLs, so the lockfile
+would not notice. The SHA URL is content-addressed — same policy as the
+federation's SHA-pinned GitHub Actions refs, and enforced the same way: the
+shared `python-app-ci` lint job runs `validate_infra_ui_pin.py` against every
+consumer. (The `github:` shorthand is additionally off-limits because
+Dependabot rewrites it to a git+SSH lockfile entry that breaks keyless CI and
+git-less Docker builds.) The version stays readable in the consumer lockfile's
+resolved `version:` field.
 
 `react` and `react-dom` (v19) are peer dependencies. The built `dist/` (JS + `.d.ts`)
 is **committed to the repo**, so every consumer gets the same prebuilt, deterministic
@@ -219,6 +233,28 @@ pnpm demo         # Vite kitchen-sink for visual review
 pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.css
                   # (commit dist/ whenever src/ changes)
 ```
+
+## Releasing
+
+`main` is the trunk; a release is an annotated `vX.Y.Z` tag minted **on merge**
+by the shared `release-tag` workflow, which reads `package.json`'s `version`
+(bumping it in the release PR is the whole release action — tags are not
+hand-cut). Release tags are immutability-protected by a repository ruleset
+(no update, no delete), and Dependabot is deliberately out of the consumer
+bump loop, so rolling a new release out is manual:
+
+```bash
+# 1. Resolve the new tag to its commit SHA
+git ls-remote https://github.com/nos-tromo/infra-ui refs/tags/vX.Y.Z
+
+# 2. In each consumer frontend (chorus, docint, Nextext, translator):
+#    replace the SHA in package.json's @infra/ui codeload URL, then
+pnpm install --no-frozen-lockfile   # refresh the lockfile
+pnpm build && pnpm test             # verify before the PR
+```
+
+Each consumer's CI re-checks the pin form (`validate_infra_ui_pin.py`), so a
+tag-named or `github:`-form pin cannot land.
 
 ## Design docs
 
