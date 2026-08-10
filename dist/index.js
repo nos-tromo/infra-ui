@@ -57,10 +57,154 @@ var HoverIconAction = forwardRef2(
 );
 HoverIconAction.displayName = "HoverIconAction";
 
+// src/primitives/IconButton.tsx
+import {
+  forwardRef as forwardRef3
+} from "react";
+
+// src/primitives/Spinner.tsx
+import { jsx as jsx3 } from "react/jsx-runtime";
+function Spinner({ className, label = "Loading" }) {
+  return /* @__PURE__ */ jsx3(
+    "span",
+    {
+      role: "status",
+      "aria-label": label,
+      className: cn(
+        "inline-block h-4 w-4 animate-spin rounded-full border-2 border-muted border-t-primary",
+        className
+      )
+    }
+  );
+}
+
+// src/primitives/IconButton.tsx
+import { jsx as jsx4, jsxs } from "react/jsx-runtime";
+function shell(adorned, tone, className) {
+  return cn(
+    "shrink-0",
+    adorned ? "gap-1.5 px-2.5" : "aspect-square px-0",
+    tone === "danger" && "hover:text-danger",
+    className
+  );
+}
+var IconButton = forwardRef3(
+  ({
+    icon,
+    label,
+    hint,
+    children,
+    tone = "default",
+    busy = false,
+    disabled,
+    variant = "ghost",
+    size = "sm",
+    className,
+    ...props
+  }, ref) => /* @__PURE__ */ jsxs(
+    Button,
+    {
+      ref,
+      type: "button",
+      variant,
+      size,
+      "aria-label": label,
+      title: hint ?? label,
+      "aria-busy": busy || void 0,
+      disabled: disabled || busy,
+      className: shell(children != null, tone, className),
+      ...props,
+      children: [
+        busy ? /* @__PURE__ */ jsx4(Spinner, { className: "h-4 w-4", label }) : icon,
+        children
+      ]
+    }
+  )
+);
+IconButton.displayName = "IconButton";
+var IconLink = forwardRef3(
+  ({
+    icon,
+    label,
+    hint,
+    children,
+    tone = "default",
+    variant = "ghost",
+    size = "sm",
+    className,
+    ...props
+  }, ref) => /* @__PURE__ */ jsxs(
+    "a",
+    {
+      ref,
+      "aria-label": label,
+      title: hint ?? label,
+      className: cn(button({ variant, size }), shell(children != null, tone, className)),
+      ...props,
+      children: [
+        icon,
+        children
+      ]
+    }
+  )
+);
+IconLink.displayName = "IconLink";
+
+// src/primitives/iconActions.tsx
+import { forwardRef as forwardRef4 } from "react";
+
+// src/icons/index.tsx
+import { jsx as jsx5, jsxs as jsxs2 } from "react/jsx-runtime";
+var base = {
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "round",
+  strokeLinejoin: "round",
+  "aria-hidden": true
+};
+var DownloadIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("path", { d: "M12 3v12" }),
+  /* @__PURE__ */ jsx5("path", { d: "m7.5 10.5 4.5 4.5 4.5-4.5" }),
+  /* @__PURE__ */ jsx5("path", { d: "M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" })
+] });
+var XIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx5("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx5("path", { d: "M18 6 6 18M6 6l12 12" }) });
+var TrashIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("path", { d: "M4 7h16M10 11v6M14 11v6" }),
+  /* @__PURE__ */ jsx5("path", { d: "M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12" }),
+  /* @__PURE__ */ jsx5("path", { d: "M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" })
+] });
+var ChevronDownIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx5("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx5("path", { d: "m6 9 6 6 6-6" }) });
+var ChevronUpIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx5("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx5("path", { d: "m6 15 6-6 6 6" }) });
+var ChevronsUpDownIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("path", { d: "m7 15 5 5 5-5" }),
+  /* @__PURE__ */ jsx5("path", { d: "m7 9 5-5 5 5" })
+] });
+var WarningIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("path", { d: "M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0" }),
+  /* @__PURE__ */ jsx5("path", { d: "M12 9v4M12 17h.01" })
+] });
+
+// src/primitives/iconActions.tsx
+import { jsx as jsx6 } from "react/jsx-runtime";
+var DownloadButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, { ref, icon: /* @__PURE__ */ jsx6(DownloadIcon, {}), ...props }));
+DownloadButton.displayName = "DownloadButton";
+var DownloadLink = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconLink, { ref, icon: /* @__PURE__ */ jsx6(DownloadIcon, {}), download: true, ...props }));
+DownloadLink.displayName = "DownloadLink";
+var RemoveButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, { ref, icon: /* @__PURE__ */ jsx6(XIcon, {}), tone: "danger", ...props }));
+RemoveButton.displayName = "RemoveButton";
+var DeleteButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, { ref, icon: /* @__PURE__ */ jsx6(TrashIcon, {}), tone: "danger", ...props }));
+DeleteButton.displayName = "DeleteButton";
+var MoveUpButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, { ref, icon: /* @__PURE__ */ jsx6(ChevronUpIcon, {}), ...props }));
+MoveUpButton.displayName = "MoveUpButton";
+var MoveDownButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, { ref, icon: /* @__PURE__ */ jsx6(ChevronDownIcon, {}), ...props }));
+MoveDownButton.displayName = "MoveDownButton";
+
 // src/primitives/CopyButton.tsx
-import { forwardRef as forwardRef3, useEffect, useRef, useState } from "react";
-import { jsx as jsx3, jsxs } from "react/jsx-runtime";
-var CopyButton = forwardRef3(
+import { forwardRef as forwardRef5, useEffect, useRef, useState } from "react";
+import { jsx as jsx7, jsxs as jsxs3 } from "react/jsx-runtime";
+var CopyButton = forwardRef5(
   ({
     text,
     label = "Copy",
@@ -90,7 +234,7 @@ var CopyButton = forwardRef3(
       }, resetDelayMs);
     }
     const currentLabel = copied ? copiedLabel : label;
-    return /* @__PURE__ */ jsx3(
+    return /* @__PURE__ */ jsx7(
       Button,
       {
         ref,
@@ -102,14 +246,14 @@ var CopyButton = forwardRef3(
         onClick: () => void copy(),
         className: cn("aspect-square px-0", className),
         ...props,
-        children: copied ? /* @__PURE__ */ jsx3(CheckGlyph, {}) : /* @__PURE__ */ jsx3(CopyGlyph, {})
+        children: copied ? /* @__PURE__ */ jsx7(CheckGlyph, {}) : /* @__PURE__ */ jsx7(CopyGlyph, {})
       }
     );
   }
 );
 CopyButton.displayName = "CopyButton";
 function CopyGlyph() {
-  return /* @__PURE__ */ jsxs(
+  return /* @__PURE__ */ jsxs3(
     "svg",
     {
       xmlns: "http://www.w3.org/2000/svg",
@@ -122,14 +266,14 @@ function CopyGlyph() {
       className: "h-4 w-4",
       "aria-hidden": "true",
       children: [
-        /* @__PURE__ */ jsx3("rect", { x: "8", y: "8", width: "14", height: "14", rx: "2", ry: "2" }),
-        /* @__PURE__ */ jsx3("path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" })
+        /* @__PURE__ */ jsx7("rect", { x: "8", y: "8", width: "14", height: "14", rx: "2", ry: "2" }),
+        /* @__PURE__ */ jsx7("path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" })
       ]
     }
   );
 }
 function CheckGlyph() {
-  return /* @__PURE__ */ jsx3(
+  return /* @__PURE__ */ jsx7(
     "svg",
     {
       xmlns: "http://www.w3.org/2000/svg",
@@ -141,13 +285,13 @@ function CheckGlyph() {
       strokeLinejoin: "round",
       className: "h-4 w-4",
       "aria-hidden": "true",
-      children: /* @__PURE__ */ jsx3("path", { d: "M20 6 9 17l-5-5" })
+      children: /* @__PURE__ */ jsx7("path", { d: "M20 6 9 17l-5-5" })
     }
   );
 }
 
 // src/primitives/FileList.tsx
-import { Fragment, jsx as jsx4, jsxs as jsxs2 } from "react/jsx-runtime";
+import { Fragment, jsx as jsx8, jsxs as jsxs4 } from "react/jsx-runtime";
 function mergeFiles(existing, incoming) {
   const key = (file) => `${file.webkitRelativePath || file.name}:${file.size ?? ""}`;
   const seen = new Set(existing.map(key));
@@ -178,7 +322,7 @@ function formatBytes(bytes) {
   return `${rounded} ${SIZE_UNITS[unit]}`;
 }
 function XGlyph() {
-  return /* @__PURE__ */ jsxs2(
+  return /* @__PURE__ */ jsxs4(
     "svg",
     {
       viewBox: "0 0 24 24",
@@ -190,8 +334,8 @@ function XGlyph() {
       className: "h-4 w-4",
       "aria-hidden": "true",
       children: [
-        /* @__PURE__ */ jsx4("path", { d: "M18 6 6 18" }),
-        /* @__PURE__ */ jsx4("path", { d: "m6 6 12 12" })
+        /* @__PURE__ */ jsx8("path", { d: "M18 6 6 18" }),
+        /* @__PURE__ */ jsx8("path", { d: "m6 6 12 12" })
       ]
     }
   );
@@ -202,29 +346,29 @@ function FileList({ files, onRemove, onClear, labels, className }) {
   const clearAllLabel = labels?.clearAll ?? "Clear all";
   const removeLabel = labels?.remove ?? "Remove";
   const totalBytes = files.reduce((sum, file) => sum + (file.size ?? 0), 0);
-  return /* @__PURE__ */ jsxs2("div", { className: cn("rounded-lg border border-border bg-muted/30", className), children: [
-    /* @__PURE__ */ jsxs2("div", { className: "flex items-center justify-between gap-2 border-b border-border px-3 py-2", children: [
-      /* @__PURE__ */ jsxs2("span", { className: "text-sm text-muted-foreground", children: [
+  return /* @__PURE__ */ jsxs4("div", { className: cn("rounded-lg border border-border bg-muted/30", className), children: [
+    /* @__PURE__ */ jsxs4("div", { className: "flex items-center justify-between gap-2 border-b border-border px-3 py-2", children: [
+      /* @__PURE__ */ jsxs4("span", { className: "text-sm text-muted-foreground", children: [
         filesLabel(files.length),
-        totalBytes > 0 && /* @__PURE__ */ jsxs2(Fragment, { children: [
+        totalBytes > 0 && /* @__PURE__ */ jsxs4(Fragment, { children: [
           " \xB7 ",
           formatBytes(totalBytes)
         ] })
       ] }),
-      onClear && /* @__PURE__ */ jsx4(Button, { variant: "ghost", size: "sm", onClick: onClear, children: clearAllLabel })
+      onClear && /* @__PURE__ */ jsx8(Button, { variant: "ghost", size: "sm", onClick: onClear, children: clearAllLabel })
     ] }),
-    /* @__PURE__ */ jsx4("ul", { className: "max-h-64 divide-y divide-border overflow-y-auto", children: files.map((file, index) => /* @__PURE__ */ jsxs2(
+    /* @__PURE__ */ jsx8("ul", { className: "max-h-64 divide-y divide-border overflow-y-auto", children: files.map((file, index) => /* @__PURE__ */ jsxs4(
       "li",
       {
         className: "group flex items-center gap-3 px-3 py-1.5 text-sm",
         children: [
-          /* @__PURE__ */ jsx4("span", { className: "w-6 shrink-0 text-right tabular-nums text-muted-foreground", children: index + 1 }),
-          /* @__PURE__ */ jsx4("span", { className: "flex-1 truncate text-foreground", title: file.name, children: file.name }),
-          file.size !== void 0 && /* @__PURE__ */ jsx4("span", { className: "shrink-0 tabular-nums text-muted-foreground", children: formatBytes(file.size) }),
-          onRemove && /* @__PURE__ */ jsx4(
+          /* @__PURE__ */ jsx8("span", { className: "w-6 shrink-0 text-right tabular-nums text-muted-foreground", children: index + 1 }),
+          /* @__PURE__ */ jsx8("span", { className: "flex-1 truncate text-foreground", title: file.name, children: file.name }),
+          file.size !== void 0 && /* @__PURE__ */ jsx8("span", { className: "shrink-0 tabular-nums text-muted-foreground", children: formatBytes(file.size) }),
+          onRemove && /* @__PURE__ */ jsx8(
             HoverIconAction,
             {
-              icon: /* @__PURE__ */ jsx4(XGlyph, {}),
+              icon: /* @__PURE__ */ jsx8(XGlyph, {}),
               label: `${removeLabel} ${file.name}`,
               onClick: () => onRemove(index)
             }
@@ -238,10 +382,10 @@ function FileList({ files, onRemove, onClear, labels, className }) {
 FileList.displayName = "FileList";
 
 // src/primitives/Card.tsx
-import { forwardRef as forwardRef4 } from "react";
-import { jsx as jsx5, jsxs as jsxs3 } from "react/jsx-runtime";
-var Card = forwardRef4(
-  ({ className, title, interactive, children, ...props }, ref) => /* @__PURE__ */ jsxs3(
+import { forwardRef as forwardRef6 } from "react";
+import { jsx as jsx9, jsxs as jsxs5 } from "react/jsx-runtime";
+var Card = forwardRef6(
+  ({ className, title, interactive, children, ...props }, ref) => /* @__PURE__ */ jsxs5(
     "div",
     {
       ref,
@@ -252,7 +396,7 @@ var Card = forwardRef4(
       ),
       ...props,
       children: [
-        title != null && /* @__PURE__ */ jsx5("div", { className: "text-lg font-semibold text-primary", children: title }),
+        title != null && /* @__PURE__ */ jsx9("div", { className: "text-lg font-semibold text-primary", children: title }),
         children
       ]
     }
@@ -261,10 +405,10 @@ var Card = forwardRef4(
 Card.displayName = "Card";
 
 // src/primitives/Input.tsx
-import { forwardRef as forwardRef5 } from "react";
-import { jsx as jsx6 } from "react/jsx-runtime";
-var Input = forwardRef5(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx6(
+import { forwardRef as forwardRef7 } from "react";
+import { jsx as jsx10 } from "react/jsx-runtime";
+var Input = forwardRef7(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx10(
     "input",
     {
       ref,
@@ -279,10 +423,10 @@ var Input = forwardRef5(
 Input.displayName = "Input";
 
 // src/primitives/Select.tsx
-import { forwardRef as forwardRef6 } from "react";
-import { jsx as jsx7 } from "react/jsx-runtime";
-var Select = forwardRef6(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx7(
+import { forwardRef as forwardRef8 } from "react";
+import { jsx as jsx11 } from "react/jsx-runtime";
+var Select = forwardRef8(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx11(
     "select",
     {
       ref,
@@ -298,7 +442,7 @@ Select.displayName = "Select";
 
 // src/primitives/Badge.tsx
 import { cva as cva2 } from "class-variance-authority";
-import { jsx as jsx8 } from "react/jsx-runtime";
+import { jsx as jsx12 } from "react/jsx-runtime";
 var badge = cva2("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium", {
   variants: {
     variant: {
@@ -310,28 +454,12 @@ var badge = cva2("inline-flex items-center rounded-full px-2 py-0.5 text-xs font
   defaultVariants: { variant: "neutral" }
 });
 function Badge({ className, variant, ...props }) {
-  return /* @__PURE__ */ jsx8("span", { className: cn(badge({ variant }), className), ...props });
-}
-
-// src/primitives/Spinner.tsx
-import { jsx as jsx9 } from "react/jsx-runtime";
-function Spinner({ className, label = "Loading" }) {
-  return /* @__PURE__ */ jsx9(
-    "span",
-    {
-      role: "status",
-      "aria-label": label,
-      className: cn(
-        "inline-block h-4 w-4 animate-spin rounded-full border-2 border-muted border-t-primary",
-        className
-      )
-    }
-  );
+  return /* @__PURE__ */ jsx12("span", { className: cn(badge({ variant }), className), ...props });
 }
 
 // src/primitives/Banner.tsx
 import { cva as cva3 } from "class-variance-authority";
-import { jsx as jsx10 } from "react/jsx-runtime";
+import { jsx as jsx13 } from "react/jsx-runtime";
 var banner = cva3("rounded-md border px-4 py-3 text-sm", {
   variants: {
     variant: {
@@ -343,18 +471,18 @@ var banner = cva3("rounded-md border px-4 py-3 text-sm", {
 });
 function Banner({ className, variant, ...props }) {
   const role = variant === "danger" ? "alert" : "status";
-  return /* @__PURE__ */ jsx10("div", { role, className: cn(banner({ variant }), className), ...props });
+  return /* @__PURE__ */ jsx13("div", { role, className: cn(banner({ variant }), className), ...props });
 }
 
 // src/primitives/PageHeader.tsx
-import { jsx as jsx11, jsxs as jsxs4 } from "react/jsx-runtime";
+import { jsx as jsx14, jsxs as jsxs6 } from "react/jsx-runtime";
 function PageHeader({ title, caption, actions, className, ...props }) {
-  return /* @__PURE__ */ jsxs4("div", { className: cn("mb-6", className), ...props, children: [
-    /* @__PURE__ */ jsxs4("div", { className: "flex items-center gap-3", children: [
-      /* @__PURE__ */ jsx11("h1", { className: "text-2xl font-semibold", children: title }),
-      actions && /* @__PURE__ */ jsx11("div", { className: "ml-auto flex items-center gap-2", children: actions })
+  return /* @__PURE__ */ jsxs6("div", { className: cn("mb-6", className), ...props, children: [
+    /* @__PURE__ */ jsxs6("div", { className: "flex items-center gap-3", children: [
+      /* @__PURE__ */ jsx14("h1", { className: "text-2xl font-semibold", children: title }),
+      actions && /* @__PURE__ */ jsx14("div", { className: "ml-auto flex items-center gap-2", children: actions })
     ] }),
-    caption && /* @__PURE__ */ jsx11("p", { "data-testid": "pageheader-caption", className: "mt-1 text-sm text-muted-foreground", children: caption })
+    caption && /* @__PURE__ */ jsx14("p", { "data-testid": "pageheader-caption", className: "mt-1 text-sm text-muted-foreground", children: caption })
   ] });
 }
 
@@ -439,20 +567,20 @@ function useTheme() {
 }
 
 // src/primitives/ThemeToggle.tsx
-import { jsx as jsx12, jsxs as jsxs5 } from "react/jsx-runtime";
+import { jsx as jsx15, jsxs as jsxs7 } from "react/jsx-runtime";
 var ICON_PROPS = {
   viewBox: "0 0 16 16",
   className: "h-4 w-4",
   "aria-hidden": true
 };
 var MODE_ICON = {
-  system: /* @__PURE__ */ jsxs5("svg", { ...ICON_PROPS, children: [
-    /* @__PURE__ */ jsx12("circle", { cx: "8", cy: "8", r: "6.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
-    /* @__PURE__ */ jsx12("path", { d: "M8 1.75a6.25 6.25 0 0 0 0 12.5Z", fill: "currentColor" })
+  system: /* @__PURE__ */ jsxs7("svg", { ...ICON_PROPS, children: [
+    /* @__PURE__ */ jsx15("circle", { cx: "8", cy: "8", r: "6.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
+    /* @__PURE__ */ jsx15("path", { d: "M8 1.75a6.25 6.25 0 0 0 0 12.5Z", fill: "currentColor" })
   ] }),
-  light: /* @__PURE__ */ jsxs5("svg", { ...ICON_PROPS, children: [
-    /* @__PURE__ */ jsx12("circle", { cx: "8", cy: "8", r: "3.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
-    /* @__PURE__ */ jsx12(
+  light: /* @__PURE__ */ jsxs7("svg", { ...ICON_PROPS, children: [
+    /* @__PURE__ */ jsx15("circle", { cx: "8", cy: "8", r: "3.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
+    /* @__PURE__ */ jsx15(
       "path",
       {
         d: "M8 .75v2.5M8 12.75v2.5M.75 8h2.5M12.75 8h2.5M2.87 2.87l1.77 1.77M11.36 11.36l1.77 1.77M13.13 2.87l-1.77 1.77M4.64 11.36l-1.77 1.77",
@@ -463,7 +591,7 @@ var MODE_ICON = {
       }
     )
   ] }),
-  dark: /* @__PURE__ */ jsx12("svg", { ...ICON_PROPS, children: /* @__PURE__ */ jsx12(
+  dark: /* @__PURE__ */ jsx15("svg", { ...ICON_PROPS, children: /* @__PURE__ */ jsx15(
     "path",
     {
       d: "M13.54 9.83A6.25 6.25 0 1 1 6.17 2.46a5 5 0 0 0 7.37 7.37Z",
@@ -475,7 +603,7 @@ function ThemeToggle({
   labels = { system: "system", light: "light", dark: "dark" }
 }) {
   const { mode: mode2, cycle } = useTheme();
-  return /* @__PURE__ */ jsx12(
+  return /* @__PURE__ */ jsx15(
     "button",
     {
       type: "button",
@@ -489,7 +617,7 @@ function ThemeToggle({
 }
 
 // src/primitives/AppHeader.tsx
-import { jsx as jsx13, jsxs as jsxs6 } from "react/jsx-runtime";
+import { jsx as jsx16, jsxs as jsxs8 } from "react/jsx-runtime";
 function AppHeader({
   title,
   user,
@@ -500,7 +628,7 @@ function AppHeader({
   className,
   ...props
 }) {
-  return /* @__PURE__ */ jsxs6(
+  return /* @__PURE__ */ jsxs8(
     "header",
     {
       className: cn(
@@ -509,24 +637,24 @@ function AppHeader({
       ),
       ...props,
       children: [
-        /* @__PURE__ */ jsxs6("div", { className: "flex items-baseline gap-3", children: [
-          /* @__PURE__ */ jsxs6(
+        /* @__PURE__ */ jsxs8("div", { className: "flex items-baseline gap-3", children: [
+          /* @__PURE__ */ jsxs8(
             "a",
             {
               href: homeHref,
               className: "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
               children: [
-                /* @__PURE__ */ jsx13("span", { "aria-hidden": true, children: "\u2190" }),
+                /* @__PURE__ */ jsx16("span", { "aria-hidden": true, children: "\u2190" }),
                 homeLabel
               ]
             }
           ),
-          /* @__PURE__ */ jsx13("span", { className: "text-sm font-semibold", children: title }),
-          version && /* @__PURE__ */ jsx13("span", { "data-testid": "appheader-version", className: "text-xs text-muted-foreground", children: version })
+          /* @__PURE__ */ jsx16("span", { className: "text-sm font-semibold", children: title }),
+          version && /* @__PURE__ */ jsx16("span", { "data-testid": "appheader-version", className: "text-xs text-muted-foreground", children: version })
         ] }),
-        /* @__PURE__ */ jsx13("span", { className: "flex-1" }),
-        user && /* @__PURE__ */ jsx13("span", { "data-testid": "appheader-user", className: "text-sm text-muted-foreground", children: user }),
-        /* @__PURE__ */ jsx13(ThemeToggle, { labels: themeLabels })
+        /* @__PURE__ */ jsx16("span", { className: "flex-1" }),
+        user && /* @__PURE__ */ jsx16("span", { "data-testid": "appheader-user", className: "text-sm text-muted-foreground", children: user }),
+        /* @__PURE__ */ jsx16(ThemeToggle, { labels: themeLabels })
       ]
     }
   );
@@ -534,7 +662,7 @@ function AppHeader({
 
 // src/primitives/UserMenu.tsx
 import { useEffect as useEffect2, useRef as useRef2, useState as useState2 } from "react";
-import { jsx as jsx14, jsxs as jsxs7 } from "react/jsx-runtime";
+import { jsx as jsx17, jsxs as jsxs9 } from "react/jsx-runtime";
 function UserMenu({
   user,
   signOutHref = "/auth/logout",
@@ -558,8 +686,8 @@ function UserMenu({
       document.removeEventListener("mousedown", onDown);
     };
   }, [open]);
-  return /* @__PURE__ */ jsxs7("div", { ref: rootRef, className: "relative", children: [
-    /* @__PURE__ */ jsxs7(
+  return /* @__PURE__ */ jsxs9("div", { ref: rootRef, className: "relative", children: [
+    /* @__PURE__ */ jsxs9(
       "button",
       {
         type: "button",
@@ -574,16 +702,16 @@ function UserMenu({
         ),
         children: [
           user,
-          /* @__PURE__ */ jsx14("span", { "aria-hidden": true, className: "text-xs", children: "\u25BE" })
+          /* @__PURE__ */ jsx17("span", { "aria-hidden": true, className: "text-xs", children: "\u25BE" })
         ]
       }
     ),
-    open && /* @__PURE__ */ jsx14(
+    open && /* @__PURE__ */ jsx17(
       "div",
       {
         role: "menu",
         className: "absolute right-0 top-full z-30 mt-1 min-w-40 rounded-lg border border-border bg-muted p-1",
-        children: /* @__PURE__ */ jsx14(
+        children: /* @__PURE__ */ jsx17(
           "a",
           {
             role: "menuitem",
@@ -599,7 +727,7 @@ function UserMenu({
 
 // src/layout/AppShell.tsx
 import { useState as useState3 } from "react";
-import { jsx as jsx15, jsxs as jsxs8 } from "react/jsx-runtime";
+import { jsx as jsx18, jsxs as jsxs10 } from "react/jsx-runtime";
 var SIDEBAR_STORAGE_KEY = "infra-ui-sidebar";
 function readCollapsed() {
   try {
@@ -633,9 +761,9 @@ function AppShell({
       return next;
     });
   };
-  return /* @__PURE__ */ jsxs8("div", { className: "flex h-screen flex-col bg-chrome text-foreground", children: [
-    /* @__PURE__ */ jsxs8("header", { className: "flex h-12 items-center gap-3 px-4", children: [
-      sidebar && /* @__PURE__ */ jsx15(
+  return /* @__PURE__ */ jsxs10("div", { className: "flex h-screen flex-col bg-chrome text-foreground", children: [
+    /* @__PURE__ */ jsxs10("header", { className: "flex h-12 items-center gap-3 px-4", children: [
+      sidebar && /* @__PURE__ */ jsx18(
         "button",
         {
           type: "button",
@@ -643,29 +771,29 @@ function AppShell({
           "aria-expanded": !collapsed,
           onClick: toggleSidebar,
           className: "inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground",
-          children: /* @__PURE__ */ jsx15("span", { "aria-hidden": true, children: "\u2630" })
+          children: /* @__PURE__ */ jsx18("span", { "aria-hidden": true, children: "\u2630" })
         }
       ),
-      /* @__PURE__ */ jsxs8(
+      /* @__PURE__ */ jsxs10(
         "a",
         {
           href: homeHref,
           className: "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
           children: [
-            /* @__PURE__ */ jsx15("span", { "aria-hidden": true, children: "\u2190" }),
+            /* @__PURE__ */ jsx18("span", { "aria-hidden": true, children: "\u2190" }),
             homeLabel
           ]
         }
       ),
-      /* @__PURE__ */ jsx15("span", { className: "text-sm font-semibold", children: title }),
-      version && /* @__PURE__ */ jsx15("span", { className: "text-xs text-muted-foreground", children: version }),
-      /* @__PURE__ */ jsx15("span", { className: "flex-1" }),
-      /* @__PURE__ */ jsx15(ThemeToggle, { labels: themeLabels }),
-      user && /* @__PURE__ */ jsx15(UserMenu, { user, signOutHref, signOutLabel })
+      /* @__PURE__ */ jsx18("span", { className: "text-sm font-semibold", children: title }),
+      version && /* @__PURE__ */ jsx18("span", { className: "text-xs text-muted-foreground", children: version }),
+      /* @__PURE__ */ jsx18("span", { className: "flex-1" }),
+      /* @__PURE__ */ jsx18(ThemeToggle, { labels: themeLabels }),
+      user && /* @__PURE__ */ jsx18(UserMenu, { user, signOutHref, signOutLabel })
     ] }),
-    /* @__PURE__ */ jsxs8("div", { className: "flex min-h-0 flex-1", children: [
-      sidebar && !collapsed && /* @__PURE__ */ jsx15("aside", { className: "flex w-72 shrink-0 flex-col gap-4 overflow-y-auto p-4", children: sidebar }),
-      /* @__PURE__ */ jsx15(
+    /* @__PURE__ */ jsxs10("div", { className: "flex min-h-0 flex-1", children: [
+      sidebar && !collapsed && /* @__PURE__ */ jsx18("aside", { className: "flex w-72 shrink-0 flex-col gap-4 overflow-y-auto p-4", children: sidebar }),
+      /* @__PURE__ */ jsx18(
         "main",
         {
           className: cn(
@@ -679,8 +807,8 @@ function AppShell({
   ] });
 }
 function SidebarGroup({ label, children }) {
-  return /* @__PURE__ */ jsxs8("div", { className: "flex flex-col gap-1", children: [
-    label && /* @__PURE__ */ jsx15("div", { className: "px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground", children: label }),
+  return /* @__PURE__ */ jsxs10("div", { className: "flex flex-col gap-1", children: [
+    label && /* @__PURE__ */ jsx18("div", { className: "px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground", children: label }),
     children
   ] });
 }
@@ -877,14 +1005,14 @@ function seedPositions(nodes, edges, previous, centerX, centerY) {
     }
     orphans.push(n.id);
   }
-  const base = out.size;
-  const spiral = phyllotaxisSeed(base + orphans.length, centerX, centerY, 30);
-  orphans.forEach((id, i) => out.set(id, spiral[base + i]));
+  const base2 = out.size;
+  const spiral = phyllotaxisSeed(base2 + orphans.length, centerX, centerY, 30);
+  orphans.forEach((id, i) => out.set(id, spiral[base2 + i]));
   return out;
 }
 
 // src/graph/ForceGraph.tsx
-import { jsx as jsx16, jsxs as jsxs9 } from "react/jsx-runtime";
+import { jsx as jsx19, jsxs as jsxs11 } from "react/jsx-runtime";
 var WIDTH = 960;
 var HEIGHT = 620;
 var CENTER_X = WIDTH / 2;
@@ -912,7 +1040,7 @@ function radiusForSize(size) {
   return Math.min(34, 7 + Math.sqrt(Math.max(1, size ?? 1)) * 2.4);
 }
 function ExpandIcon() {
-  return /* @__PURE__ */ jsxs9(
+  return /* @__PURE__ */ jsxs11(
     "svg",
     {
       width: "16",
@@ -925,16 +1053,16 @@ function ExpandIcon() {
       strokeLinejoin: "round",
       "aria-hidden": "true",
       children: [
-        /* @__PURE__ */ jsx16("polyline", { points: "15 3 21 3 21 9" }),
-        /* @__PURE__ */ jsx16("polyline", { points: "9 21 3 21 3 15" }),
-        /* @__PURE__ */ jsx16("path", { d: "M 21 3 L 14 10" }),
-        /* @__PURE__ */ jsx16("path", { d: "M 3 21 L 10 14" })
+        /* @__PURE__ */ jsx19("polyline", { points: "15 3 21 3 21 9" }),
+        /* @__PURE__ */ jsx19("polyline", { points: "9 21 3 21 3 15" }),
+        /* @__PURE__ */ jsx19("path", { d: "M 21 3 L 14 10" }),
+        /* @__PURE__ */ jsx19("path", { d: "M 3 21 L 10 14" })
       ]
     }
   );
 }
 function CollapseIcon() {
-  return /* @__PURE__ */ jsxs9(
+  return /* @__PURE__ */ jsxs11(
     "svg",
     {
       width: "16",
@@ -947,10 +1075,10 @@ function CollapseIcon() {
       strokeLinejoin: "round",
       "aria-hidden": "true",
       children: [
-        /* @__PURE__ */ jsx16("polyline", { points: "4 14 10 14 10 20" }),
-        /* @__PURE__ */ jsx16("polyline", { points: "20 10 14 10 14 4" }),
-        /* @__PURE__ */ jsx16("path", { d: "M 14 10 L 21 3" }),
-        /* @__PURE__ */ jsx16("path", { d: "M 3 21 L 10 14" })
+        /* @__PURE__ */ jsx19("polyline", { points: "4 14 10 14 10 20" }),
+        /* @__PURE__ */ jsx19("polyline", { points: "20 10 14 10 14 4" }),
+        /* @__PURE__ */ jsx19("path", { d: "M 14 10 L 21 3" }),
+        /* @__PURE__ */ jsx19("path", { d: "M 3 21 L 10 14" })
       ]
     }
   );
@@ -1337,7 +1465,7 @@ function ForceGraph({
     return set;
   }, [visibleEdges, selectedSet]);
   const transform = `translate(${view.x} ${view.y}) scale(${view.k})`;
-  return /* @__PURE__ */ jsxs9(
+  return /* @__PURE__ */ jsxs11(
     "div",
     {
       "data-maximized": isMaximized,
@@ -1347,12 +1475,12 @@ function ForceGraph({
         className
       ),
       children: [
-        /* @__PURE__ */ jsxs9("div", { className: "space-y-2", children: [
-          statusText && /* @__PURE__ */ jsx16("p", { className: "text-sm text-muted-foreground", children: statusText }),
-          /* @__PURE__ */ jsxs9("div", { className: "flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-2", children: [
-            /* @__PURE__ */ jsxs9("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Minimum edges per node", children: [
-              /* @__PURE__ */ jsx16("span", { className: "text-xs text-muted-foreground", children: L.minEdges }),
-              /* @__PURE__ */ jsx16(
+        /* @__PURE__ */ jsxs11("div", { className: "space-y-2", children: [
+          statusText && /* @__PURE__ */ jsx19("p", { className: "text-sm text-muted-foreground", children: statusText }),
+          /* @__PURE__ */ jsxs11("div", { className: "flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-2", children: [
+            /* @__PURE__ */ jsxs11("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Minimum edges per node", children: [
+              /* @__PURE__ */ jsx19("span", { className: "text-xs text-muted-foreground", children: L.minEdges }),
+              /* @__PURE__ */ jsx19(
                 "button",
                 {
                   type: "button",
@@ -1363,8 +1491,8 @@ function ForceGraph({
                   children: "\u2212"
                 }
               ),
-              /* @__PURE__ */ jsx16("span", { "aria-live": "polite", className: "w-5 text-center text-xs tabular-nums", children: minDegree }),
-              /* @__PURE__ */ jsx16(
+              /* @__PURE__ */ jsx19("span", { "aria-live": "polite", className: "w-5 text-center text-xs tabular-nums", children: minDegree }),
+              /* @__PURE__ */ jsx19(
                 "button",
                 {
                   type: "button",
@@ -1376,10 +1504,10 @@ function ForceGraph({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx16("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
-            /* @__PURE__ */ jsxs9("div", { className: "flex items-center gap-2", children: [
-              /* @__PURE__ */ jsx16("span", { className: "text-xs text-muted-foreground", children: L.edgeLength }),
-              /* @__PURE__ */ jsx16(
+            /* @__PURE__ */ jsx19("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
+            /* @__PURE__ */ jsxs11("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsx19("span", { className: "text-xs text-muted-foreground", children: L.edgeLength }),
+              /* @__PURE__ */ jsx19(
                 "input",
                 {
                   type: "range",
@@ -1394,10 +1522,10 @@ function ForceGraph({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx16("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
-            /* @__PURE__ */ jsxs9("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Zoom", children: [
-              /* @__PURE__ */ jsx16("span", { className: "text-xs text-muted-foreground", children: L.zoom }),
-              /* @__PURE__ */ jsx16(
+            /* @__PURE__ */ jsx19("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
+            /* @__PURE__ */ jsxs11("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Zoom", children: [
+              /* @__PURE__ */ jsx19("span", { className: "text-xs text-muted-foreground", children: L.zoom }),
+              /* @__PURE__ */ jsx19(
                 "button",
                 {
                   type: "button",
@@ -1407,7 +1535,7 @@ function ForceGraph({
                   children: "+"
                 }
               ),
-              /* @__PURE__ */ jsx16(
+              /* @__PURE__ */ jsx19(
                 "button",
                 {
                   type: "button",
@@ -1417,7 +1545,7 @@ function ForceGraph({
                   children: "\u2212"
                 }
               ),
-              /* @__PURE__ */ jsx16(
+              /* @__PURE__ */ jsx19(
                 "button",
                 {
                   type: "button",
@@ -1429,8 +1557,8 @@ function ForceGraph({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx16("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
-            /* @__PURE__ */ jsx16(
+            /* @__PURE__ */ jsx19("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
+            /* @__PURE__ */ jsx19(
               "button",
               {
                 type: "button",
@@ -1442,7 +1570,7 @@ function ForceGraph({
             )
           ] })
         ] }),
-        /* @__PURE__ */ jsxs9(
+        /* @__PURE__ */ jsxs11(
           "div",
           {
             className: cn(
@@ -1450,7 +1578,7 @@ function ForceGraph({
               isMaximized && "flex-1 min-h-0"
             ),
             children: [
-              /* @__PURE__ */ jsxs9(
+              /* @__PURE__ */ jsxs11(
                 "svg",
                 {
                   ref: setSvgRef,
@@ -1462,7 +1590,7 @@ function ForceGraph({
                   role: "application",
                   "aria-label": "Force-directed graph",
                   children: [
-                    /* @__PURE__ */ jsx16(
+                    /* @__PURE__ */ jsx19(
                       "rect",
                       {
                         x: 0,
@@ -1476,8 +1604,8 @@ function ForceGraph({
                         onPointerCancel: onBackgroundPointerCancel
                       }
                     ),
-                    /* @__PURE__ */ jsxs9("g", { transform, children: [
-                      /* @__PURE__ */ jsx16("defs", { children: /* @__PURE__ */ jsx16(
+                    /* @__PURE__ */ jsxs11("g", { transform, children: [
+                      /* @__PURE__ */ jsx19("defs", { children: /* @__PURE__ */ jsx19(
                         "marker",
                         {
                           id: "fg-arrow",
@@ -1488,7 +1616,7 @@ function ForceGraph({
                           markerHeight: "7",
                           orient: "auto-start-reverse",
                           className: "fill-muted-foreground",
-                          children: /* @__PURE__ */ jsx16("path", { d: "M 0 0 L 10 5 L 0 10 z" })
+                          children: /* @__PURE__ */ jsx19("path", { d: "M 0 0 L 10 5 L 0 10 z" })
                         }
                       ) }),
                       visibleEdges.map((e, i) => {
@@ -1503,7 +1631,7 @@ function ForceGraph({
                         const dist = Math.hypot(dx, dy) || 1;
                         const tx = e.directed ? b.x - dx / dist * (b.r + 2) : b.x;
                         const ty = e.directed ? b.y - dy / dist * (b.r + 2) : b.y;
-                        return /* @__PURE__ */ jsx16(
+                        return /* @__PURE__ */ jsx19(
                           "line",
                           {
                             x1: a.x,
@@ -1526,7 +1654,7 @@ function ForceGraph({
                         const isNeighbor = neighborIds?.has(n.id) ?? false;
                         const dimmed = selectedSet.size > 0 && !isSelected && !isNeighbor;
                         const r = sn.r;
-                        return /* @__PURE__ */ jsxs9(
+                        return /* @__PURE__ */ jsxs11(
                           "g",
                           {
                             transform: `translate(${sn.x} ${sn.y})`,
@@ -1552,8 +1680,8 @@ function ForceGraph({
                               }
                             },
                             children: [
-                              /* @__PURE__ */ jsx16("title", { children: `${n.label} (${n.kind})` }),
-                              /* @__PURE__ */ jsx16(
+                              /* @__PURE__ */ jsx19("title", { children: `${n.label} (${n.kind})` }),
+                              /* @__PURE__ */ jsx19(
                                 "circle",
                                 {
                                   r,
@@ -1563,7 +1691,7 @@ function ForceGraph({
                                   strokeWidth: (isSelected ? 3 : 1.5) / view.k
                                 }
                               ),
-                              /* @__PURE__ */ jsx16(
+                              /* @__PURE__ */ jsx19(
                                 "text",
                                 {
                                   y: r + 11 / view.k,
@@ -1582,7 +1710,7 @@ function ForceGraph({
                           n.id
                         );
                       }),
-                      marqueeRect && /* @__PURE__ */ jsx16(
+                      marqueeRect && /* @__PURE__ */ jsx19(
                         "rect",
                         {
                           x: marqueeRect.x,
@@ -1599,7 +1727,7 @@ function ForceGraph({
                   ]
                 }
               ),
-              /* @__PURE__ */ jsx16(
+              /* @__PURE__ */ jsx19(
                 "button",
                 {
                   type: "button",
@@ -1608,11 +1736,11 @@ function ForceGraph({
                   title: isMaximized ? L.minimize : L.maximize,
                   onClick: () => setIsMaximized((m) => !m),
                   className: "absolute left-2 top-2 z-10 rounded-md border border-border bg-background/90 p-1.5 text-muted-foreground hover:text-foreground",
-                  children: isMaximized ? /* @__PURE__ */ jsx16(CollapseIcon, {}) : /* @__PURE__ */ jsx16(ExpandIcon, {})
+                  children: isMaximized ? /* @__PURE__ */ jsx19(CollapseIcon, {}) : /* @__PURE__ */ jsx19(ExpandIcon, {})
                 }
               ),
-              selectedIdsArr.length > 0 && (onExpandNode || onExpandAction || onDeleteNodes) && /* @__PURE__ */ jsxs9("div", { className: "absolute bottom-2 left-2 z-10 flex items-center gap-1.5", children: [
-                actionsActive && selectedIdsArr.length === 1 ? expandActions.map((action) => /* @__PURE__ */ jsx16(
+              selectedIdsArr.length > 0 && (onExpandNode || onExpandAction || onDeleteNodes) && /* @__PURE__ */ jsxs11("div", { className: "absolute bottom-2 left-2 z-10 flex items-center gap-1.5", children: [
+                actionsActive && selectedIdsArr.length === 1 ? expandActions.map((action) => /* @__PURE__ */ jsx19(
                   "button",
                   {
                     type: "button",
@@ -1622,7 +1750,7 @@ function ForceGraph({
                     children: action.label
                   },
                   action.id
-                )) : onExpandNode && selectedIdsArr.length === 1 && /* @__PURE__ */ jsx16(
+                )) : onExpandNode && selectedIdsArr.length === 1 && /* @__PURE__ */ jsx19(
                   "button",
                   {
                     type: "button",
@@ -1632,7 +1760,7 @@ function ForceGraph({
                     children: L.expandSelected
                   }
                 ),
-                onDeleteNodes && /* @__PURE__ */ jsx16(
+                onDeleteNodes && /* @__PURE__ */ jsx19(
                   "button",
                   {
                     type: "button",
@@ -1643,8 +1771,8 @@ function ForceGraph({
                   }
                 )
               ] }),
-              legend && legend.length > 0 && /* @__PURE__ */ jsx16("div", { className: "absolute right-2 top-2 max-w-[12rem] rounded-md border border-border bg-background/90 p-2 text-xs space-y-1", children: /* @__PURE__ */ jsx16("ul", { className: "space-y-0.5", children: legend.map(({ kind, label }) => /* @__PURE__ */ jsxs9("li", { className: "flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx16(
+              legend && legend.length > 0 && /* @__PURE__ */ jsx19("div", { className: "absolute right-2 top-2 max-w-[12rem] rounded-md border border-border bg-background/90 p-2 text-xs space-y-1", children: /* @__PURE__ */ jsx19("ul", { className: "space-y-0.5", children: legend.map(({ kind, label }) => /* @__PURE__ */ jsxs11("li", { className: "flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx19(
                   "span",
                   {
                     "aria-hidden": "true",
@@ -1652,7 +1780,7 @@ function ForceGraph({
                     style: { backgroundColor: nodeStyles[kind]?.color ?? "currentColor" }
                   }
                 ),
-                /* @__PURE__ */ jsx16("span", { className: "truncate", children: label })
+                /* @__PURE__ */ jsx19("span", { className: "truncate", children: label })
               ] }, kind)) }) })
             ]
           }
@@ -1951,18 +2079,33 @@ export {
   Banner,
   Button,
   Card,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ChevronsUpDownIcon,
   CopyButton,
+  DeleteButton,
+  DownloadButton,
+  DownloadIcon,
+  DownloadLink,
   FileList,
   ForceGraph,
   HoverIconAction,
+  IconButton,
+  IconLink,
   Input,
+  MoveDownButton,
+  MoveUpButton,
   PageHeader,
+  RemoveButton,
   SIDEBAR_STORAGE_KEY,
   Select,
   SidebarGroup,
   Spinner,
   THEME_STORAGE_KEY,
+  TrashIcon,
   UserMenu,
+  WarningIcon,
+  XIcon,
   cn,
   downloadText,
   mergeFiles,

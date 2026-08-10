@@ -97,7 +97,54 @@ prop entirely for a header-only shell.
 one per route) · `UserMenu` (identity + sign-out dropdown) ·
 `AppHeader` (portal link, identity, tri-state theme toggle) · `Button` (primary/secondary/ghost/danger · sm/md) · `CopyButton` (icon-only,
 copies text to the clipboard) · `Card` (plain or tile-style with `title`/`interactive`) · `Input` · `Select` ·
-`Badge` (neutral/accent/danger) · `Spinner` · `Banner` (info/danger).
+`Badge` (neutral/accent/danger) · `Spinner` · `Banner` (info/danger) ·
+`IconButton`/`IconLink` and the named icon actions below.
+
+### Icon actions
+
+`IconButton` is the always-visible icon control (`HoverIconAction` is the
+sibling that hides until its row is hovered). It is `ghost` by default —
+transparent at rest, taking a background only under the pointer — and requires
+a `label`, which drives both `aria-label` and `title` since the icon carries no
+text of its own. Pass `children` for a short adornment beside the icon (a
+format, a count, a caret) where several sit side by side; pass `busy` to swap in
+a `Spinner` and block the second click. `IconLink` is the same shell over an
+`<a>`, for a file the server streams.
+
+Import the *action*, not the icon plus a button — that is what keeps four apps
+looking alike:
+
+```tsx
+import {
+  DownloadButton, DownloadLink, RemoveButton, DeleteButton, MoveUpButton, MoveDownButton,
+} from '@infra/ui'
+
+<DownloadButton label="Download transcript" onClick={save} />
+<DownloadLink label="Export CSV" href="/export/documents.csv" />
+<DownloadButton label="Export GraphML" onClick={save}>GraphML</DownloadButton>
+<RemoveButton label="Remove filter rule" onClick={drop} />
+<DeleteButton label="Delete collection" busy={pending} onClick={destroy} />
+<MoveUpButton label="Move up" disabled={first} onClick={() => move(-1)} />
+<MoveDownButton label="Move down" disabled={last} onClick={() => move(1)} />
+```
+
+`MoveUpButton`/`MoveDownButton` reorder an item within a list. Disable them at
+the ends of the run rather than hiding them, so a row's controls do not shift
+under the pointer.
+
+The two removal actions differ on purpose: `RemoveButton` (`×`) takes something
+out of a list, a selection or a view and nothing is destroyed; `DeleteButton`
+(trash) destroys stored data — reserve it for what does not come back, and pair
+it with a confirmation. Both tint `danger` on hover.
+
+**Icons are drawn, never typed.** The set lives in `src/icons/` as inline SVG
+(`DownloadIcon`, `XIcon`, `TrashIcon`, `ChevronDownIcon`, `ChevronUpIcon`,
+`ChevronsUpDownIcon`, `WarningIcon`, all exported). A
+character like `×`, `▾` or `⤓` renders from whatever font the browser and OS
+fall back to, so it differs on every machine — and in a label-less control the
+drawing *is* the affordance. Adding an action means one icon in `src/icons/`
+plus a wrapper the size of the ones in `src/primitives/iconActions.tsx`, never a
+hand-rolled SVG in an app.
 
 All styling uses semantic design tokens only (`bg-primary`, `text-muted-foreground`,
 `border-border`, `bg-chrome` (the `AppShell` frame background), …), so an app

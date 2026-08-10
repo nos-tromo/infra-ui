@@ -66,11 +66,31 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   tailwind-merge).
 - Primitive set: `AppShell`, `SidebarGroup`, `PageHeader`, `UserMenu`, `AppHeader`,
   `Button`, `CopyButton`, `Card`, `Input`, `Select`, `Badge`, `Spinner`, `Banner`,
-  plus the `cn` helper. Every primitive has a unit test — keep that invariant
-  when adding one. `AppShell` is the chrome frame apps wrap their routed
-  content in (sidebar via `SidebarGroup`, `PageHeader` per route, `UserMenu`
-  for identity) and styles its frame background from the `--color-chrome`
-  token — declared in `src/theme.css` alongside the other semantic tokens.
+  `IconButton`/`IconLink` and the named icon actions, plus the `cn` helper.
+  Every primitive has a unit test — keep that invariant when adding one.
+- **Icons are drawn, never typed.** The shared set is `src/icons/` — inline SVG,
+  `currentColor`, `aria-hidden`, sized by the caller. Never a character such as
+  `×`, `▾`, `⤓` or `☀`: those render from whatever font the browser and OS fall
+  back to, so weight and size differ on every machine, and in a control with no
+  text of its own that drawing *is* the affordance. `ThemeToggle` carries the
+  same rule in its own comment; the icon set is where new ones go.
+- **Icon actions are imported, not composed.** `IconButton` (always visible,
+  `ghost` by default so it has no background until hovered) and `IconLink` (the
+  `<a>` shell, for a file the server streams) are the base; `DownloadButton`,
+  `DownloadLink`, `RemoveButton`, `DeleteButton`, `MoveUpButton` and
+  `MoveDownButton` in `src/primitives/iconActions.tsx` bind one icon to one meaning so four apps do
+  not each arrive somewhere slightly different. Adding one — print, refresh,
+  share — is an icon in `src/icons/` plus a wrapper of the same few lines; do
+  not answer a new need by hand-rolling a button in an app. `RemoveButton` (`×`)
+  takes something out of a list or view, `DeleteButton` (trash) destroys stored
+  data — the icon is what tells the user how far the action goes, so keep them
+  distinct. `label` is required on all of them (it is the accessible name and
+  the tooltip), `children` adorns the icon where several sit side by side, and
+  `busy` swaps in a `Spinner` and blocks the second click.
+- `AppShell` is the chrome frame apps wrap their routed content in (sidebar via
+  `SidebarGroup`, `PageHeader` per route, `UserMenu` for identity) and styles
+  its frame background from the `--color-chrome` token — declared in
+  `src/theme.css` alongside the other semantic tokens.
 - **`dist/tokens.css` is generated, never hand-edited.** It's a plain-CSS
   (non-Tailwind) export of the same tokens in `src/theme.css`, for build-free
   static-HTML consumers (e.g. edge-plane's portal) that can't process a

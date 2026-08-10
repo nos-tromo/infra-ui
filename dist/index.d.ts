@@ -1,12 +1,20 @@
 import { ClassValue } from 'clsx';
 import * as react from 'react';
-import { ButtonHTMLAttributes, ReactNode, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, ReactNode, AnchorHTMLAttributes, SVGProps, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes } from 'react';
 import * as class_variance_authority_types from 'class-variance-authority/types';
 import { VariantProps } from 'class-variance-authority';
 
 /** Merge conditional Tailwind classes, resolving utility conflicts (last wins). */
 declare function cn(...inputs: ClassValue[]): string;
 
+/**
+ * The button recipe.
+ *
+ * Exported for the primitives that must render an `<a>` yet look exactly like a
+ * `Button` — a server-streamed download is an anchor, not a button. Deliberately
+ * *not* re-exported from the package index: consumers get `IconLink`, so a link
+ * dressed as a button stays a decision this package makes once.
+ */
 declare const button: (props?: ({
     variant?: "primary" | "secondary" | "ghost" | "danger" | null | undefined;
     size?: "sm" | "md" | null | undefined;
@@ -28,6 +36,161 @@ interface HoverIconActionProps extends Omit<ButtonHTMLAttributes<HTMLButtonEleme
  * marker and the button's positioning.
  */
 declare const HoverIconAction: react.ForwardRefExoticComponent<HoverIconActionProps & react.RefAttributes<HTMLButtonElement>>;
+
+/**
+ * The always-visible icon action, and the base every named action is built on.
+ *
+ * `HoverIconAction` is the quiet sibling — it hides at `opacity-0` until its
+ * row is hovered. This one is always on screen, so it is `ghost` by default:
+ * transparent, taking a background only under the pointer. A permanent border
+ * and fill would make a toolbar of these read as a row of loud chips beside the
+ * quiet icons they sit with.
+ *
+ * `label` is required and drives both `aria-label` and `title`, because the
+ * icon carries no text of its own. `children` is an optional short adornment
+ * beside the icon — a format ("CSV"), a count, a caret — for the case where
+ * several of these sit side by side and the icon alone cannot tell them apart.
+ */
+type IconActionShape = {
+    /** The icon to render. A node, so this package stays icon-library-agnostic. */
+    icon: ReactNode;
+    /** Accessible name — drives both `aria-label` and `title`. Required. */
+    label: string;
+    /**
+     * Tooltip text replacing `label`'s, when there is something extra to say —
+     * most often *why* the action is unavailable. The accessible name stays
+     * `label`, because a disabled control must still say what it is: swapping the
+     * name for the reason leaves a button called "No jobs completed yet".
+     */
+    hint?: string;
+    /** Optional short adornment beside the icon: a format, a count, a caret. */
+    children?: ReactNode;
+    /** Tint the icon on hover — for actions that take something away. */
+    tone?: 'default' | 'danger';
+};
+interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'aria-label' | 'title'>, IconActionShape {
+    /** Swaps the icon for a spinner and blocks further clicks while work is in flight. */
+    busy?: boolean;
+    variant?: ButtonProps['variant'];
+    size?: ButtonProps['size'];
+}
+/**
+ * An icon action the page performs itself.
+ *
+ * @param props - `icon` and `label` are required; `busy` swaps in a spinner.
+ * @returns The button.
+ */
+declare const IconButton: react.ForwardRefExoticComponent<IconButtonProps & react.RefAttributes<HTMLButtonElement>>;
+interface IconLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'aria-label' | 'title'>, IconActionShape {
+    /** Where the link points. */
+    href: string;
+    variant?: ButtonProps['variant'];
+    size?: ButtonProps['size'];
+}
+/**
+ * An icon action the browser performs — a file the server streams is an anchor,
+ * not a button, so it carries the same shell over an `<a>`.
+ *
+ * @param props - `icon`, `label` and `href` are required.
+ * @returns The link, styled as the button it mirrors.
+ */
+declare const IconLink: react.ForwardRefExoticComponent<IconLinkProps & react.RefAttributes<HTMLAnchorElement>>;
+
+/**
+ * The named icon actions.
+ *
+ * Each is a thin binding of one icon to one meaning, so an app imports the
+ * *action* rather than composing an icon with a button and arriving somewhere
+ * slightly different in every repo. Adding another — print, refresh, share — is
+ * an icon in `../icons` plus a wrapper the size of the ones below.
+ *
+ * The two removal actions are deliberately distinct, because the difference is
+ * not decorative:
+ *
+ * - {@link RemoveButton} (`×`) takes something out of a list, a selection or a
+ *   view. Nothing is destroyed and the user can put it back.
+ * - {@link DeleteButton} (trash) destroys stored data. Reserve it for what does
+ *   not come back, and pair it with a confirmation.
+ *
+ * Both tint `danger` on hover; the icon is what says how far the action goes.
+ */
+type ActionButtonProps = Omit<IconButtonProps, 'icon' | 'tone'>;
+type ActionLinkProps = Omit<IconLinkProps, 'icon' | 'tone'>;
+/**
+ * Save a file the page builds itself.
+ *
+ * @param props - `label` names the action; `children` may carry a format.
+ * @returns The download button.
+ */
+declare const DownloadButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
+ * Save a file the server streams. Sets `download` so the browser saves the
+ * response instead of navigating to it; pass `download="name.ext"` to name it.
+ *
+ * @param props - `label` names the action; `href` is the streaming endpoint.
+ * @returns The download link.
+ */
+declare const DownloadLink: react.ForwardRefExoticComponent<ActionLinkProps & react.RefAttributes<HTMLAnchorElement>>;
+/**
+ * Take something out of a list, a selection, or a view.
+ *
+ * @param props - `label` names what is being removed.
+ * @returns The remove button.
+ */
+declare const RemoveButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
+ * Destroy stored data.
+ *
+ * @param props - `label` names what is being deleted.
+ * @returns The delete button.
+ */
+declare const DeleteButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
+ * Move an item one place toward the top of a list.
+ *
+ * Chevrons rather than full arrows: the pair is the conventional reorder
+ * affordance, and it reads as a step within a list rather than navigation away
+ * from it. Disable it at the end of the run instead of hiding it, so the row's
+ * controls do not shift under the pointer.
+ *
+ * @param props - `label` names what moves.
+ * @returns The move-up button.
+ */
+declare const MoveUpButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
+ * Move an item one place toward the bottom of a list.
+ *
+ * @param props - `label` names what moves.
+ * @returns The move-down button.
+ */
+declare const MoveDownButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+
+type IconProps = SVGProps<SVGSVGElement>;
+/**
+ * Save a file to the machine.
+ *
+ * Deliberately the conventional arrow-into-a-tray and nothing cleverer: this is
+ * the icon that has to be understood without a label, on first sight, by
+ * someone who has never opened the app before.
+ */
+declare const DownloadIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/** Take this out of the list, the selection, or the view. Nothing is destroyed. */
+declare const XIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/** Destroy stored data. Reserved for what does not come back. */
+declare const TrashIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/** Disclosure caret. Rotate it with a class rather than swapping the icon. */
+declare const ChevronDownIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/** The up caret — a sort ascending, or a move toward the top of a list. */
+declare const ChevronUpIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Sortable, but not currently sorted.
+ *
+ * Both directions at once, so a column header can advertise that it *can* sort
+ * without claiming a direction it does not have.
+ */
+declare const ChevronsUpDownIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/** Something needs attention but nothing has failed outright. */
+declare const WarningIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 
 interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'onClick' | 'aria-label' | 'title'> {
     /** Text written to the clipboard on click. */
@@ -396,4 +559,4 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, CopyButton, type CopyButtonProps, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, Input, PageHeader, type PageHeaderProps, SIDEBAR_STORAGE_KEY, Select, SidebarGroup, Spinner, type SpinnerProps, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, UserMenu, type UserMenuProps, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DownloadButton, DownloadIcon, DownloadLink, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, Input, MoveDownButton, MoveUpButton, PageHeader, type PageHeaderProps, RemoveButton, SIDEBAR_STORAGE_KEY, Select, SidebarGroup, Spinner, type SpinnerProps, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
