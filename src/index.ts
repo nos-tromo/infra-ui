@@ -1,6 +1,30 @@
 export { cn } from './cn'
 export { Button, type ButtonProps } from './primitives/Button'
 export { HoverIconAction, type HoverIconActionProps } from './primitives/HoverIconAction'
+export {
+  IconButton,
+  IconLink,
+  type IconButtonProps,
+  type IconLinkProps,
+} from './primitives/IconButton'
+export {
+  DownloadButton,
+  DownloadLink,
+  RemoveButton,
+  DeleteButton,
+  MoveUpButton,
+  MoveDownButton,
+} from './primitives/iconActions'
+export {
+  DownloadIcon,
+  XIcon,
+  TrashIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  ChevronsUpDownIcon,
+  WarningIcon,
+  type IconProps,
+} from './icons'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'
 export {
   FileList,
