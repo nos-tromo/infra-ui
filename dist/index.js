@@ -169,6 +169,7 @@ var DownloadIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs
   /* @__PURE__ */ jsx5("path", { d: "m7.5 10.5 4.5 4.5 4.5-4.5" }),
   /* @__PURE__ */ jsx5("path", { d: "M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" })
 ] });
+var PlusIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx5("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx5("path", { d: "M12 5v14M5 12h14" }) });
 var XIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx5("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx5("path", { d: "M18 6 6 18M6 6l12 12" }) });
 var TrashIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
   /* @__PURE__ */ jsx5("path", { d: "M4 7h16M10 11v6M14 11v6" }),
@@ -192,6 +193,8 @@ var DownloadButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton
 DownloadButton.displayName = "DownloadButton";
 var DownloadLink = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconLink, { ref, icon: /* @__PURE__ */ jsx6(DownloadIcon, {}), download: true, ...props }));
 DownloadLink.displayName = "DownloadLink";
+var NewButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, { ref, icon: /* @__PURE__ */ jsx6(PlusIcon, {}), ...props }));
+NewButton.displayName = "NewButton";
 var RemoveButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, { ref, icon: /* @__PURE__ */ jsx6(XIcon, {}), tone: "danger", ...props }));
 RemoveButton.displayName = "RemoveButton";
 var DeleteButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, { ref, icon: /* @__PURE__ */ jsx6(TrashIcon, {}), tone: "danger", ...props }));
@@ -2095,7 +2098,9 @@ export {
   Input,
   MoveDownButton,
   MoveUpButton,
+  NewButton,
   PageHeader,
+  PlusIcon,
   RemoveButton,
   SIDEBAR_STORAGE_KEY,
   Select,

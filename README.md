@@ -130,12 +130,14 @@ looking alike:
 
 ```tsx
 import {
-  DownloadButton, DownloadLink, RemoveButton, DeleteButton, MoveUpButton, MoveDownButton,
+  DownloadButton, DownloadLink, NewButton, RemoveButton, DeleteButton,
+  MoveUpButton, MoveDownButton,
 } from '@infra/ui'
 
 <DownloadButton label="Download transcript" onClick={save} />
 <DownloadLink label="Export CSV" href="/export/documents.csv" />
 <DownloadButton label="Export GraphML" onClick={save}>GraphML</DownloadButton>
+<NewButton label="New chat" onClick={start} />
 <RemoveButton label="Remove filter rule" onClick={drop} />
 <DeleteButton label="Delete collection" busy={pending} onClick={destroy} />
 <MoveUpButton label="Move up" disabled={first} onClick={() => move(-1)} />
@@ -146,14 +148,20 @@ import {
 the ends of the run rather than hiding them, so a row's controls do not shift
 under the pointer.
 
+`NewButton` (`+`) creates a new one of whatever the surrounding list holds — a
+chat, a report, a row — and is the one constructive action in the set, so it
+takes no `danger` tint. It stays a single action rather than splitting into an
+"add" and a "new": the two removals are distinct because their drawings are,
+and a plus asked to mean two things would look the same either way.
+
 The two removal actions differ on purpose: `RemoveButton` (`×`) takes something
 out of a list, a selection or a view and nothing is destroyed; `DeleteButton`
 (trash) destroys stored data — reserve it for what does not come back, and pair
 it with a confirmation. Both tint `danger` on hover.
 
 **Icons are drawn, never typed.** The set lives in `src/icons/` as inline SVG
-(`DownloadIcon`, `XIcon`, `TrashIcon`, `ChevronDownIcon`, `ChevronUpIcon`,
-`ChevronsUpDownIcon`, `WarningIcon`, all exported). A
+(`DownloadIcon`, `PlusIcon`, `XIcon`, `TrashIcon`, `ChevronDownIcon`,
+`ChevronUpIcon`, `ChevronsUpDownIcon`, `WarningIcon`, all exported). A
 character like `×`, `▾` or `⤓` renders from whatever font the browser and OS
 fall back to, so it differs on every machine — and in a label-less control the
 drawing *is* the affordance. Adding an action means one icon in `src/icons/`

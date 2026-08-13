@@ -77,16 +77,19 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
 - **Icon actions are imported, not composed.** `IconButton` (always visible,
   `ghost` by default so it has no background until hovered) and `IconLink` (the
   `<a>` shell, for a file the server streams) are the base; `DownloadButton`,
-  `DownloadLink`, `RemoveButton`, `DeleteButton`, `MoveUpButton` and
+  `DownloadLink`, `NewButton`, `RemoveButton`, `DeleteButton`, `MoveUpButton` and
   `MoveDownButton` in `src/primitives/iconActions.tsx` bind one icon to one meaning so four apps do
   not each arrive somewhere slightly different. Adding one — print, refresh,
   share — is an icon in `src/icons/` plus a wrapper of the same few lines; do
   not answer a new need by hand-rolling a button in an app. `RemoveButton` (`×`)
   takes something out of a list or view, `DeleteButton` (trash) destroys stored
   data — the icon is what tells the user how far the action goes, so keep them
-  distinct. `label` is required on all of them (it is the accessible name and
-  the tooltip), `children` adorns the icon where several sit side by side, and
-  `busy` swaps in a `Spinner` and blocks the second click.
+  distinct. `NewButton` (`+`) is the one constructive action and so wears no
+  `danger` tint; it stays undivided (no separate "add") because a plus meaning
+  two things would draw the same either way. `label` is required on all of them
+  (it is the accessible name and the tooltip), `children` adorns the icon where
+  several sit side by side, and `busy` swaps in a `Spinner` and blocks the
+  second click.
 - `AppShell` is the chrome frame apps wrap their routed content in (sidebar via
   `SidebarGroup`, `PageHeader` per route, `UserMenu` for identity) and styles
   its frame background from the `--color-chrome` token — declared in

@@ -10,6 +10,7 @@ export {
 export {
   DownloadButton,
   DownloadLink,
+  NewButton,
   RemoveButton,
   DeleteButton,
   MoveUpButton,
@@ -17,6 +18,7 @@ export {
 } from './primitives/iconActions'
 export {
   DownloadIcon,
+  PlusIcon,
   XIcon,
   TrashIcon,
   ChevronDownIcon,

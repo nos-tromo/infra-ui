@@ -132,6 +132,18 @@ declare const DownloadButton: react.ForwardRefExoticComponent<ActionButtonProps 
  */
 declare const DownloadLink: react.ForwardRefExoticComponent<ActionLinkProps & react.RefAttributes<HTMLAnchorElement>>;
 /**
+ * Create a new one of whatever the surrounding list holds.
+ *
+ * One action rather than an "add" and a "new" split the way the two removals
+ * are: those are distinct because their drawings are, and a plus asked to mean
+ * two things would look the same either way. It carries no `danger` tint —
+ * nothing is being taken away.
+ *
+ * @param props - `label` names what gets created.
+ * @returns The new button.
+ */
+declare const NewButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
  * Take something out of a list, a selection, or a view.
  *
  * @param props - `label` names what is being removed.
@@ -174,6 +186,14 @@ type IconProps = SVGProps<SVGSVGElement>;
  * someone who has never opened the app before.
  */
 declare const DownloadIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Bring one more into being: a chat, a report, a row.
+ *
+ * The same two strokes {@link XIcon} draws on the diagonal, which is why the
+ * angle has to stay square — tilted, an invitation to add reads as an offer to
+ * take away.
+ */
+declare const PlusIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 /** Take this out of the list, the selection, or the view. Nothing is destroyed. */
 declare const XIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 /** Destroy stored data. Reserved for what does not come back. */
@@ -559,4 +579,4 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DownloadButton, DownloadIcon, DownloadLink, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, Input, MoveDownButton, MoveUpButton, PageHeader, type PageHeaderProps, RemoveButton, SIDEBAR_STORAGE_KEY, Select, SidebarGroup, Spinner, type SpinnerProps, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DownloadButton, DownloadIcon, DownloadLink, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlusIcon, RemoveButton, SIDEBAR_STORAGE_KEY, Select, SidebarGroup, Spinner, type SpinnerProps, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };

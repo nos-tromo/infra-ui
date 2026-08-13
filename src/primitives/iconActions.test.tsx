@@ -6,6 +6,7 @@ import {
   DownloadLink,
   MoveDownButton,
   MoveUpButton,
+  NewButton,
   RemoveButton,
 } from './iconActions'
 
@@ -13,11 +14,12 @@ test('each action names itself and draws an icon rather than a text character', 
   render(
     <>
       <DownloadButton label="Download" />
+      <NewButton label="New chat" />
       <RemoveButton label="Remove rule" />
       <DeleteButton label="Delete collection" />
     </>,
   )
-  for (const name of ['Download', 'Remove rule', 'Delete collection']) {
+  for (const name of ['Download', 'New chat', 'Remove rule', 'Delete collection']) {
     const btn = screen.getByRole('button', { name })
     expect(btn).toHaveAttribute('title', name)
     // The affordance is a drawn SVG. A character like × or ⤓ would render from
@@ -66,6 +68,19 @@ test('both removal actions warn on hover but differ in reach', () => {
   expect(del).toHaveClass('hover:text-danger')
   // Different drawings: × takes something out of a view, the trash destroys it.
   expect(remove.innerHTML).not.toBe(del.innerHTML)
+})
+
+test('the constructive action carries no danger tint', () => {
+  render(
+    <>
+      <NewButton label="New chat" />
+      <RemoveButton label="Remove chat" />
+    </>,
+  )
+  // The hover tint is reserved for actions that take something away; wearing it
+  // here would make starting a chat look like losing one.
+  expect(screen.getByRole('button', { name: 'New chat' })).not.toHaveClass('hover:text-danger')
+  expect(screen.getByRole('button', { name: 'Remove chat' })).toHaveClass('hover:text-danger')
 })
 
 test('a busy action blocks the second click that would delete twice', async () => {

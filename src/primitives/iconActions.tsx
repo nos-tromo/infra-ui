@@ -1,5 +1,5 @@
 import { forwardRef } from 'react'
-import { ChevronDownIcon, ChevronUpIcon, DownloadIcon, TrashIcon, XIcon } from '../icons'
+import { ChevronDownIcon, ChevronUpIcon, DownloadIcon, PlusIcon, TrashIcon, XIcon } from '../icons'
 import {
   IconButton,
   IconLink,
@@ -51,6 +51,22 @@ export const DownloadLink = forwardRef<HTMLAnchorElement, ActionLinkProps>((prop
   <IconLink ref={ref} icon={<DownloadIcon />} download {...props} />
 ))
 DownloadLink.displayName = 'DownloadLink'
+
+/**
+ * Create a new one of whatever the surrounding list holds.
+ *
+ * One action rather than an "add" and a "new" split the way the two removals
+ * are: those are distinct because their drawings are, and a plus asked to mean
+ * two things would look the same either way. It carries no `danger` tint —
+ * nothing is being taken away.
+ *
+ * @param props - `label` names what gets created.
+ * @returns The new button.
+ */
+export const NewButton = forwardRef<HTMLButtonElement, ActionButtonProps>((props, ref) => (
+  <IconButton ref={ref} icon={<PlusIcon />} {...props} />
+))
+NewButton.displayName = 'NewButton'
 
 /**
  * Take something out of a list, a selection, or a view.
