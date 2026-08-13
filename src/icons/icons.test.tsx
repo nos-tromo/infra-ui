@@ -4,6 +4,7 @@ import {
   ChevronUpIcon,
   ChevronsUpDownIcon,
   DownloadIcon,
+  PlusIcon,
   TrashIcon,
   WarningIcon,
   XIcon,
@@ -12,6 +13,7 @@ import {
 const ICONS = {
   DownloadIcon,
   XIcon,
+  PlusIcon,
   TrashIcon,
   ChevronDownIcon,
   ChevronUpIcon,
@@ -54,5 +56,15 @@ test('the two reorder chevrons point opposite ways', () => {
   // Same drawing for both would make a reorder pair unusable.
   expect(up.querySelector('path')!.getAttribute('d')).not.toBe(
     down.querySelector('path')!.getAttribute('d'),
+  )
+})
+
+test('the plus is upright, not the × turned 45°', () => {
+  const { container: plus } = render(<PlusIcon />)
+  const { container: cross } = render(<XIcon />)
+  // Adding and removing are opposite actions drawn from the same two strokes,
+  // so only the angle tells them apart — a diagonal plus reads as a remove.
+  expect(plus.querySelector('path')!.getAttribute('d')).not.toBe(
+    cross.querySelector('path')!.getAttribute('d'),
   )
 })

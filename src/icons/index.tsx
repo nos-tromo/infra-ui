@@ -45,6 +45,19 @@ export const DownloadIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => 
   </svg>
 )
 
+/**
+ * Bring one more into being: a chat, a report, a row.
+ *
+ * The same two strokes {@link XIcon} draws on the diagonal, which is why the
+ * angle has to stay square — tilted, an invitation to add reads as an offer to
+ * take away.
+ */
+export const PlusIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+)
+
 /** Take this out of the list, the selection, or the view. Nothing is destroyed. */
 export const XIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
   <svg {...base} className={className} {...props}>
