@@ -190,7 +190,12 @@ var InfoIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("s
   /* @__PURE__ */ jsx5("circle", { cx: "12", cy: "12", r: "9" }),
   /* @__PURE__ */ jsx5("path", { d: "M12 16v-5M12 8h.01" })
 ] });
-var CheckIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx5("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx5("path", { d: "m5 13 4 4 10-10" }) });
+var CheckIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx5("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx5("path", { d: "M20 6 9 17l-5-5" }) });
+var ExternalLinkIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" }),
+  /* @__PURE__ */ jsx5("path", { d: "M15 3h6v6" }),
+  /* @__PURE__ */ jsx5("path", { d: "M10 14 21 3" })
+] });
 var StopwatchIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
   /* @__PURE__ */ jsx5("circle", { cx: "12", cy: "14", r: "8" }),
   /* @__PURE__ */ jsx5("path", { d: "M12 14v-4" }),
@@ -260,7 +265,7 @@ var CopyButton = forwardRef5(
         onClick: () => void copy(),
         className: cn("aspect-square px-0", className),
         ...props,
-        children: copied ? /* @__PURE__ */ jsx7(CheckGlyph, {}) : /* @__PURE__ */ jsx7(CopyGlyph, {})
+        children: copied ? /* @__PURE__ */ jsx7(CheckIcon, {}) : /* @__PURE__ */ jsx7(CopyGlyph, {})
       }
     );
   }
@@ -283,23 +288,6 @@ function CopyGlyph() {
         /* @__PURE__ */ jsx7("rect", { x: "8", y: "8", width: "14", height: "14", rx: "2", ry: "2" }),
         /* @__PURE__ */ jsx7("path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" })
       ]
-    }
-  );
-}
-function CheckGlyph() {
-  return /* @__PURE__ */ jsx7(
-    "svg",
-    {
-      xmlns: "http://www.w3.org/2000/svg",
-      viewBox: "0 0 24 24",
-      fill: "none",
-      stroke: "currentColor",
-      strokeWidth: "2",
-      strokeLinecap: "round",
-      strokeLinejoin: "round",
-      className: "h-4 w-4",
-      "aria-hidden": "true",
-      children: /* @__PURE__ */ jsx7("path", { d: "M20 6 9 17l-5-5" })
     }
   );
 }
@@ -335,25 +323,6 @@ function formatBytes(bytes) {
   }
   return `${rounded} ${SIZE_UNITS[unit]}`;
 }
-function XGlyph() {
-  return /* @__PURE__ */ jsxs4(
-    "svg",
-    {
-      viewBox: "0 0 24 24",
-      fill: "none",
-      stroke: "currentColor",
-      strokeWidth: "2",
-      strokeLinecap: "round",
-      strokeLinejoin: "round",
-      className: "h-4 w-4",
-      "aria-hidden": "true",
-      children: [
-        /* @__PURE__ */ jsx8("path", { d: "M18 6 6 18" }),
-        /* @__PURE__ */ jsx8("path", { d: "m6 6 12 12" })
-      ]
-    }
-  );
-}
 function FileList({ files, onRemove, onClear, labels, className }) {
   if (files.length === 0) return null;
   const filesLabel = labels?.files ?? ((n) => `${n} file${n === 1 ? "" : "s"}`);
@@ -382,7 +351,7 @@ function FileList({ files, onRemove, onClear, labels, className }) {
           onRemove && /* @__PURE__ */ jsx8(
             HoverIconAction,
             {
-              icon: /* @__PURE__ */ jsx8(XGlyph, {}),
+              icon: /* @__PURE__ */ jsx8(XIcon, {}),
               label: `${removeLabel} ${file.name}`,
               onClick: () => onRemove(index)
             }
@@ -2102,6 +2071,7 @@ export {
   DownloadButton,
   DownloadIcon,
   DownloadLink,
+  ExternalLinkIcon,
   FileList,
   ForceGraph,
   HoverIconAction,

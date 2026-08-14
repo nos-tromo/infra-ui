@@ -133,7 +133,22 @@ export const InfoIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
  */
 export const CheckIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
   <svg {...base} className={className} {...props}>
-    <path d="m5 13 4 4 10-10" />
+    <path d="M20 6 9 17l-5-5" />
+  </svg>
+)
+
+/**
+ * This link leaves — a new tab, or the app entirely.
+ *
+ * The arrow escaping the frame is the whole message, so it belongs beside the
+ * label rather than replacing it: unlike a row action, a link that opens
+ * elsewhere still needs to say *where* it goes.
+ */
+export const ExternalLinkIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+    <path d="M15 3h6v6" />
+    <path d="M10 14 21 3" />
   </svg>
 )
 

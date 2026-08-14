@@ -5,6 +5,7 @@ import {
   ChevronUpIcon,
   ChevronsUpDownIcon,
   DownloadIcon,
+  ExternalLinkIcon,
   InfoIcon,
   PlusIcon,
   StopwatchIcon,
@@ -25,6 +26,7 @@ const ICONS = {
   CheckIcon,
   StopwatchIcon,
   InfoIcon,
+  ExternalLinkIcon,
 }
 
 test('every icon is drawn geometry, not a text character', () => {
@@ -83,6 +85,15 @@ test('the pass and fail markers are told apart by their drawing', () => {
   expect(pass.querySelector('path')!.getAttribute('d')).not.toBe(
     fail.querySelector('path')!.getAttribute('d'),
   )
+})
+
+test('there is exactly one checkmark in the system', () => {
+  // CopyButton drew its own check before `src/icons/` existed. A design system
+  // holding two different checkmarks is the duplication this directory was
+  // extracted to end, so the exported one must stay the drawing every
+  // primitive uses — not a second, subtly different tick.
+  const { container } = render(<CheckIcon />)
+  expect(container.querySelector('path')!.getAttribute('d')).toBe('M20 6 9 17l-5-5')
 })
 
 test('the dialled icons keep their dial', () => {
