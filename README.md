@@ -161,12 +161,20 @@ it with a confirmation. Both tint `danger` on hover.
 
 **Icons are drawn, never typed.** The set lives in `src/icons/` as inline SVG
 (`DownloadIcon`, `PlusIcon`, `XIcon`, `TrashIcon`, `ChevronDownIcon`,
-`ChevronUpIcon`, `ChevronsUpDownIcon`, `WarningIcon`, all exported). A
-character like `×`, `▾` or `⤓` renders from whatever font the browser and OS
-fall back to, so it differs on every machine — and in a label-less control the
-drawing *is* the affordance. Adding an action means one icon in `src/icons/`
-plus a wrapper the size of the ones in `src/primitives/iconActions.tsx`, never a
-hand-rolled SVG in an app.
+`ChevronUpIcon`, `ChevronsUpDownIcon`, `WarningIcon`, `InfoIcon`, `CheckIcon`,
+`StopwatchIcon`, all exported). A character like `×`, `▾` or `⤓` renders from
+whatever font the browser and OS fall back to, so it differs on every machine —
+and in a label-less control the drawing *is* the affordance. Adding an action
+means one icon in `src/icons/` plus a wrapper the size of the ones in
+`src/primitives/iconActions.tsx`, never a hand-rolled SVG in an app.
+
+The rule covers status markers as much as controls, which is what the last four
+are for: `CheckIcon`/`XIcon` as a pass/fail pair, `WarningIcon`/`InfoIcon` as an
+interrupts/does-not-interrupt pair, and `StopwatchIcon` for an elapsed duration
+(a stopwatch, not a clock — this marks time *taken*, not time of day). `⏱` and
+`ⓘ` are the worst offenders under the typed-character rule: both carry emoji
+presentation on some platforms, so they can arrive full-colour beside otherwise
+monochrome chrome.
 
 All styling uses semantic design tokens only (`bg-primary`, `text-muted-foreground`,
 `border-border`, `bg-chrome` (the `AppShell` frame background), …), so an app

@@ -1,10 +1,13 @@
 import { render } from '@testing-library/react'
 import {
+  CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   ChevronsUpDownIcon,
   DownloadIcon,
+  InfoIcon,
   PlusIcon,
+  StopwatchIcon,
   TrashIcon,
   WarningIcon,
   XIcon,
@@ -19,6 +22,9 @@ const ICONS = {
   ChevronUpIcon,
   ChevronsUpDownIcon,
   WarningIcon,
+  CheckIcon,
+  StopwatchIcon,
+  InfoIcon,
 }
 
 test('every icon is drawn geometry, not a text character', () => {
@@ -67,4 +73,24 @@ test('the plus is upright, not the × turned 45°', () => {
   expect(plus.querySelector('path')!.getAttribute('d')).not.toBe(
     cross.querySelector('path')!.getAttribute('d'),
   )
+})
+
+test('the pass and fail markers are told apart by their drawing', () => {
+  const { container: pass } = render(<CheckIcon />)
+  const { container: fail } = render(<XIcon />)
+  // These two are read side by side as one status pair — a terminal state is
+  // "the ✓ one" or "the ✗ one" at a glance, before any label is read.
+  expect(pass.querySelector('path')!.getAttribute('d')).not.toBe(
+    fail.querySelector('path')!.getAttribute('d'),
+  )
+})
+
+test('the dialled icons keep their dial', () => {
+  // Stopwatch and info both mean nothing without the enclosing round face:
+  // stripped to their strokes, the stopwatch is a tick and the info is a
+  // lowercase i. The circle is not decoration.
+  for (const [name, Icon] of Object.entries({ StopwatchIcon, InfoIcon })) {
+    const { container } = render(<Icon />)
+    expect(container.querySelector('svg')!.querySelector('circle'), name).not.toBeNull()
+  }
 })

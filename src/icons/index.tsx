@@ -108,3 +108,47 @@ export const WarningIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
     <path d="M12 9v4M12 17h.01" />
   </svg>
 )
+
+/**
+ * Context, offered rather than demanded.
+ *
+ * Deliberately {@link WarningIcon}'s stack inverted — dot above, bar below — so
+ * the two read as one family and differ only where it matters: the triangle
+ * interrupts, the circle does not.
+ */
+export const InfoIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 16v-5M12 8h.01" />
+  </svg>
+)
+
+/**
+ * It worked, it passed, it is already in.
+ *
+ * The pass half of a pair whose fail half is {@link XIcon} — the two get read
+ * side by side as one status vocabulary, so they must keep the same stroke
+ * weight and optical size or a run's outcome starts depending on which marker
+ * it drew.
+ */
+export const CheckIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="m5 13 4 4 10-10" />
+  </svg>
+)
+
+/**
+ * Time *taken*, not time of day.
+ *
+ * A dial with a crown, deliberately not a clock face: this marks a duration —
+ * how long a run has been going, or how long it took — and a clock beside a
+ * counter reads as a timestamp instead.
+ */
+export const StopwatchIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <circle cx="12" cy="14" r="8" />
+    <path d="M12 14v-4" />
+    <path d="M9 2h6" />
+    <path d="M12 2v4" />
+  </svg>
+)

@@ -186,6 +186,17 @@ var WarningIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2
   /* @__PURE__ */ jsx5("path", { d: "M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0" }),
   /* @__PURE__ */ jsx5("path", { d: "M12 9v4M12 17h.01" })
 ] });
+var InfoIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("circle", { cx: "12", cy: "12", r: "9" }),
+  /* @__PURE__ */ jsx5("path", { d: "M12 16v-5M12 8h.01" })
+] });
+var CheckIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx5("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx5("path", { d: "m5 13 4 4 10-10" }) });
+var StopwatchIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("circle", { cx: "12", cy: "14", r: "8" }),
+  /* @__PURE__ */ jsx5("path", { d: "M12 14v-4" }),
+  /* @__PURE__ */ jsx5("path", { d: "M9 2h6" }),
+  /* @__PURE__ */ jsx5("path", { d: "M12 2v4" })
+] });
 
 // src/primitives/iconActions.tsx
 import { jsx as jsx6 } from "react/jsx-runtime";
@@ -2082,6 +2093,7 @@ export {
   Banner,
   Button,
   Card,
+  CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,
   ChevronsUpDownIcon,
@@ -2095,6 +2107,7 @@ export {
   HoverIconAction,
   IconButton,
   IconLink,
+  InfoIcon,
   Input,
   MoveDownButton,
   MoveUpButton,
@@ -2106,6 +2119,7 @@ export {
   Select,
   SidebarGroup,
   Spinner,
+  StopwatchIcon,
   THEME_STORAGE_KEY,
   TrashIcon,
   UserMenu,

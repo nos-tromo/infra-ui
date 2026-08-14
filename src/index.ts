@@ -25,6 +25,9 @@ export {
   ChevronUpIcon,
   ChevronsUpDownIcon,
   WarningIcon,
+  InfoIcon,
+  CheckIcon,
+  StopwatchIcon,
   type IconProps,
 } from './icons'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'
