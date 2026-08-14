@@ -1,4 +1,5 @@
 import { cn } from '../cn'
+import { XIcon } from '../icons'
 import { Button } from './Button'
 import { HoverIconAction } from './HoverIconAction'
 
@@ -76,24 +77,6 @@ function formatBytes(bytes: number): string {
   return `${rounded} ${SIZE_UNITS[unit]}`
 }
 
-function XGlyph() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4"
-      aria-hidden="true"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
-  )
-}
-
 /**
  * A self-contained panel that displays a list of selected files: a pinned
  * summary header (count + total size + optional "Clear all") over a
@@ -144,7 +127,7 @@ export function FileList({ files, onRemove, onClear, labels, className }: FileLi
             )}
             {onRemove && (
               <HoverIconAction
-                icon={<XGlyph />}
+                icon={<XIcon />}
                 label={`${removeLabel} ${file.name}`}
                 onClick={() => onRemove(index)}
               />

@@ -211,6 +211,39 @@ declare const ChevronUpIcon: ({ className, ...props }: IconProps) => react.JSX.E
 declare const ChevronsUpDownIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 /** Something needs attention but nothing has failed outright. */
 declare const WarningIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Context, offered rather than demanded.
+ *
+ * Deliberately {@link WarningIcon}'s stack inverted — dot above, bar below — so
+ * the two read as one family and differ only where it matters: the triangle
+ * interrupts, the circle does not.
+ */
+declare const InfoIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * It worked, it passed, it is already in.
+ *
+ * The pass half of a pair whose fail half is {@link XIcon} — the two get read
+ * side by side as one status vocabulary, so they must keep the same stroke
+ * weight and optical size or a run's outcome starts depending on which marker
+ * it drew.
+ */
+declare const CheckIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * This link leaves — a new tab, or the app entirely.
+ *
+ * The arrow escaping the frame is the whole message, so it belongs beside the
+ * label rather than replacing it: unlike a row action, a link that opens
+ * elsewhere still needs to say *where* it goes.
+ */
+declare const ExternalLinkIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Time *taken*, not time of day.
+ *
+ * A dial with a crown, deliberately not a clock face: this marks a duration —
+ * how long a run has been going, or how long it took — and a clock beside a
+ * counter reads as a timestamp instead.
+ */
+declare const StopwatchIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 
 interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'onClick' | 'aria-label' | 'title'> {
     /** Text written to the clipboard on click. */
@@ -579,4 +612,4 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DownloadButton, DownloadIcon, DownloadLink, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlusIcon, RemoveButton, SIDEBAR_STORAGE_KEY, Select, SidebarGroup, Spinner, type SpinnerProps, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlusIcon, RemoveButton, SIDEBAR_STORAGE_KEY, Select, SidebarGroup, Spinner, type SpinnerProps, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };

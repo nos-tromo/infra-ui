@@ -1,6 +1,7 @@
 import { forwardRef, useEffect, useRef, useState } from 'react'
 import { Button, type ButtonProps } from './Button'
 import { cn } from '../cn'
+import { CheckIcon } from '../icons'
 
 export interface CopyButtonProps
   extends Omit<ButtonProps, 'children' | 'onClick' | 'aria-label' | 'title'> {
@@ -69,7 +70,7 @@ export const CopyButton = forwardRef<HTMLButtonElement, CopyButtonProps>(
         className={cn('aspect-square px-0', className)}
         {...props}
       >
-        {copied ? <CheckGlyph /> : <CopyGlyph />}
+        {copied ? <CheckIcon /> : <CopyGlyph />}
       </Button>
     )
   },
@@ -96,21 +97,3 @@ function CopyGlyph() {
   )
 }
 
-/** Lucide "check" glyph, shown briefly after a successful copy. */
-function CheckGlyph() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4"
-      aria-hidden="true"
-    >
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
-  )
-}
