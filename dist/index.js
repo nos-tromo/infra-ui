@@ -202,6 +202,16 @@ var StopwatchIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx
   /* @__PURE__ */ jsx5("path", { d: "M9 2h6" }),
   /* @__PURE__ */ jsx5("path", { d: "M12 2v4" })
 ] });
+var ReportIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("path", { d: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" }),
+  /* @__PURE__ */ jsx5("path", { d: "M14 3v5h5" }),
+  /* @__PURE__ */ jsx5("path", { d: "M9 13h6M9 17h6" })
+] });
+var ReportCheckIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("path", { d: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" }),
+  /* @__PURE__ */ jsx5("path", { d: "M14 3v5h5" }),
+  /* @__PURE__ */ jsx5("path", { d: "m9 15 2 2 4-4" })
+] });
 
 // src/primitives/iconActions.tsx
 import { jsx as jsx6 } from "react/jsx-runtime";
@@ -2085,6 +2095,8 @@ export {
   PageHeader,
   PlusIcon,
   RemoveButton,
+  ReportCheckIcon,
+  ReportIcon,
   SIDEBAR_STORAGE_KEY,
   Select,
   SidebarGroup,

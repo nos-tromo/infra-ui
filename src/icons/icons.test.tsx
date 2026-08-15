@@ -8,6 +8,8 @@ import {
   ExternalLinkIcon,
   InfoIcon,
   PlusIcon,
+  ReportCheckIcon,
+  ReportIcon,
   StopwatchIcon,
   TrashIcon,
   WarningIcon,
@@ -27,6 +29,8 @@ const ICONS = {
   StopwatchIcon,
   InfoIcon,
   ExternalLinkIcon,
+  ReportIcon,
+  ReportCheckIcon,
 }
 
 test('every icon is drawn geometry, not a text character', () => {
@@ -104,4 +108,19 @@ test('the dialled icons keep their dial', () => {
     const { container } = render(<Icon />)
     expect(container.querySelector('svg')!.querySelector('circle'), name).not.toBeNull()
   }
+})
+
+test('the report pair is one page in two states', () => {
+  const { container: empty } = render(<ReportIcon />)
+  const { container: filed } = render(<ReportCheckIcon />)
+  const page = (c: HTMLElement) =>
+    [...c.querySelectorAll('path')].slice(0, 2).map((p) => p.getAttribute('d'))
+  // "Add to report" is a toggle carrying no text of its own, so the sheet has
+  // to stay put while only its contents change — a page that also moved would
+  // read as the icon being swapped for a different one, not as a state.
+  expect(page(empty)).toEqual(page(filed))
+  expect(empty.querySelectorAll('path')).toHaveLength(filed.querySelectorAll('path').length)
+  // ...and the two states must still differ, or the toggle says nothing.
+  const inside = (c: HTMLElement) => c.querySelectorAll('path')[2]!.getAttribute('d')
+  expect(inside(empty)).not.toBe(inside(filed))
 })
