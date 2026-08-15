@@ -29,6 +29,8 @@ export {
   CheckIcon,
   StopwatchIcon,
   ExternalLinkIcon,
+  ReportIcon,
+  ReportCheckIcon,
   type IconProps,
 } from './icons'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'

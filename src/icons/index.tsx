@@ -167,3 +167,40 @@ export const StopwatchIcon = ({ className = 'h-4 w-4', ...props }: IconProps) =>
     <path d="M12 2v4" />
   </svg>
 )
+
+/**
+ * A report — a page of written findings.
+ *
+ * Drawn as a sheet with a folded corner and two lines of text, because a report
+ * in these apps is a *document being assembled*, not a chart or a clipboard: the
+ * lines say it holds prose someone wrote, and the fold says it is one page of
+ * it. It is the only page in the set, so nothing else in a row can be mistaken
+ * for it.
+ */
+export const ReportIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+    <path d="M14 3v5h5" />
+    <path d="M9 13h6M9 17h6" />
+  </svg>
+)
+
+/**
+ * The same report, with this artifact already in it.
+ *
+ * The pair exists because "add to report" is a *toggle* that carries no text:
+ * one drawing pressed and unpressed would leave its two states to be told apart
+ * by a background tint alone. So the page stays exactly where it is and only
+ * its contents change — the lines become a tick — which reads as the sheet
+ * being filled rather than swapped for a different icon.
+ *
+ * The tick is part of a composite drawing, sized to sit inside the page;
+ * {@link CheckIcon} remains the system's one standalone checkmark.
+ */
+export const ReportCheckIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+    <path d="M14 3v5h5" />
+    <path d="m9 15 2 2 4-4" />
+  </svg>
+)

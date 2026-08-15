@@ -162,7 +162,7 @@ it with a confirmation. Both tint `danger` on hover.
 **Icons are drawn, never typed.** The set lives in `src/icons/` as inline SVG
 (`DownloadIcon`, `PlusIcon`, `XIcon`, `TrashIcon`, `ChevronDownIcon`,
 `ChevronUpIcon`, `ChevronsUpDownIcon`, `WarningIcon`, `InfoIcon`, `CheckIcon`,
-`StopwatchIcon`, `ExternalLinkIcon`, all exported). A character like `×`, `▾` or
+`StopwatchIcon`, `ExternalLinkIcon`, `ReportIcon`/`ReportCheckIcon`, all exported). A character like `×`, `▾` or
 `⤓` renders from whatever font the browser and OS fall back to, so it differs on
 every machine — and in a label-less control the drawing *is* the affordance.
 Adding an action means one icon in `src/icons/` plus a wrapper the size of the
@@ -175,6 +175,13 @@ stopwatch, not a clock — this marks time *taken*, not time of day), and
 `ExternalLinkIcon` for a link that leaves. `⏱`, `ⓘ` and `↗` are the worst
 offenders under the typed-character rule: they carry emoji presentation on some
 platforms, so they can arrive full-colour beside otherwise monochrome chrome.
+
+`ReportIcon`/`ReportCheckIcon` are a *state* pair rather than a semantic one:
+one page, drawn empty and drawn with a tick, for the "add to report" / "in
+report" toggle an app builds over `IconButton`. It stays two icons instead of
+one action wrapper because which of them shows is decided by the app's own
+state, and the sheet must not move between them — a page that shifted would
+read as the icon being swapped, not as the toggle being pressed.
 
 An icon is exported **once** and imported everywhere, including by this
 package's own primitives — `CopyButton` and `FileList` each kept a private
