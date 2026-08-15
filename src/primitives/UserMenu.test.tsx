@@ -36,3 +36,15 @@ test('closes on Escape and on outside click', () => {
   fireEvent.mouseDown(screen.getByText('outside'))
   expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 })
+
+test('the caret is drawn, not typed', () => {
+  render(<UserMenu user="a.beispiel" />)
+  const trigger = screen.getByRole('button', { name: /a\.beispiel/i })
+  const svg = trigger.querySelector('svg')
+  // A `▾` renders from whatever font the browser falls back to, so this
+  // package would ship a caret that differs on every machine — and it ships
+  // into every app's header, which is the worst place for that.
+  expect(svg).not.toBeNull()
+  expect(svg).toHaveAttribute('aria-hidden', 'true')
+  expect(trigger.textContent).toBe('a.beispiel')
+})

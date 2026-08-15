@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react'
 import {
+  ArrowLeftIcon,
   CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,
@@ -8,8 +9,11 @@ import {
   ExternalLinkIcon,
   InfoIcon,
   PlusIcon,
+  RefreshIcon,
   ReportCheckIcon,
   ReportIcon,
+  SearchIcon,
+  SendIcon,
   StopwatchIcon,
   TrashIcon,
   WarningIcon,
@@ -31,6 +35,10 @@ const ICONS = {
   ExternalLinkIcon,
   ReportIcon,
   ReportCheckIcon,
+  SendIcon,
+  SearchIcon,
+  RefreshIcon,
+  ArrowLeftIcon,
 }
 
 test('every icon is drawn geometry, not a text character', () => {
@@ -123,4 +131,34 @@ test('the report pair is one page in two states', () => {
   // ...and the two states must still differ, or the toggle says nothing.
   const inside = (c: HTMLElement) => c.querySelectorAll('path')[2]!.getAttribute('d')
   expect(inside(empty)).not.toBe(inside(filed))
+})
+
+test('the refresh icon keeps both of its arrows', () => {
+  const { container } = render(<RefreshIcon />)
+  const paths = [...container.querySelectorAll('path')]
+  // Two arcs and two heads, not one circular arrow: a single arrow curving
+  // back on itself is the undo drawing, and only the closed pair reads as
+  // "again". Stripping one to tidy the icon changes what it means.
+  expect(paths.filter((p) => /[aA]/.test(p.getAttribute('d') ?? ''))).toHaveLength(2)
+  expect(paths.length).toBeGreaterThanOrEqual(4)
+})
+
+test('send is a plane, not the search magnifier or an arrow', () => {
+  const { container: send } = render(<SendIcon />)
+  const { container: search } = render(<SearchIcon />)
+  // The plane is closed geometry (it encloses a shape); the magnifier is a
+  // circle plus a stroke. Sharing a drawing would make the chat composer's two
+  // controls indistinguishable, and they sit a few pixels apart.
+  expect(send.querySelectorAll('path').length).toBe(2)
+  expect(send.querySelector('circle')).toBeNull()
+  expect(search.querySelector('circle')).not.toBeNull()
+})
+
+test('the back arrow is a full arrow, not a chevron', () => {
+  const { container: back } = render(<ArrowLeftIcon />)
+  const { container: chevron } = render(<ChevronDownIcon />)
+  // A chevron is a disclosure or a step within a list; this link leaves the
+  // page. The shaft is what carries that difference.
+  expect(back.querySelectorAll('path')).toHaveLength(2)
+  expect(chevron.querySelectorAll('path')).toHaveLength(1)
 })

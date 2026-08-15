@@ -176,6 +176,36 @@ declare const MoveUpButton: react.ForwardRefExoticComponent<ActionButtonProps & 
  * @returns The move-down button.
  */
 declare const MoveDownButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
+ * Send what has been composed — a chat message, a prompt.
+ *
+ * The one action here that is usually a page's *primary* control rather than
+ * quiet chrome, so it is the common case for passing `variant="primary"`. Pass
+ * `type="submit"` when it closes a form: `IconButton` writes `type="button"`
+ * before spreading the caller's props, so this overrides it.
+ *
+ * @param props - `label` names the action; `busy` covers the send in flight.
+ * @returns The send button.
+ */
+declare const SendButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
+ * Run the search the neighbouring field describes.
+ *
+ * @param props - `label` names the action; pass `type="submit"` inside a form.
+ * @returns The search button.
+ */
+declare const SearchButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
+ * Rebuild what is already on screen.
+ *
+ * Reserve it for a *re*build — something is displayed and this replaces it.
+ * A view with nothing in it yet wants a labelled create button instead, which
+ * can say what it will make; a bare pair of arrows over an empty panel cannot.
+ *
+ * @param props - `label` names what gets rebuilt; `busy` covers the rebuild.
+ * @returns The refresh button.
+ */
+declare const RefreshButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
 
 type IconProps = SVGProps<SVGSVGElement>;
 /**
@@ -267,6 +297,41 @@ declare const ReportIcon: ({ className, ...props }: IconProps) => react.JSX.Elem
  * {@link CheckIcon} remains the system's one standalone checkmark.
  */
 declare const ReportCheckIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Send the message that has been typed.
+ *
+ * The paper plane every chat composer uses — a triangle with the fold line
+ * that turns it from an arrowhead into a sheet in flight. Drawn rather than
+ * borrowed from an arrow because the two say different things: an arrow points
+ * somewhere, this one leaves.
+ */
+declare const SendIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Search whatever the surrounding field takes as its query.
+ *
+ * A magnifier, and deliberately nothing cleverer: like {@link DownloadIcon} it
+ * has to be understood on first sight, without a label, by someone who has
+ * never opened the app.
+ */
+declare const SearchIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Rebuild something already on screen.
+ *
+ * **Two** arcs chasing each other, each with its own arrowhead — not one
+ * circular arrow. A single arrow curving back on itself is the undo/revert
+ * drawing; the closed pair is what reads as *again*. The gaps between them are
+ * what leaves room for the heads, so an arc that swept the full circle would
+ * cost the icon its meaning rather than tidy it.
+ */
+declare const RefreshIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Back to where this page was reached from.
+ *
+ * A full arrow rather than a chevron: a chevron is a disclosure or a step
+ * within a list, and this leaves the page. It sits beside its label — a link
+ * that goes back still has to say what it goes back to.
+ */
+declare const ArrowLeftIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 
 interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'onClick' | 'aria-label' | 'title'> {
     /** Text written to the clipboard on click. */
@@ -635,4 +700,4 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlusIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, Select, SidebarGroup, Spinner, type SpinnerProps, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };

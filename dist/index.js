@@ -212,6 +212,24 @@ var ReportCheckIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ j
   /* @__PURE__ */ jsx5("path", { d: "M14 3v5h5" }),
   /* @__PURE__ */ jsx5("path", { d: "m9 15 2 2 4-4" })
 ] });
+var SendIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("path", { d: "M21.5 2.5 11 13" }),
+  /* @__PURE__ */ jsx5("path", { d: "M21.5 2.5 15 21.5 11 13 2.5 9z" })
+] });
+var SearchIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("circle", { cx: "11", cy: "11", r: "7" }),
+  /* @__PURE__ */ jsx5("path", { d: "m20 20-3.6-3.6" })
+] });
+var RefreshIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("path", { d: "M20.5 12a8.5 8.5 0 0 1-14.6 5.9L3 15" }),
+  /* @__PURE__ */ jsx5("path", { d: "M3.5 12a8.5 8.5 0 0 1 14.6-5.9L21 9" }),
+  /* @__PURE__ */ jsx5("path", { d: "M3 20.5V15h5.5" }),
+  /* @__PURE__ */ jsx5("path", { d: "M21 3.5V9h-5.5" })
+] });
+var ArrowLeftIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("path", { d: "M19 12H5" }),
+  /* @__PURE__ */ jsx5("path", { d: "m12 19-7-7 7-7" })
+] });
 
 // src/primitives/iconActions.tsx
 import { jsx as jsx6 } from "react/jsx-runtime";
@@ -229,6 +247,12 @@ var MoveUpButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, 
 MoveUpButton.displayName = "MoveUpButton";
 var MoveDownButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, { ref, icon: /* @__PURE__ */ jsx6(ChevronDownIcon, {}), ...props }));
 MoveDownButton.displayName = "MoveDownButton";
+var SendButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, { ref, icon: /* @__PURE__ */ jsx6(SendIcon, {}), ...props }));
+SendButton.displayName = "SendButton";
+var SearchButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, { ref, icon: /* @__PURE__ */ jsx6(SearchIcon, {}), ...props }));
+SearchButton.displayName = "SearchButton";
+var RefreshButton = forwardRef4((props, ref) => /* @__PURE__ */ jsx6(IconButton, { ref, icon: /* @__PURE__ */ jsx6(RefreshIcon, {}), ...props }));
+RefreshButton.displayName = "RefreshButton";
 
 // src/primitives/CopyButton.tsx
 import { forwardRef as forwardRef5, useEffect, useRef, useState } from "react";
@@ -637,7 +661,7 @@ function AppHeader({
               href: homeHref,
               className: "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
               children: [
-                /* @__PURE__ */ jsx16("span", { "aria-hidden": true, children: "\u2190" }),
+                /* @__PURE__ */ jsx16(ArrowLeftIcon, { className: "h-3.5 w-3.5" }),
                 homeLabel
               ]
             }
@@ -695,7 +719,7 @@ function UserMenu({
         ),
         children: [
           user,
-          /* @__PURE__ */ jsx17("span", { "aria-hidden": true, className: "text-xs", children: "\u25BE" })
+          /* @__PURE__ */ jsx17(ChevronDownIcon, { className: "h-3.5 w-3.5" })
         ]
       }
     ),
@@ -773,7 +797,7 @@ function AppShell({
           href: homeHref,
           className: "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
           children: [
-            /* @__PURE__ */ jsx18("span", { "aria-hidden": true, children: "\u2190" }),
+            /* @__PURE__ */ jsx18(ArrowLeftIcon, { className: "h-3.5 w-3.5" }),
             homeLabel
           ]
         }
@@ -2068,6 +2092,7 @@ function downloadText(filename, text, mimeType) {
 export {
   AppHeader,
   AppShell,
+  ArrowLeftIcon,
   Badge,
   Banner,
   Button,
@@ -2094,11 +2119,17 @@ export {
   NewButton,
   PageHeader,
   PlusIcon,
+  RefreshButton,
+  RefreshIcon,
   RemoveButton,
   ReportCheckIcon,
   ReportIcon,
   SIDEBAR_STORAGE_KEY,
+  SearchButton,
+  SearchIcon,
   Select,
+  SendButton,
+  SendIcon,
   SidebarGroup,
   Spinner,
   StopwatchIcon,

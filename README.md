@@ -131,7 +131,7 @@ looking alike:
 ```tsx
 import {
   DownloadButton, DownloadLink, NewButton, RemoveButton, DeleteButton,
-  MoveUpButton, MoveDownButton,
+  MoveUpButton, MoveDownButton, SendButton, SearchButton, RefreshButton,
 } from '@infra/ui'
 
 <DownloadButton label="Download transcript" onClick={save} />
@@ -142,7 +142,19 @@ import {
 <DeleteButton label="Delete collection" busy={pending} onClick={destroy} />
 <MoveUpButton label="Move up" disabled={first} onClick={() => move(-1)} />
 <MoveDownButton label="Move down" disabled={last} onClick={() => move(1)} />
+<SendButton label="Send" type="submit" variant="primary" busy={inflight} />
+<SearchButton label="Search" type="submit" />
+<RefreshButton label="Refresh summary" busy={rebuilding} onClick={rebuild} />
 ```
+
+`SendButton` is the one action here that is usually a page's *primary* control
+rather than quiet chrome, so it is the common case for `variant="primary"`. It
+and `SearchButton` normally close a form: pass `type="submit"` — `IconButton`
+writes `type="button"` before spreading your props, so the override lands.
+
+`RefreshButton` is for a *re*build — something is on screen and this replaces
+it. A view with nothing in it yet wants a labelled create button instead, which
+can say what it will make; a bare pair of arrows over an empty panel cannot.
 
 `MoveUpButton`/`MoveDownButton` reorder an item within a list. Disable them at
 the ends of the run rather than hiding them, so a row's controls do not shift
@@ -162,7 +174,8 @@ it with a confirmation. Both tint `danger` on hover.
 **Icons are drawn, never typed.** The set lives in `src/icons/` as inline SVG
 (`DownloadIcon`, `PlusIcon`, `XIcon`, `TrashIcon`, `ChevronDownIcon`,
 `ChevronUpIcon`, `ChevronsUpDownIcon`, `WarningIcon`, `InfoIcon`, `CheckIcon`,
-`StopwatchIcon`, `ExternalLinkIcon`, `ReportIcon`/`ReportCheckIcon`, all exported). A character like `×`, `▾` or
+`StopwatchIcon`, `ExternalLinkIcon`, `ReportIcon`/`ReportCheckIcon`, `SendIcon`,
+`SearchIcon`, `RefreshIcon`, `ArrowLeftIcon`, all exported). A character like `×`, `▾` or
 `⤓` renders from whatever font the browser and OS fall back to, so it differs on
 every machine — and in a label-less control the drawing *is* the affordance.
 Adding an action means one icon in `src/icons/` plus a wrapper the size of the
@@ -175,6 +188,11 @@ stopwatch, not a clock — this marks time *taken*, not time of day), and
 `ExternalLinkIcon` for a link that leaves. `⏱`, `ⓘ` and `↗` are the worst
 offenders under the typed-character rule: they carry emoji presentation on some
 platforms, so they can arrive full-colour beside otherwise monochrome chrome.
+
+The rule binds this package's own chrome hardest, because a slip here ships to
+every app at once: `UserMenu` drew its caret as `▾` and `AppShell`/`AppHeader`
+drew the back link as `←` until `v0.14.0`, so four federation headers rendered
+their arrows in whatever font each machine fell back to.
 
 `ReportIcon`/`ReportCheckIcon` are a *state* pair rather than a semantic one:
 one page, drawn empty and drawn with a tick, for the "add to report" / "in

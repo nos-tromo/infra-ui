@@ -15,6 +15,9 @@ export {
   DeleteButton,
   MoveUpButton,
   MoveDownButton,
+  SendButton,
+  SearchButton,
+  RefreshButton,
 } from './primitives/iconActions'
 export {
   DownloadIcon,
@@ -31,6 +34,10 @@ export {
   ExternalLinkIcon,
   ReportIcon,
   ReportCheckIcon,
+  SendIcon,
+  SearchIcon,
+  RefreshIcon,
+  ArrowLeftIcon,
   type IconProps,
 } from './icons'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'

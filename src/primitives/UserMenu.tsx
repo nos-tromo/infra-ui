@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '../cn'
+import { ChevronDownIcon } from '../icons'
 
 export interface UserMenuProps {
   /** Signed-in user name (from the trusted X-Auth-User header). */
@@ -51,7 +52,7 @@ export function UserMenu({
         )}
       >
         {user}
-        <span aria-hidden className="text-xs">▾</span>
+        <ChevronDownIcon className="h-3.5 w-3.5" />
       </button>
       {open && (
         <div

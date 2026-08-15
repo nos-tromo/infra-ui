@@ -68,3 +68,14 @@ test('SidebarGroup renders an uppercase section label', () => {
   render(<SidebarGroup label="Entities">items</SidebarGroup>)
   expect(screen.getByText('Entities')).toHaveClass('uppercase')
 })
+
+test('the back link draws its arrow', () => {
+  render(<AppShell title="docint">body</AppShell>)
+  const link = screen.getByRole('link', { name: 'Apps' })
+  const svg = link.querySelector('svg')
+  // Same fix as AppHeader's: a typed `←` differs on every machine, and this
+  // one sits in the header of every app in the federation.
+  expect(svg).not.toBeNull()
+  expect(svg).toHaveAttribute('aria-hidden', 'true')
+  expect(link.textContent).toBe('Apps')
+})
