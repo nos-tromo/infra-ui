@@ -1,5 +1,6 @@
 import { type HTMLAttributes } from 'react'
 import { cn } from '../cn'
+import { ArrowLeftIcon } from '../icons'
 import { ThemeToggle } from './ThemeToggle'
 
 export interface AppHeaderProps extends HTMLAttributes<HTMLElement> {
@@ -40,7 +41,7 @@ export function AppHeader({
           href={homeHref}
           className="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
         >
-          <span aria-hidden>←</span>
+          <ArrowLeftIcon className="h-3.5 w-3.5" />
           {homeLabel}
         </a>
         <span className="text-sm font-semibold">{title}</span>

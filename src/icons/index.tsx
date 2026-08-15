@@ -204,3 +204,64 @@ export const ReportCheckIcon = ({ className = 'h-4 w-4', ...props }: IconProps) 
     <path d="m9 15 2 2 4-4" />
   </svg>
 )
+
+/**
+ * Send the message that has been typed.
+ *
+ * The paper plane every chat composer uses — a triangle with the fold line
+ * that turns it from an arrowhead into a sheet in flight. Drawn rather than
+ * borrowed from an arrow because the two say different things: an arrow points
+ * somewhere, this one leaves.
+ */
+export const SendIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M21.5 2.5 11 13" />
+    <path d="M21.5 2.5 15 21.5 11 13 2.5 9z" />
+  </svg>
+)
+
+/**
+ * Search whatever the surrounding field takes as its query.
+ *
+ * A magnifier, and deliberately nothing cleverer: like {@link DownloadIcon} it
+ * has to be understood on first sight, without a label, by someone who has
+ * never opened the app.
+ */
+export const SearchIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <circle cx="11" cy="11" r="7" />
+    <path d="m20 20-3.6-3.6" />
+  </svg>
+)
+
+/**
+ * Rebuild something already on screen.
+ *
+ * **Two** arcs chasing each other, each with its own arrowhead — not one
+ * circular arrow. A single arrow curving back on itself is the undo/revert
+ * drawing; the closed pair is what reads as *again*. The gaps between them are
+ * what leaves room for the heads, so an arc that swept the full circle would
+ * cost the icon its meaning rather than tidy it.
+ */
+export const RefreshIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M20.5 12a8.5 8.5 0 0 1-14.6 5.9L3 15" />
+    <path d="M3.5 12a8.5 8.5 0 0 1 14.6-5.9L21 9" />
+    <path d="M3 20.5V15h5.5" />
+    <path d="M21 3.5V9h-5.5" />
+  </svg>
+)
+
+/**
+ * Back to where this page was reached from.
+ *
+ * A full arrow rather than a chevron: a chevron is a disclosure or a step
+ * within a list, and this leaves the page. It sits beside its label — a link
+ * that goes back still has to say what it goes back to.
+ */
+export const ArrowLeftIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M19 12H5" />
+    <path d="m12 19-7-7 7-7" />
+  </svg>
+)

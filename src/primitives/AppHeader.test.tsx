@@ -71,3 +71,14 @@ test('omits version element when absent', () => {
   render(<AppHeader title="chorus" />)
   expect(screen.queryByTestId('appheader-version')).not.toBeInTheDocument()
 })
+
+test('the back link draws its arrow', () => {
+  render(<AppHeader title="docint" homeLabel="Übersicht" />)
+  const link = screen.getByRole('link', { name: 'Übersicht' })
+  const svg = link.querySelector('svg')
+  // Was a typed `←`. The accessible name must stay the label alone — an arrow
+  // that reached the accessibility tree would read as part of the destination.
+  expect(svg).not.toBeNull()
+  expect(svg).toHaveAttribute('aria-hidden', 'true')
+  expect(link.textContent).toBe('Übersicht')
+})

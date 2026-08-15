@@ -1,5 +1,15 @@
 import { forwardRef } from 'react'
-import { ChevronDownIcon, ChevronUpIcon, DownloadIcon, PlusIcon, TrashIcon, XIcon } from '../icons'
+import {
+  ChevronDownIcon,
+  ChevronUpIcon,
+  DownloadIcon,
+  PlusIcon,
+  RefreshIcon,
+  SearchIcon,
+  SendIcon,
+  TrashIcon,
+  XIcon,
+} from '../icons'
 import {
   IconButton,
   IconLink,
@@ -116,3 +126,45 @@ export const MoveDownButton = forwardRef<HTMLButtonElement, ActionButtonProps>((
   <IconButton ref={ref} icon={<ChevronDownIcon />} {...props} />
 ))
 MoveDownButton.displayName = 'MoveDownButton'
+
+/**
+ * Send what has been composed — a chat message, a prompt.
+ *
+ * The one action here that is usually a page's *primary* control rather than
+ * quiet chrome, so it is the common case for passing `variant="primary"`. Pass
+ * `type="submit"` when it closes a form: `IconButton` writes `type="button"`
+ * before spreading the caller's props, so this overrides it.
+ *
+ * @param props - `label` names the action; `busy` covers the send in flight.
+ * @returns The send button.
+ */
+export const SendButton = forwardRef<HTMLButtonElement, ActionButtonProps>((props, ref) => (
+  <IconButton ref={ref} icon={<SendIcon />} {...props} />
+))
+SendButton.displayName = 'SendButton'
+
+/**
+ * Run the search the neighbouring field describes.
+ *
+ * @param props - `label` names the action; pass `type="submit"` inside a form.
+ * @returns The search button.
+ */
+export const SearchButton = forwardRef<HTMLButtonElement, ActionButtonProps>((props, ref) => (
+  <IconButton ref={ref} icon={<SearchIcon />} {...props} />
+))
+SearchButton.displayName = 'SearchButton'
+
+/**
+ * Rebuild what is already on screen.
+ *
+ * Reserve it for a *re*build — something is displayed and this replaces it.
+ * A view with nothing in it yet wants a labelled create button instead, which
+ * can say what it will make; a bare pair of arrows over an empty panel cannot.
+ *
+ * @param props - `label` names what gets rebuilt; `busy` covers the rebuild.
+ * @returns The refresh button.
+ */
+export const RefreshButton = forwardRef<HTMLButtonElement, ActionButtonProps>((props, ref) => (
+  <IconButton ref={ref} icon={<RefreshIcon />} {...props} />
+))
+RefreshButton.displayName = 'RefreshButton'

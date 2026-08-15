@@ -7,7 +7,10 @@ import {
   MoveDownButton,
   MoveUpButton,
   NewButton,
+  RefreshButton,
   RemoveButton,
+  SearchButton,
+  SendButton,
 } from './iconActions'
 
 test('each action names itself and draws an icon rather than a text character', () => {
@@ -101,4 +104,41 @@ test('the reorder pair names each direction and disables at the ends', () => {
   // do not shift under the pointer.
   expect(screen.getByRole('button', { name: 'Move up' })).toBeDisabled()
   expect(screen.getByRole('button', { name: 'Move down' })).toBeEnabled()
+})
+
+test('the composer trio draw distinct icons and name themselves', () => {
+  render(
+    <>
+      <SendButton label="Send" />
+      <SearchButton label="Search" />
+      <RefreshButton label="Refresh" />
+    </>,
+  )
+  const drawings = ['Send', 'Search', 'Refresh'].map((name) => {
+    const btn = screen.getByRole('button', { name })
+    // The label is the whole affordance in a control with no text of its own,
+    // so it has to reach both the accessibility tree and the tooltip.
+    expect(btn).toHaveAttribute('title', name)
+    return btn.querySelector('svg')!.innerHTML
+  })
+  expect(new Set(drawings).size).toBe(3)
+})
+
+test('a submit action can close the form it sits in', () => {
+  const onSubmit = vi.fn((e: React.FormEvent) => e.preventDefault())
+  render(
+    <form onSubmit={onSubmit}>
+      <SendButton label="Send" type="submit" />
+    </form>,
+  )
+  // IconButton writes type="button" before spreading the caller's props, so
+  // this override is what lets Enter and the click submit rather than no-op.
+  expect(screen.getByRole('button', { name: 'Send' })).toHaveAttribute('type', 'submit')
+})
+
+test('a busy send blocks the double-send', async () => {
+  const onClick = vi.fn()
+  render(<SendButton label="Send" busy onClick={onClick} />)
+  await userEvent.click(screen.getByRole('button', { name: 'Send' }))
+  expect(onClick).not.toHaveBeenCalled()
 })
