@@ -414,6 +414,94 @@ declare const Input: react.ForwardRefExoticComponent<InputHTMLAttributes<HTMLInp
 
 declare const Select: react.ForwardRefExoticComponent<SelectHTMLAttributes<HTMLSelectElement> & react.RefAttributes<HTMLSelectElement>>;
 
+interface SelectMenuOption {
+    /** Handed back to `onChange`. Unique within `options`. */
+    value: string;
+    /**
+     * The only text the user reads — on the closed trigger and on the row.
+     *
+     * Deliberately one string rather than a label plus a hint slot: a second slot
+     * needs its own alignment, truncation and reading order, and the counts and
+     * owners callers want there are part of what the operator reads as the *name*
+     * of the thing. Compose it: `` `${title} (${count})` ``.
+     */
+    label: string;
+    /** Rendered and announced, but not choosable. The arrows step over it. */
+    disabled?: boolean;
+}
+interface SelectMenuProps {
+    /** The list to choose from. Empty renders {@link SelectMenuProps.emptyLabel}. */
+    options: SelectMenuOption[];
+    /** The chosen `value`, or `null` for "nothing chosen yet". */
+    value: string | null;
+    /**
+     * Called with the chosen `value` — never the label, and never `null`. There
+     * is no un-choosing: a placeholder is a state you leave, not one you return
+     * to, matching a native `<select>` whose placeholder option is disabled.
+     */
+    onChange: (value: string) => void;
+    /**
+     * Accessible name for the trigger and the list. Required: the trigger's
+     * visible text is a data value, so it cannot serve as a stable name.
+     */
+    label: string;
+    /** Trigger text while `value` matches nothing. */
+    placeholder?: string;
+    /** Trigger text while `options` is empty. Falls back to `placeholder`. */
+    emptyLabel?: string;
+    /** Which edge the panel hangs from. `'start'` = left, `'end'` = right. */
+    align?: 'start' | 'end';
+    /** Classes for the positioning wrapper — width and margins. Never `text-*`. */
+    className?: string;
+    /** Classes for the trigger. This is where a `text-2xl font-semibold` goes. */
+    triggerClassName?: string;
+    /** Blocks the control entirely — distinct from having nothing to offer. */
+    disabled?: boolean;
+}
+/**
+ * Pick one item from a list, with the trigger showing the current choice.
+ *
+ * The menu form of {@link Select}, and the reason it exists: a native
+ * `<select>`'s popup inherits the element's own font size, so a `<select>`
+ * styled as a page title at `text-2xl` opens a 24px list that covers the header
+ * it sits in. Here the panel is a *sibling* of the trigger and declares
+ * `text-sm` on itself, so the caller sizes the trigger text freely and the list
+ * is unaffected. **Reach for `Select` first** — take this one only when the
+ * closed control must be styled past what the platform will honor, because a
+ * native select also brings type-ahead, a touch picker and form participation
+ * that this cannot.
+ *
+ * Options are data rather than `children`: this component owns the active
+ * index, the option ids, `aria-selected` and the empty state, all of which need
+ * the list itself — and a `children` API would let a caller drop a `<div>`
+ * inside `role="listbox"`, a break it could not police.
+ *
+ * Keyboard, all of it landing on the trigger because focus never leaves it:
+ * `ArrowDown`/`ArrowUp`/`Enter`/`Space` open (Down from the top, Up from the
+ * bottom, both preferring the current value); the arrows then move the active
+ * row and **clamp** at the ends rather than wrapping, so holding a key lands
+ * somewhere deterministic and `Home`/`End` still mean something;
+ * `Enter`/`Space` commit; `Escape` closes without committing; `Tab` closes and
+ * moves on.
+ *
+ * Focus stays on the trigger via `aria-activedescendant` rather than roving
+ * `tabIndex`. Moving real focus into the panel would make every close path
+ * responsible for putting it back, and each missed path strands focus on the
+ * body; it also breaks `Tab`, which from a focused row would skip past the
+ * trigger. The price is that the browser scrolls nothing for us, so the active
+ * row is scrolled into view by hand below.
+ *
+ * **No type-ahead yet** — the one real thing this gives up against a native
+ * `<select>`. Doing it properly needs a keystroke buffer with a reset timer,
+ * the same-letter-cycles rule, and an `Intl.Collator` so `Ü` finds "Übergabe"
+ * in a German catalog; half of it is worse than none, because it looks like it
+ * works until the first umlaut. It also wants `Space`, which currently commits.
+ */
+declare function SelectMenu({ options, value, onChange, label, placeholder, emptyLabel, align, className, triggerClassName, disabled, }: SelectMenuProps): react.JSX.Element;
+declare namespace SelectMenu {
+    var displayName: string;
+}
+
 declare const badge: (props?: ({
     variant?: "danger" | "neutral" | "accent" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
@@ -700,4 +788,4 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };

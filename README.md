@@ -111,8 +111,52 @@ prop entirely for a header-only shell.
 one per route) · `UserMenu` (identity + sign-out dropdown) ·
 `AppHeader` (portal link, identity, tri-state theme toggle) · `Button` (primary/secondary/ghost/danger · sm/md) · `CopyButton` (icon-only,
 copies text to the clipboard) · `Card` (plain or tile-style with `title`/`interactive`) · `Input` · `Select` ·
+`SelectMenu` (custom value picker, for when a native popup cannot be styled) ·
 `Badge` (neutral/accent/danger) · `Spinner` · `Banner` (info/danger) ·
 `IconButton`/`IconLink` and the named icon actions below.
+
+### SelectMenu
+
+Native first. `Select` is a real `<select>` and gets the platform's keyboard,
+type-ahead and touch picker for free — reach for `SelectMenu` only when the
+*closed* control must be styled past what the platform will honor. The case that
+forced it: a `<select>` sized as a page title at `text-2xl` opens a 24px popup
+that covers the header, because a native popup inherits its control's font size.
+`SelectMenu`'s panel is a sibling of the trigger and declares `text-sm` on
+itself.
+
+```tsx
+<SelectMenu
+  label="Select report"
+  options={reports.map((r) => ({ value: String(r.id), label: `${r.title} (${r.item_count})` }))}
+  value={activeId != null ? String(activeId) : null}
+  onChange={(v) => setActiveId(Number(v))}
+  placeholder="Choose a report…"
+  emptyLabel="No reports yet."
+  className="min-w-0 max-w-[40rem]"
+  triggerClassName="text-2xl font-semibold"
+/>
+```
+
+`className` styles the positioning wrapper (width, margins); `triggerClassName`
+styles the button. **Font size belongs on `triggerClassName`** — the panel
+restates `text-sm` regardless, so a `text-*` on the wrapper is a lie about what
+it does.
+
+`onChange` is called with the `value`, never the label, and never with `null`:
+there is no un-choosing, which is what a native `<select>` with a disabled
+placeholder option also gives you. An empty `options` renders `emptyLabel` on the
+trigger and opens nothing, so "nothing to pick" stays where a native select put
+it — the closed control's own text.
+
+Keyboard: `↓`/`↑`/`Enter`/`Space` open · `↓`/`↑` move and clamp at the ends ·
+`Home`/`End` jump · `Enter`/`Space` commit · `Esc` closes · `Tab` closes and
+moves on. Focus never leaves the trigger (`aria-activedescendant`), so `Tab`
+behaves like a native select's rather than stranding focus in the panel.
+**Type-ahead is not implemented** and is the one real thing this gives up: it
+needs a keystroke buffer with a reset timer and an `Intl.Collator` for the German
+catalogs, and half of it is worse than none, because it looks like it works until
+the first umlaut.
 
 ### Icon actions
 
