@@ -14,6 +14,7 @@ import {
   Input,
   PageHeader,
   Select,
+  SelectMenu,
   SidebarGroup,
   Spinner,
 } from '../src/index'
@@ -37,6 +38,12 @@ const GRAPH_LEGEND = [
   { kind: 'topic', label: 'Topic' },
 ]
 
+const DEMO_PICKS = [
+  { value: 'a', label: 'Case Alpha (2)' },
+  { value: 'b', label: 'Case Beta (0)' },
+  { value: 'c', label: 'Retired case', disabled: true },
+]
+
 const INITIAL_GRAPH_NODES: ForceGraphNode[] = [
   { id: 'n1', label: 'Origin Alpha', kind: 'seed' },
   { id: 'n2', label: 'Contact Bravo', kind: 'person' },
@@ -58,6 +65,7 @@ const INITIAL_GRAPH_EDGES: ForceGraphEdge[] = [
 ]
 
 function Sink() {
+  const [picked, setPicked] = useState<string | null>('a')
   const [demoFiles, setDemoFiles] = useState([
     { name: 'interview_2021_part1.mp4', size: 412_000_000 },
     { name: 'witness_statement_final.pdf', size: 2_100_000 },
@@ -135,6 +143,23 @@ function Sink() {
               <option value="a">Option A</option>
               <option value="b">Option B</option>
             </Select>
+            <SelectMenu
+              label="Demo picker"
+              options={DEMO_PICKS}
+              value={picked}
+              onChange={setPicked}
+              placeholder="Choose one…"
+            />
+            {/* Title-sized: the only way to eyeball the bug this replaces — a
+                native select at this size opens a popup that covers the row. */}
+            <SelectMenu
+              label="Demo picker, title-sized"
+              options={DEMO_PICKS}
+              value={picked}
+              onChange={setPicked}
+              placeholder="Choose one…"
+              triggerClassName="text-2xl font-semibold"
+            />
           </div>
         </Card>
 

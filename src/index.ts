@@ -51,6 +51,11 @@ export {
 export { Card, type CardProps } from './primitives/Card'
 export { Input } from './primitives/Input'
 export { Select } from './primitives/Select'
+export {
+  SelectMenu,
+  type SelectMenuProps,
+  type SelectMenuOption,
+} from './primitives/SelectMenu'
 export { Badge, type BadgeProps } from './primitives/Badge'
 export { Spinner, type SpinnerProps } from './primitives/Spinner'
 export { Banner, type BannerProps } from './primitives/Banner'
