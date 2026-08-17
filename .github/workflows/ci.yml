@@ -19,6 +19,6 @@ jobs:
     # reusable workflow (not python-app-ci.yml). check-dist guards the committed
     # prebuilt dist/ that every app frontend consumes as a pinned git dependency:
     # the job fails if a src/ change shipped without a matching `pnpm build`.
-    uses: nos-tromo/.github/.github/workflows/node-lib-ci.yml@862094798ffb1a50433db7fa8759cca1f54c4dc4 # v3.12
+    uses: nos-tromo/.github/.github/workflows/node-lib-ci.yml@4663f3fce265a177e9ec5d9b190a4897c94b156e # v3.13
     with:
       check-dist: true
