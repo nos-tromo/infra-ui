@@ -1,5 +1,13 @@
 # `infra-ui` v0.1.0 (Phase 0) Implementation Plan
 
+> **Historical — v0.1.0 design, superseded by [`README.md`](../README.md) and
+> [`components.md`](components.md).** Kept for the reasoning behind the original
+> design, not as instructions. Three things it describes are no longer true: the
+> install form is a commit-SHA codeload tarball, not `github:nos-tromo/infra-ui#vX.Y.Z`
+> (see [`pinning.md`](pinning.md)); `dist/` is committed rather than built on install
+> via the `prepare` lifecycle; and the package now defaults to light rather than
+> being dark-only.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build the shared design-system package `@infra/ui` — Tailwind v4 tokens, the `cn` helper, and seven generic UI primitives extracted from Nextext's look — to a tested, buildable, tagged `v0.1.0` that other apps can install as a pinned pnpm Git dependency.

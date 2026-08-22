@@ -151,5 +151,10 @@ tag-named or `github:`-form pin cannot land.
 ## Documentation
 
 [`docs/`](docs/) carries the reference material this README points into — start
-at [docs/README.md](docs/README.md). Dated design and plan files live alongside
-it as design history.
+at [docs/README.md](docs/README.md).
+
+Design history lives alongside it and is not current documentation: the dated
+design and plan files for each feature wave, plus [design.md](docs/design.md)
+and [implementation-plan.md](docs/implementation-plan.md), which are the
+superseded v0.1.0 spec — they still describe the `github:` install form, an
+install-time `prepare` rebuild and a dark-only palette, none of which hold.
