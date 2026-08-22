@@ -16,7 +16,7 @@ prop entirely for a header-only shell.
 ```tsx
 <AppShell
   title="kitchen-sink"
-  version="v0.9.0"
+  version={appVersion}
   user="jane.doe"
   sidebar={
     <SidebarGroup label="Sections">
@@ -40,6 +40,11 @@ prop entirely for a header-only shell.
   </div>
 </AppShell>
 ```
+
+`version` is the *consuming app's* own version string, not `@infra/ui`'s — the
+apps read it from their config endpoint and pass it through (see
+`frontend/src/layout/Shell.tsx` in chorus or docint). Omit the prop and the
+chrome renders no version at all.
 
 ## SelectMenu
 

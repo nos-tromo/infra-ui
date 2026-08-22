@@ -50,7 +50,7 @@ The app-wide chrome — collapsible sidebar, home link, theme toggle, and
 `UserMenu` — wraps every route's content.
 
 ```tsx
-<AppShell title="kitchen-sink" version="v0.9.0" user="jane.doe" sidebar={sidebar}>
+<AppShell title="kitchen-sink" version={appVersion} user="jane.doe" sidebar={sidebar}>
   <div className="p-8">
     <PageHeader title="Primitives" caption="Every exported component, both themes" />
     {/* routed content */}
