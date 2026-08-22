@@ -23,7 +23,10 @@ root (e.g. `docker/compose.yaml`).
 `@infra/ui` — the shared React design system for the nos-tromo federation:
 Tailwind v4 tokens (`src/theme.css`) plus light/dark themeable, minimal UI primitives (OS-preference default), consumed
 by the four app frontends (chorus, docint, Nextext, translator) as a
-**tag-pinned pnpm git dependency** (`github:nos-tromo/infra-ui#vX.Y.Z`).
+**commit-SHA-pinned pnpm tarball dependency**
+(`https://codeload.github.com/nos-tromo/infra-ui/tar.gz/<full-40-hex-sha>`) —
+never a tag, never the `github:` shorthand; each consumer's CI enforces the
+pin form with `validate_infra_ui_pin.py`. Rationale: `docs/pinning.md`.
 Build-time only — never a runtime service; it joins no Docker network and ships
 no image. React 19 + Tailwind v4 + tsup + vitest, on its own ESLint + Prettier
 toolchain (not the Python apps' ruff/pyrefly/common.mk conventions).
