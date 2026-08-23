@@ -1,10 +1,12 @@
 # Component reference
 
-Props, keyboard maps and worked examples for the primitives that need more than
-a one-line description. The top-level [README](../README.md) carries the install,
-Tailwind wiring and the full primitive inventory; this file is the detail behind
-it. Why the icons are drawn rather than typed, and what each named action means,
-is in [icon-policy.md](icon-policy.md).
+Props, keyboard maps and worked examples for the four things that need more than
+a one-line description: `AppShell`, `SelectMenu`, the icon actions and
+`ForceGraph`. The other primitives take a prop or two and are listed, with what
+each is for, in the top-level [README](../README.md#primitives), which also
+carries the install and the Tailwind wiring; this file is the detail behind it.
+Why the icons are drawn rather than typed, and what each named action means, is
+in [icon-policy.md](icon-policy.md).
 
 ## AppShell
 
