@@ -1,5 +1,13 @@
 # `infra-ui` — Shared Frontend Design System
 
+> **Historical — v0.1.0 design, superseded by [`README.md`](../README.md) and
+> [`components.md`](components.md).** Kept for the reasoning behind the original
+> design, not as instructions. Three things it describes are no longer true: the
+> install form is a commit-SHA codeload tarball, not `github:nos-tromo/infra-ui#vX.Y.Z`
+> (see [`pinning.md`](pinning.md)); `dist/` is committed rather than built on install
+> via the `prepare` lifecycle; and the package now defaults to light rather than
+> being dark-only.
+
 - **Date:** 2026-06-18
 - **Status:** Design — awaiting user review
 - **Scope:** A reusable "meta frontend" design layer (tokens + UI primitives) extracted

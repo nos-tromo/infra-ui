@@ -23,7 +23,10 @@ root (e.g. `docker/compose.yaml`).
 `@infra/ui` — the shared React design system for the nos-tromo federation:
 Tailwind v4 tokens (`src/theme.css`) plus light/dark themeable, minimal UI primitives (OS-preference default), consumed
 by the four app frontends (chorus, docint, Nextext, translator) as a
-**tag-pinned pnpm git dependency** (`github:nos-tromo/infra-ui#vX.Y.Z`).
+**commit-SHA-pinned pnpm tarball dependency**
+(`https://codeload.github.com/nos-tromo/infra-ui/tar.gz/<full-40-hex-sha>`) —
+never a tag, never the `github:` shorthand; each consumer's CI enforces the
+pin form with `validate_infra_ui_pin.py`. Rationale: `docs/pinning.md`.
 Build-time only — never a runtime service; it joins no Docker network and ships
 no image. React 19 + Tailwind v4 + tsup + vitest, on its own ESLint + Prettier
 toolchain (not the Python apps' ruff/pyrefly/common.mk conventions).
@@ -65,8 +68,10 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   runtime deps are limited to the styling utilities (cva, clsx,
   tailwind-merge).
 - Primitive set: `AppShell`, `SidebarGroup`, `PageHeader`, `UserMenu`, `AppHeader`,
-  `Button`, `CopyButton`, `Card`, `Input`, `Select`, `Badge`, `Spinner`, `Banner`,
-  `IconButton`/`IconLink` and the named icon actions, plus the `cn` helper.
+  `Button`, `CopyButton`, `Card`, `Input`, `Select`, `SelectMenu`, `Badge`,
+  `Spinner`, `Banner`, `FileList`, `ForceGraph`, `IconButton`/`IconLink` and the
+  named icon actions, plus the `cn` helper. `SelectMenu` is the custom picker for
+  when a native `<select>` popup cannot be styled — reach for `Select` first.
   Every primitive has a unit test — keep that invariant when adding one.
 - **Icons are drawn, never typed.** The shared set is `src/icons/` — inline SVG,
   `currentColor`, `aria-hidden`, sized by the caller. Never a character such as
@@ -123,14 +128,26 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
 
 ## Releasing
 
-Consumers pin an annotated git tag. To release: bump `version` in
-`package.json`, ensure `dist/` is rebuilt and committed, tag `vX.Y.Z`, then
-bump the pin in each consuming app. The README (§ Install/Develop) is the
-human-facing doc — keep it and this file in sync when behavior changes.
+`main` is the trunk. A release is an annotated `vX.Y.Z` tag minted **on merge**
+by the shared `release-tag` workflow, which reads `package.json`'s `version` —
+tags are not hand-cut. So: bump `version` in `package.json`, ensure `dist/` is
+rebuilt and committed, and merge; bumping the version in the release PR is the
+whole release action. Rolling the release out to consumers is then manual —
+resolve the tag to its SHA and update each app's pin — because Dependabot is
+deliberately out of that loop. Runbook: README § Releasing.
+
+The README (§ Install, § Develop, § Releasing) is the human-facing doc — keep
+it and this file in sync when behavior changes.
 
 ## Where to look
 
 - `README.md` — install + Tailwind wiring for consumers.
-- `docs/` — design spec and the implementation plan the package was built from.
+- `docs/README.md` — index over the in-repo reference: `docs/components.md`
+  (props, keyboard maps, worked examples), `docs/icon-policy.md` (the
+  drawn-never-typed rule and what each named action may mean — the human-facing
+  canonical copy of the icon constraints above), `docs/pinning.md` (why a SHA
+  and not a tag, why `dist/` is committed).
+- `docs/design.md` + `docs/implementation-plan.md` — the superseded v0.1.0
+  spec, kept as design history only; dated design/plan files sit alongside.
 - Federation context (how the four apps consume this, workspace layout):
   `../CLAUDE.md`.
