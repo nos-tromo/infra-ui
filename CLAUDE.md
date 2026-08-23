@@ -34,8 +34,8 @@ toolchain (not the Python apps' ruff/pyrefly/common.mk conventions).
 ## The committed-`dist/` rule
 
 The built `dist/` (JS + `.d.ts` + `tokens.css`) is **committed to the repo** so
-every consumer gets the same prebuilt, deterministic output — there is no
-install-time rebuild (per-consumer `prepare` rebuilds proved unreliable and
+every consumer pinning a given commit installs byte-identical output — there is
+no install-time rebuild (per-consumer `prepare` rebuilds proved unreliable and
 silently degraded the `.d.ts` to `any` in some CI environments). **After any
 change to `src/`, run `pnpm build` and commit the resulting `dist/` in the
 same change.** A PR that touches `src/` but not `dist/` is incomplete.
@@ -69,9 +69,10 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   tailwind-merge).
 - Primitive set: `AppShell`, `SidebarGroup`, `PageHeader`, `UserMenu`, `AppHeader`,
   `Button`, `CopyButton`, `Card`, `Input`, `Select`, `SelectMenu`, `Badge`,
-  `Spinner`, `Banner`, `FileList`, `ForceGraph`, `IconButton`/`IconLink` and the
-  named icon actions, plus the `cn` helper. `SelectMenu` is the custom picker for
-  when a native `<select>` popup cannot be styled — reach for `Select` first.
+  `Spinner`, `Banner`, `FileList`, `ForceGraph`, `IconButton`/`IconLink`,
+  `HoverIconAction` and the named icon actions, plus the `cn` helper.
+  `SelectMenu` is the custom picker for when a native `<select>` popup cannot be
+  styled — reach for `Select` first.
   Every primitive has a unit test — keep that invariant when adding one.
 - **Icons are drawn, never typed.** The shared set is `src/icons/` — inline SVG,
   `currentColor`, `aria-hidden`, sized by the caller. Never a character such as
@@ -80,16 +81,18 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   text of its own that drawing *is* the affordance. `ThemeToggle` carries the
   same rule in its own comment; the icon set is where new ones go.
 - **Icon actions are imported, not composed.** `IconButton` (always visible,
-  `ghost` by default so it has no background until hovered) and `IconLink` (the
-  `<a>` shell, for a file the server streams) are the base; `DownloadButton`,
-  `DownloadLink`, `NewButton`, `RemoveButton`, `DeleteButton`, `MoveUpButton` and
-  `MoveDownButton` in `src/primitives/iconActions.tsx` bind one icon to one meaning so four apps do
-  not each arrive somewhere slightly different. Adding one — print, refresh,
-  share — is an icon in `src/icons/` plus a wrapper of the same few lines; do
-  not answer a new need by hand-rolling a button in an app. `RemoveButton` (`×`)
-  takes something out of a list or view, `DeleteButton` (trash) destroys stored
-  data — the icon is what tells the user how far the action goes, so keep them
-  distinct. `NewButton` (`+`) is the one constructive action and so wears no
+  `ghost` by default so it has no background until hovered), `HoverIconAction`
+  (the same control, `opacity-0` until its `.group` row is hovered or focused)
+  and `IconLink` (the `<a>` shell, for a file the server streams) are the base;
+  the ten named actions in `src/primitives/iconActions.tsx` — `DownloadButton`,
+  `DownloadLink`, `NewButton`, `RemoveButton`, `DeleteButton`, `MoveUpButton`,
+  `MoveDownButton`, `SendButton`, `SearchButton`, `RefreshButton` — bind one icon
+  to one meaning so four apps do not each arrive somewhere slightly different.
+  Adding one — print, share — is an icon in `src/icons/` plus a wrapper of the
+  same few lines; do not answer a new need by hand-rolling a button in an app.
+  `RemoveButton` (`×`) takes something out of a list or view, `DeleteButton`
+  (trash) destroys stored data — the icon is what tells the user how far the
+  action goes, so keep them distinct. `NewButton` (`+`) is the one constructive action and so wears no
   `danger` tint; it stays undivided (no separate "add") because a plus meaning
   two things would draw the same either way. `label` is required on all of them
   (it is the accessible name and the tooltip), `children` adorns the icon where
