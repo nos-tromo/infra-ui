@@ -34,8 +34,8 @@ toolchain (not the Python apps' ruff/pyrefly/common.mk conventions).
 ## The committed-`dist/` rule
 
 The built `dist/` (JS + `.d.ts` + `tokens.css`) is **committed to the repo** so
-every consumer gets the same prebuilt, deterministic output — there is no
-install-time rebuild (per-consumer `prepare` rebuilds proved unreliable and
+every consumer pinning a given commit installs byte-identical output — there is
+no install-time rebuild (per-consumer `prepare` rebuilds proved unreliable and
 silently degraded the `.d.ts` to `any` in some CI environments). **After any
 change to `src/`, run `pnpm build` and commit the resulting `dist/` in the
 same change.** A PR that touches `src/` but not `dist/` is incomplete.
