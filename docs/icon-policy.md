@@ -16,11 +16,12 @@ every machine — and in a label-less control the drawing *is* the affordance.
 Adding an action means one icon in `src/icons/` plus a wrapper the size of the
 ones in `src/primitives/iconActions.tsx`, never a hand-rolled SVG in an app.
 
-The rule covers status markers as much as controls, which is what the last five
-are for: `CheckIcon`/`XIcon` as a pass/fail pair, `WarningIcon`/`InfoIcon` as an
-interrupts/does-not-interrupt pair, `StopwatchIcon` for an elapsed duration (a
+The rule covers status markers as much as controls, which is what the four added
+in `v0.12.0` are for: `CheckIcon` pairs with the control set's existing `XIcon`
+as pass/fail and `InfoIcon` with `WarningIcon` as
+does-not-interrupt/interrupts, `StopwatchIcon` marks an elapsed duration (a
 stopwatch, not a clock — this marks time *taken*, not time of day), and
-`ExternalLinkIcon` for a link that leaves. `⏱`, `ⓘ` and `↗` are the worst
+`ExternalLinkIcon` a link that leaves. `⏱`, `ⓘ` and `↗` are the worst
 offenders under the typed-character rule: they carry emoji presentation on some
 platforms, so they can arrive full-colour beside otherwise monochrome chrome.
 
@@ -36,11 +37,17 @@ one action wrapper because which of them shows is decided by the app's own
 state, and the sheet must not move between them — a page that shifted would
 read as the icon being swapped, not as the toggle being pressed.
 
-An icon is exported **once** and imported everywhere, including by this
-package's own primitives — `CopyButton` and `FileList` each kept a private
-inline copy from before `src/icons/` existed, and a design system holding two
-different checkmarks is exactly what that costs. Reach for the export before
-drawing anything.
+An icon with more than one call site is exported **once** from `src/icons/` and
+imported everywhere, including by this package's own primitives: `CopyButton`
+and `FileList` each carried a private checkmark and `×` from before
+`src/icons/` existed — a design system holding two different checkmarks is
+exactly what that costs — and `v0.12.0` moved both onto the shared `CheckIcon`
+and `XIcon`. What stays local is the glyph with a single call site and no
+counterpart in the set: `CopyButton`'s copy sheets and `ThemeToggle`'s three
+mode marks are still drawn in their own files. They obey the drawn-never-typed
+rule the same way — they are simply not part of the shared inventory. Reach for
+the export before drawing anything, and move a glyph into `src/icons/` the
+moment a second caller wants it.
 
 ## What each action means
 
@@ -62,3 +69,9 @@ The two removal actions differ on purpose: `RemoveButton` (`×`) takes something
 out of a list, a selection or a view and nothing is destroyed; `DeleteButton`
 (trash) destroys stored data — reserve it for what does not come back, and pair
 it with a confirmation. Both tint `danger` on hover.
+
+The remaining four actions carry no constraint beyond their name, and the choice
+between them is mechanical rather than a judgement about meaning:
+`DownloadButton` versus `DownloadLink` is a click handler versus an `<a>` the
+server streams, and `SendButton`/`SearchButton` are a form's submit control.
+[components.md](components.md#icon-actions) has their call shapes.
