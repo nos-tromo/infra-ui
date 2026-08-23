@@ -39,7 +39,7 @@ read as the icon being swapped, not as the toggle being pressed.
 
 An icon with more than one call site is exported **once** from `src/icons/` and
 imported everywhere, including by this package's own primitives: `CopyButton`
-and `FileList` each carried a private checkmark and `×` from before
+and `FileList` each drew a private checkmark and cross of their own from before
 `src/icons/` existed — a design system holding two different checkmarks is
 exactly what that costs — and `v0.12.0` moved both onto the shared `CheckIcon`
 and `XIcon`. What stays local is the glyph with a single call site and no

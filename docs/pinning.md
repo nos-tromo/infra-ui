@@ -36,9 +36,9 @@ an app only once its own bump lands.
 
 ## The committed `dist/` rule
 
-The built `dist/` (`index.js`, `index.d.ts`, `tokens.css`)
-is **committed to the repo**, so every consumer pinning a given commit installs
-byte-identical output — there is no install-time rebuild. (Rebuilding per-consumer under `prepare` proved
-unreliable: a tag-pinned git dependency rebuilt in some CI environments emitted a degraded
-`.d.ts`, silently making the primitives `any`.) After changing `src/`, run `pnpm build`
-and commit `dist/`.
+The built `dist/` (`index.js`, `index.d.ts`, `tokens.css`) is **committed to the
+repo**, so every consumer pinning a given commit installs byte-identical output
+— there is no install-time rebuild. (Rebuilding per-consumer under `prepare`
+proved unreliable: a tag-pinned git dependency rebuilt in some CI environments
+emitted a degraded `.d.ts`, silently making the primitives `any`.) After
+changing `src/`, run `pnpm build` and commit `dist/`.
