@@ -70,7 +70,9 @@ one per route) · `UserMenu` (identity + sign-out dropdown) ·
 copies text to the clipboard) · `Card` (plain or tile-style with `title`/`interactive`) · `Input` · `Select` ·
 `SelectMenu` (custom value picker, for when a native popup cannot be styled) ·
 `Badge` (neutral/accent/danger) · `Spinner` · `Banner` (info/danger) ·
-`IconButton`/`IconLink` · the named icon actions · `FileList` · `ForceGraph`.
+`IconButton`/`IconLink` · `HoverIconAction` (the same icon button, kept invisible
+until its `.group` row is hovered or focused) · the named icon actions ·
+`FileList` · `ForceGraph`.
 
 Props, keyboard maps and worked examples: [components.md](docs/components.md).
 Why the icons are drawn rather than typed, and what each named action may mean:
