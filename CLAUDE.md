@@ -80,13 +80,15 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   text of its own that drawing *is* the affordance. `ThemeToggle` carries the
   same rule in its own comment; the icon set is where new ones go.
 - **Icon actions are imported, not composed.** `IconButton` (always visible,
-  `ghost` by default so it has no background until hovered) and `IconLink` (the
-  `<a>` shell, for a file the server streams) are the base; `DownloadButton`,
-  `DownloadLink`, `NewButton`, `RemoveButton`, `DeleteButton`, `MoveUpButton` and
-  `MoveDownButton` in `src/primitives/iconActions.tsx` bind one icon to one meaning so four apps do
-  not each arrive somewhere slightly different. Adding one — print, refresh,
-  share — is an icon in `src/icons/` plus a wrapper of the same few lines; do
-  not answer a new need by hand-rolling a button in an app. `RemoveButton` (`×`)
+  `ghost` by default so it has no background until hovered), `HoverIconAction`
+  (the same control, `opacity-0` until its `.group` row is hovered or focused)
+  and `IconLink` (the `<a>` shell, for a file the server streams) are the base;
+  the ten named actions in `src/primitives/iconActions.tsx` — `DownloadButton`,
+  `DownloadLink`, `NewButton`, `RemoveButton`, `DeleteButton`, `MoveUpButton`,
+  `MoveDownButton`, `SendButton`, `SearchButton`, `RefreshButton` — bind one icon
+  to one meaning so four apps do not each arrive somewhere slightly different.
+  Adding one — print, share — is an icon in `src/icons/` plus a wrapper of the
+  same few lines; do not answer a new need by hand-rolling a button in an app. `RemoveButton` (`×`)
   takes something out of a list or view, `DeleteButton` (trash) destroys stored
   data — the icon is what tells the user how far the action goes, so keep them
   distinct. `NewButton` (`+`) is the one constructive action and so wears no
