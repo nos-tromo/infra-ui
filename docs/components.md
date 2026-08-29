@@ -43,7 +43,7 @@ prop entirely for a header-only shell.
 </AppShell>
 ```
 
-`version` is the *consuming app's* own version string, not `@infra/ui`'s — the
+`version` is the _consuming app's_ own version string, not `@infra/ui`'s — the
 apps read it from their config endpoint and pass it through (see
 `frontend/src/layout/Shell.tsx` in chorus or docint). Omit the prop and the
 chrome renders no version at all.
@@ -52,7 +52,7 @@ chrome renders no version at all.
 
 Native first. `Select` is a real `<select>` and gets the platform's keyboard,
 type-ahead and touch picker for free — reach for `SelectMenu` only when the
-*closed* control must be styled past what the platform will honor. The case that
+_closed_ control must be styled past what the platform will honor. The case that
 forced it: a `<select>` sized as a page title at `text-2xl` opens a 24px popup
 that covers the header, because a native popup inherits its control's font size.
 `SelectMenu`'s panel is a sibling of the trigger and declares `text-sm` on
@@ -102,7 +102,7 @@ format, a count, a caret) where several sit side by side; pass `busy` to swap in
 a `Spinner` and block the second click. `IconLink` is the same shell over an
 `<a>`, for a file the server streams.
 
-Import the *action*, not the icon plus a button — that is what keeps four apps
+Import the _action_, not the icon plus a button — that is what keeps four apps
 looking alike:
 
 ```tsx
@@ -124,7 +124,7 @@ import {
 <RefreshButton label="Refresh summary" busy={rebuilding} onClick={rebuild} />
 ```
 
-`SendButton` is the one action here that is usually a page's *primary* control
+`SendButton` is the one action here that is usually a page's _primary_ control
 rather than quiet chrome, so it is the common case for `variant="primary"`. It
 and `SearchButton` normally close a form: pass `type="submit"` — `IconButton`
 writes `type="button"` before spreading your props, so the override lands.
@@ -138,7 +138,7 @@ The set lives in `src/icons/`, all exported: `DownloadIcon`, `PlusIcon`,
 `XIcon`, `TrashIcon`, `ChevronDownIcon`, `ChevronUpIcon`, `ChevronsUpDownIcon`,
 `WarningIcon`, `InfoIcon`, `CheckIcon`, `StopwatchIcon`, `ExternalLinkIcon`,
 `ReportIcon`/`ReportCheckIcon`, `SendIcon`, `SearchIcon`, `RefreshIcon`,
-`ArrowLeftIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
+`ArrowLeftIcon`, `BrainIcon`/`BrainActiveIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
 the caller. Adding one is covered by
 [icon-policy.md](icon-policy.md#icons-are-drawn-never-typed).
 
