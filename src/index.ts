@@ -38,6 +38,8 @@ export {
   SearchIcon,
   RefreshIcon,
   ArrowLeftIcon,
+  BrainIcon,
+  BrainActiveIcon,
   type IconProps,
 } from './icons'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'
@@ -51,11 +53,7 @@ export {
 export { Card, type CardProps } from './primitives/Card'
 export { Input } from './primitives/Input'
 export { Select } from './primitives/Select'
-export {
-  SelectMenu,
-  type SelectMenuProps,
-  type SelectMenuOption,
-} from './primitives/SelectMenu'
+export { SelectMenu, type SelectMenuProps, type SelectMenuOption } from './primitives/SelectMenu'
 export { Badge, type BadgeProps } from './primitives/Badge'
 export { Spinner, type SpinnerProps } from './primitives/Spinner'
 export { Banner, type BannerProps } from './primitives/Banner'
@@ -63,12 +61,7 @@ export { PageHeader, type PageHeaderProps } from './primitives/PageHeader'
 export { AppHeader, type AppHeaderProps } from './primitives/AppHeader'
 export { type ThemeToggleLabels } from './primitives/ThemeToggle'
 export { UserMenu, type UserMenuProps } from './primitives/UserMenu'
-export {
-  AppShell,
-  SidebarGroup,
-  SIDEBAR_STORAGE_KEY,
-  type AppShellProps,
-} from './layout/AppShell'
+export { AppShell, SidebarGroup, SIDEBAR_STORAGE_KEY, type AppShellProps } from './layout/AppShell'
 export {
   ForceGraph,
   type ForceGraphNode,

@@ -12,7 +12,7 @@ The set lives in `src/icons/` as inline SVG — the inventory is in
 [components.md](components.md#the-icon-set), and every icon is exported. A
 character like `×`, `▾` or `⤓` renders from whatever font the browser and OS
 fall back to, so it differs on
-every machine — and in a label-less control the drawing *is* the affordance.
+every machine — and in a label-less control the drawing _is_ the affordance.
 Adding an action means one icon in `src/icons/` plus a wrapper the size of the
 ones in `src/primitives/iconActions.tsx`, never a hand-rolled SVG in an app.
 
@@ -20,7 +20,7 @@ The rule covers status markers as much as controls, which is what the four added
 in `v0.12.0` are for: `CheckIcon` pairs with the control set's existing `XIcon`
 as pass/fail and `InfoIcon` with `WarningIcon` as
 does-not-interrupt/interrupts, `StopwatchIcon` marks an elapsed duration (a
-stopwatch, not a clock — this marks time *taken*, not time of day), and
+stopwatch, not a clock — this marks time _taken_, not time of day), and
 `ExternalLinkIcon` a link that leaves. `⏱`, `ⓘ` and `↗` are the worst
 offenders under the typed-character rule: they carry emoji presentation on some
 platforms, so they can arrive full-colour beside otherwise monochrome chrome.
@@ -30,12 +30,20 @@ every app at once: `UserMenu` drew its caret as `▾` and `AppShell`/`AppHeader`
 drew the back link as `←` until `v0.14.0`, so four federation headers rendered
 their arrows in whatever font each machine fell back to.
 
-`ReportIcon`/`ReportCheckIcon` are a *state* pair rather than a semantic one:
+`ReportIcon`/`ReportCheckIcon` are a _state_ pair rather than a semantic one:
 one page, drawn empty and drawn with a tick, for the "add to report" / "in
 report" toggle an app builds over `IconButton`. It stays two icons instead of
 one action wrapper because which of them shows is decided by the app's own
 state, and the sheet must not move between them — a page that shifted would
 read as the icon being swapped, not as the toggle being pressed.
+
+`BrainIcon`/`BrainActiveIcon` (`v0.16.0`) is the second state pair, built the
+same way for the same toggle shape: a chat's "reasoning on/off" control, which
+an app builds over `IconButton` with `aria-pressed`. The brain is the glyph chat
+products have settled on for "think before answering", so it is read without a
+label. The outline is identical in both drawings and only the inside changes —
+a spark appears where the fissure was — so the head lights up rather than being
+replaced.
 
 An icon with more than one call site is exported **once** from `src/icons/` and
 imported everywhere, including by this package's own primitives: `CopyButton`

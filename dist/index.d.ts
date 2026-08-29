@@ -332,6 +332,28 @@ declare const RefreshIcon: ({ className, ...props }: IconProps) => react.JSX.Ele
  * that goes back still has to say what it goes back to.
  */
 declare const ArrowLeftIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Reasoning mode, off.
+ *
+ * A brain in outline: two lobes meeting at a fissure. It is the glyph chat
+ * products have converged on for "let the model think before answering", so it
+ * is read without a label — which a label-less toggle needs. Drawn as two
+ * mirrored lobes rather than a single blob because the fissure is what stops a
+ * rounded outline from reading as a cloud or a thought bubble.
+ */
+declare const BrainIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * The same brain, with reasoning switched on.
+ *
+ * The second *state* pair in the set, after {@link ReportIcon} /
+ * {@link ReportCheckIcon}, and for the same reason: "reasoning on/off" is a
+ * toggle that carries no text, so one drawing pressed and unpressed would leave
+ * its two states to a background tint alone. The outline stays exactly where it
+ * is and a spark appears inside it — the head lighting up, not a different
+ * icon. The idle drawing's fissure gives way to the spark so the two do not
+ * fight over the same few pixels.
+ */
+declare const BrainActiveIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 
 interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'onClick' | 'aria-label' | 'title'> {
     /** Text written to the clipboard on click. */
@@ -788,4 +810,4 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };

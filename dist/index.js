@@ -230,6 +230,17 @@ var ArrowLeftIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx
   /* @__PURE__ */ jsx5("path", { d: "M19 12H5" }),
   /* @__PURE__ */ jsx5("path", { d: "m12 19-7-7 7-7" })
 ] });
+var BrainIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("path", { d: "M12 5a3 3 0 1 0-5.9.6A3 3 0 0 0 4 9.5a3 3 0 0 0 .5 5A3 3 0 0 0 7 19a3 3 0 0 0 5-1.5" }),
+  /* @__PURE__ */ jsx5("path", { d: "M12 5a3 3 0 1 1 5.9.6A3 3 0 0 1 20 9.5a3 3 0 0 1-.5 5A3 3 0 0 1 17 19a3 3 0 0 1-5-1.5" }),
+  /* @__PURE__ */ jsx5("path", { d: "M12 5v12.5" })
+] });
+var BrainActiveIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx5("path", { d: "M12 5a3 3 0 1 0-5.9.6A3 3 0 0 0 4 9.5a3 3 0 0 0 .5 5A3 3 0 0 0 7 19a3 3 0 0 0 5-1.5" }),
+  /* @__PURE__ */ jsx5("path", { d: "M12 5a3 3 0 1 1 5.9.6A3 3 0 0 1 20 9.5a3 3 0 0 1-.5 5A3 3 0 0 1 17 19a3 3 0 0 1-5-1.5" }),
+  /* @__PURE__ */ jsx5("path", { d: "M12 5v2.5M12 15v2.5" }),
+  /* @__PURE__ */ jsx5("path", { d: "M12 8.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" })
+] });
 
 // src/primitives/iconActions.tsx
 import { jsx as jsx6 } from "react/jsx-runtime";
@@ -2294,6 +2305,8 @@ export {
   ArrowLeftIcon,
   Badge,
   Banner,
+  BrainActiveIcon,
+  BrainIcon,
   Button,
   Card,
   CheckIcon,

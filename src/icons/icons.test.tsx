@@ -1,6 +1,8 @@
 import { render } from '@testing-library/react'
 import {
   ArrowLeftIcon,
+  BrainActiveIcon,
+  BrainIcon,
   CheckIcon,
   ChevronDownIcon,
   ChevronUpIcon,
@@ -39,6 +41,8 @@ const ICONS = {
   SearchIcon,
   RefreshIcon,
   ArrowLeftIcon,
+  BrainIcon,
+  BrainActiveIcon,
 }
 
 test('every icon is drawn geometry, not a text character', () => {
@@ -161,4 +165,19 @@ test('the back arrow is a full arrow, not a chevron', () => {
   // page. The shaft is what carries that difference.
   expect(back.querySelectorAll('path')).toHaveLength(2)
   expect(chevron.querySelectorAll('path')).toHaveLength(1)
+})
+
+test('the brain pair is one head in two states', () => {
+  const { container: idle } = render(<BrainIcon />)
+  const { container: active } = render(<BrainActiveIcon />)
+  const outline = (c: HTMLElement) =>
+    [...c.querySelectorAll('path')].slice(0, 2).map((p) => p.getAttribute('d'))
+  // "Reasoning on/off" is a toggle carrying no text of its own, so — like the
+  // report pair — the head has to stay put while only what is inside changes.
+  // A silhouette that shifted would read as a different icon, not a state.
+  expect(outline(idle)).toEqual(outline(active))
+  // The active state adds a spark inside the head; the idle one shows none.
+  expect(active.querySelectorAll('path').length).toBeGreaterThan(
+    idle.querySelectorAll('path').length,
+  )
 })

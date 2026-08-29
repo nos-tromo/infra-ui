@@ -265,3 +265,40 @@ export const ArrowLeftIcon = ({ className = 'h-4 w-4', ...props }: IconProps) =>
     <path d="m12 19-7-7 7-7" />
   </svg>
 )
+
+/**
+ * Reasoning mode, off.
+ *
+ * A brain in outline: two lobes meeting at a fissure. It is the glyph chat
+ * products have converged on for "let the model think before answering", so it
+ * is read without a label — which a label-less toggle needs. Drawn as two
+ * mirrored lobes rather than a single blob because the fissure is what stops a
+ * rounded outline from reading as a cloud or a thought bubble.
+ */
+export const BrainIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M12 5a3 3 0 1 0-5.9.6A3 3 0 0 0 4 9.5a3 3 0 0 0 .5 5A3 3 0 0 0 7 19a3 3 0 0 0 5-1.5" />
+    <path d="M12 5a3 3 0 1 1 5.9.6A3 3 0 0 1 20 9.5a3 3 0 0 1-.5 5A3 3 0 0 1 17 19a3 3 0 0 1-5-1.5" />
+    <path d="M12 5v12.5" />
+  </svg>
+)
+
+/**
+ * The same brain, with reasoning switched on.
+ *
+ * The second *state* pair in the set, after {@link ReportIcon} /
+ * {@link ReportCheckIcon}, and for the same reason: "reasoning on/off" is a
+ * toggle that carries no text, so one drawing pressed and unpressed would leave
+ * its two states to a background tint alone. The outline stays exactly where it
+ * is and a spark appears inside it — the head lighting up, not a different
+ * icon. The idle drawing's fissure gives way to the spark so the two do not
+ * fight over the same few pixels.
+ */
+export const BrainActiveIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M12 5a3 3 0 1 0-5.9.6A3 3 0 0 0 4 9.5a3 3 0 0 0 .5 5A3 3 0 0 0 7 19a3 3 0 0 0 5-1.5" />
+    <path d="M12 5a3 3 0 1 1 5.9.6A3 3 0 0 1 20 9.5a3 3 0 0 1-.5 5A3 3 0 0 1 17 19a3 3 0 0 1-5-1.5" />
+    <path d="M12 5v2.5M12 15v2.5" />
+    <path d="M12 8.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" />
+  </svg>
+)
