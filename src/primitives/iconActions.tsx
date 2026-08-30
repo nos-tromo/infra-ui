@@ -1,8 +1,10 @@
 import { forwardRef } from 'react'
+import { cn } from '../cn'
 import {
   ChevronDownIcon,
   ChevronUpIcon,
   DownloadIcon,
+  PlayIcon,
   PlusIcon,
   RefreshIcon,
   SearchIcon,
@@ -168,3 +170,57 @@ export const RefreshButton = forwardRef<HTMLButtonElement, ActionButtonProps>((p
   <IconButton ref={ref} icon={<RefreshIcon />} {...props} />
 ))
 RefreshButton.displayName = 'RefreshButton'
+
+/**
+ * Open or start playback of a recording.
+ *
+ * The action beside a transcript, a job, or a row that has audio or video
+ * behind it. It says "play this", not "play/pause" — a transport control that
+ * flips between two drawings is a different component, and this one keeps its
+ * triangle whatever the player is doing.
+ *
+ * @param props - `label` names what plays.
+ * @returns The play button.
+ */
+export const PlayButton = forwardRef<HTMLButtonElement, ActionButtonProps>((props, ref) => (
+  <IconButton ref={ref} icon={<PlayIcon />} {...props} />
+))
+PlayButton.displayName = 'PlayButton'
+
+export interface DisclosureButtonProps extends ActionButtonProps {
+  /** Whether the section this controls is open. Drives the rotation and `aria-expanded`. */
+  expanded: boolean
+  /** `id` of the element this reveals, wired to `aria-controls`. */
+  controls?: string
+}
+
+/**
+ * Show or hide the section this sits on.
+ *
+ * One chevron rotated, never a pair: `aria-expanded` carries the state, and
+ * swapping the drawing for an up-chevron would say the button *moves* the
+ * thing — that is {@link MoveUpButton}'s meaning, a step within a list. The
+ * caret points down when closed and turns over when open, so the rotation
+ * animates rather than the icon changing under the pointer.
+ *
+ * `label` is the whole affordance and swaps with the state — pass the "show"
+ * wording while closed and the "hide" wording while open, so the accessible
+ * name and the tooltip both say what the next click does.
+ *
+ * @param props - `expanded` is required; `controls` names the revealed element.
+ * @returns The disclosure button.
+ */
+export const DisclosureButton = forwardRef<HTMLButtonElement, DisclosureButtonProps>(
+  ({ expanded, controls, ...props }, ref) => (
+    <IconButton
+      ref={ref}
+      aria-expanded={expanded}
+      aria-controls={controls}
+      icon={
+        <ChevronDownIcon className={cn('h-4 w-4 transition-transform', expanded && 'rotate-180')} />
+      }
+      {...props}
+    />
+  ),
+)
+DisclosureButton.displayName = 'DisclosureButton'

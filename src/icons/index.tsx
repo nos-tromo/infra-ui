@@ -302,3 +302,23 @@ export const BrainActiveIcon = ({ className = 'h-4 w-4', ...props }: IconProps) 
     <path d="M12 8.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" />
   </svg>
 )
+
+/**
+ * Start or open playback of a recording.
+ *
+ * A right-pointing triangle, closed with `z` — the one drawing every media
+ * surface has agreed on, so it needs no label to be understood. Drawn as a
+ * path on the shared stroke like the rest of the set, never the `▶` character,
+ * which arrives in whatever font the machine falls back to and carries emoji
+ * presentation on some platforms.
+ *
+ * It is deliberately not a chevron — that is disclosure or a step within a
+ * list, see {@link ChevronDownIcon} — and not {@link SendIcon}'s plane, which
+ * is the other closed triangle-ish shape in the set and can sit a few pixels
+ * away in the same toolbar.
+ */
+export const PlayIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M7 5v14l12-7z" />
+  </svg>
+)

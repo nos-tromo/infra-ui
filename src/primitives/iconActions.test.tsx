@@ -2,11 +2,13 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {
   DeleteButton,
+  DisclosureButton,
   DownloadButton,
   DownloadLink,
   MoveDownButton,
   MoveUpButton,
   NewButton,
+  PlayButton,
   RefreshButton,
   RemoveButton,
   SearchButton,
@@ -141,4 +143,56 @@ test('a busy send blocks the double-send', async () => {
   render(<SendButton label="Send" busy onClick={onClick} />)
   await userEvent.click(screen.getByRole('button', { name: 'Send' }))
   expect(onClick).not.toHaveBeenCalled()
+})
+
+test('play names itself and draws its own triangle', () => {
+  render(
+    <>
+      <PlayButton label="Open player" />
+      <SendButton label="Send" />
+    </>,
+  )
+  const play = screen.getByRole('button', { name: 'Open player' })
+  expect(play).toHaveAttribute('title', 'Open player')
+  // The two closed shapes in the set sit in the same kind of toolbar, so the
+  // action must not inherit the plane by copy-paste.
+  expect(play.querySelector('svg')!.innerHTML).not.toBe(
+    screen.getByRole('button', { name: 'Send' }).querySelector('svg')!.innerHTML,
+  )
+})
+
+test('the disclosure reports its state and turns its caret over', () => {
+  const { rerender } = render(<DisclosureButton expanded={false} label="Show results" />)
+  const closed = screen.getByRole('button', { name: 'Show results' })
+  expect(closed).toHaveAttribute('aria-expanded', 'false')
+  expect(closed.querySelector('svg')).not.toHaveClass('rotate-180')
+
+  // The label swaps with the state so the name always says what the next
+  // click does; the drawing stays the one caret, rotated.
+  rerender(<DisclosureButton expanded label="Hide results" />)
+  const open = screen.getByRole('button', { name: 'Hide results' })
+  expect(open).toHaveAttribute('aria-expanded', 'true')
+  expect(open.querySelector('svg')).toHaveClass('rotate-180')
+  expect(screen.queryByRole('button', { name: 'Show results' })).toBeNull()
+})
+
+test('the disclosure points at the section it reveals', () => {
+  render(<DisclosureButton expanded controls="results-panel" label="Hide results" />)
+  expect(screen.getByRole('button', { name: 'Hide results' })).toHaveAttribute(
+    'aria-controls',
+    'results-panel',
+  )
+})
+
+test('the disclosure draws one caret, never a swapped pair', () => {
+  const { rerender } = render(<DisclosureButton expanded={false} label="Show" />)
+  const closed = screen.getByRole('button', { name: 'Show' }).querySelector('path')!.getAttribute('d')
+  rerender(<DisclosureButton expanded label="Hide" />)
+  const open = screen.getByRole('button', { name: 'Hide' }).querySelector('path')!.getAttribute('d')
+  // Swapping down-caret for up-caret would say the button moves the row —
+  // that is MoveUpButton's meaning. Same geometry, rotated by CSS.
+  expect(open).toBe(closed)
+  expect(open).toBe(
+    screen.getByRole('button', { name: 'Hide' }).querySelector('path')!.getAttribute('d'),
+  )
 })

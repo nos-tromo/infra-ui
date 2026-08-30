@@ -206,6 +206,41 @@ declare const SearchButton: react.ForwardRefExoticComponent<ActionButtonProps & 
  * @returns The refresh button.
  */
 declare const RefreshButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
+ * Open or start playback of a recording.
+ *
+ * The action beside a transcript, a job, or a row that has audio or video
+ * behind it. It says "play this", not "play/pause" — a transport control that
+ * flips between two drawings is a different component, and this one keeps its
+ * triangle whatever the player is doing.
+ *
+ * @param props - `label` names what plays.
+ * @returns The play button.
+ */
+declare const PlayButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+interface DisclosureButtonProps extends ActionButtonProps {
+    /** Whether the section this controls is open. Drives the rotation and `aria-expanded`. */
+    expanded: boolean;
+    /** `id` of the element this reveals, wired to `aria-controls`. */
+    controls?: string;
+}
+/**
+ * Show or hide the section this sits on.
+ *
+ * One chevron rotated, never a pair: `aria-expanded` carries the state, and
+ * swapping the drawing for an up-chevron would say the button *moves* the
+ * thing — that is {@link MoveUpButton}'s meaning, a step within a list. The
+ * caret points down when closed and turns over when open, so the rotation
+ * animates rather than the icon changing under the pointer.
+ *
+ * `label` is the whole affordance and swaps with the state — pass the "show"
+ * wording while closed and the "hide" wording while open, so the accessible
+ * name and the tooltip both say what the next click does.
+ *
+ * @param props - `expanded` is required; `controls` names the revealed element.
+ * @returns The disclosure button.
+ */
+declare const DisclosureButton: react.ForwardRefExoticComponent<DisclosureButtonProps & react.RefAttributes<HTMLButtonElement>>;
 
 type IconProps = SVGProps<SVGSVGElement>;
 /**
@@ -354,6 +389,21 @@ declare const BrainIcon: ({ className, ...props }: IconProps) => react.JSX.Eleme
  * fight over the same few pixels.
  */
 declare const BrainActiveIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Start or open playback of a recording.
+ *
+ * A right-pointing triangle, closed with `z` — the one drawing every media
+ * surface has agreed on, so it needs no label to be understood. Drawn as a
+ * path on the shared stroke like the rest of the set, never the `▶` character,
+ * which arrives in whatever font the machine falls back to and carries emoji
+ * presentation on some platforms.
+ *
+ * It is deliberately not a chevron — that is disclosure or a step within a
+ * list, see {@link ChevronDownIcon} — and not {@link SendIcon}'s plane, which
+ * is the other closed triangle-ish shape in the set and can sit a few pixels
+ * away in the same toolbar.
+ */
+declare const PlayIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 
 interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'onClick' | 'aria-label' | 'title'> {
     /** Text written to the clipboard on click. */
@@ -536,6 +586,51 @@ interface SpinnerProps {
     label?: string;
 }
 declare function Spinner({ className, label }: SpinnerProps): react.JSX.Element;
+
+/**
+ * The states a queued unit of work can be in.
+ *
+ * Deliberately five and no more: apps name their statuses differently
+ * (`queued`/`pending`, `completed`/`complete`/`done`), so callers map their own
+ * union onto this one and the drawing stays the same across the federation.
+ */
+type StatusIconStatus = 'idle' | 'running' | 'done' | 'failed' | 'cancelled';
+interface StatusIconProps {
+    /** Which state to draw. */
+    status: StatusIconStatus;
+    /**
+     * Accessible name and tooltip — the caller's own translated wording
+     * ("Queued", "Läuft", "Abgeschlossen"). Required: the marker carries no text,
+     * so this is the only thing a screen reader or a hovering pointer gets.
+     */
+    label: string;
+    /** Sizing and colour overrides, applied last. */
+    className?: string;
+}
+/**
+ * The state of one job, task or upload, drawn rather than spelled out.
+ *
+ * A row of these is read down a list at a glance, which a column of words is
+ * not — and the words are the part that changes length per language, pushing
+ * the controls beside them around. The label is not lost: it becomes the
+ * accessible name and the tooltip, so the wording still reaches a screen reader
+ * and a hovering pointer.
+ *
+ * The vocabulary is the set's existing status pair plus the stopwatch —
+ * `CheckIcon` and `XIcon` are already read as pass/fail, and `StopwatchIcon`
+ * already means time taken, so nothing new is invented here. `failed` and
+ * `cancelled` share the cross and differ by tint: one is an error the user
+ * should look at, the other is a thing they themselves stopped.
+ *
+ * `running` is the `Spinner`, not an icon — motion is what says "still going",
+ * and a static drawing for it would be indistinguishable from `idle` at a
+ * glance. It keeps the spinner's own `role="status"`, so assistive tech
+ * announces it as live rather than as an image.
+ *
+ * @param props - `status` picks the drawing; `label` names it.
+ * @returns The status marker.
+ */
+declare function StatusIcon({ status, label, className }: StatusIconProps): react.JSX.Element;
 
 declare const banner: (props?: ({
     variant?: "danger" | "info" | null | undefined;
@@ -810,4 +905,4 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlayButton, PlayIcon, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
