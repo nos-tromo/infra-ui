@@ -17,6 +17,7 @@ import {
   SelectMenu,
   SidebarGroup,
   Spinner,
+  ToggleButton,
 } from '../src/index'
 import './styles.css'
 
@@ -66,6 +67,7 @@ const INITIAL_GRAPH_EDGES: ForceGraphEdge[] = [
 
 function Sink() {
   const [picked, setPicked] = useState<string | null>('a')
+  const [options, setOptions] = useState<Record<string, boolean>>({ speakers: true })
   const [demoFiles, setDemoFiles] = useState([
     { name: 'interview_2021_part1.mp4', size: 412_000_000 },
     { name: 'witness_statement_final.pdf', size: 2_100_000 },
@@ -128,6 +130,23 @@ function Sink() {
           <Button disabled>Disabled</Button>
           <CopyButton text="Copied from the kitchen sink" />
           <Spinner />
+        </section>
+
+        {/* A form's option row: stretched across the span, lit where chosen. */}
+        <section className="flex flex-wrap gap-2">
+          {['Speakers', 'Word analysis', 'Summary', 'Hate speech', 'Keyframes'].map((label) => {
+            const key = label.toLowerCase().split(' ')[0]
+            return (
+              <ToggleButton
+                key={key}
+                pressed={Boolean(options[key])}
+                onClick={() => setOptions((o) => ({ ...o, [key]: !o[key] }))}
+                className="min-w-32 flex-1"
+              >
+                {label}
+              </ToggleButton>
+            )
+          })}
         </section>
 
         <section className="flex flex-wrap items-center gap-3">

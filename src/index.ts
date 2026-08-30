@@ -1,5 +1,6 @@
 export { cn } from './cn'
 export { Button, type ButtonProps } from './primitives/Button'
+export { ToggleButton, type ToggleButtonProps } from './primitives/ToggleButton'
 export { HoverIconAction, type HoverIconActionProps } from './primitives/HoverIconAction'
 export {
   IconButton,
