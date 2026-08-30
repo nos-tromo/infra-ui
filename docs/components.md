@@ -109,6 +109,7 @@ looking alike:
 import {
   DownloadButton, DownloadLink, NewButton, RemoveButton, DeleteButton,
   MoveUpButton, MoveDownButton, SendButton, SearchButton, RefreshButton,
+  PlayButton, DisclosureButton,
 } from '@infra/ui'
 
 <DownloadButton label="Download transcript" onClick={save} />
@@ -122,7 +123,19 @@ import {
 <SendButton label="Send" type="submit" variant="primary" busy={inflight} />
 <SearchButton label="Search" type="submit" />
 <RefreshButton label="Refresh summary" busy={rebuilding} onClick={rebuild} />
+<PlayButton label="Open player" onClick={play} />
+<DisclosureButton
+  expanded={open}
+  controls={panelId}
+  label={open ? 'Hide results' : 'Show results'}
+  onClick={() => setOpen((v) => !v)}
+/>
 ```
+
+`DisclosureButton` is the one action carrying state: pass `expanded` and it
+writes `aria-expanded` and turns the caret over — one chevron rotated, never a
+swapped pair. Give the revealed element an `id` and pass it as `controls`, and
+swap `label` with the state so the name always says what the next click does.
 
 `SendButton` is the one action here that is usually a page's _primary_ control
 rather than quiet chrome, so it is the common case for `variant="primary"`. It
@@ -138,9 +151,27 @@ The set lives in `src/icons/`, all exported: `DownloadIcon`, `PlusIcon`,
 `XIcon`, `TrashIcon`, `ChevronDownIcon`, `ChevronUpIcon`, `ChevronsUpDownIcon`,
 `WarningIcon`, `InfoIcon`, `CheckIcon`, `StopwatchIcon`, `ExternalLinkIcon`,
 `ReportIcon`/`ReportCheckIcon`, `SendIcon`, `SearchIcon`, `RefreshIcon`,
-`ArrowLeftIcon`, `BrainIcon`/`BrainActiveIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
+`ArrowLeftIcon`, `BrainIcon`/`BrainActiveIcon`, `PlayIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
 the caller. Adding one is covered by
 [icon-policy.md](icon-policy.md#icons-are-drawn-never-typed).
+
+### Status icon
+
+`StatusIcon` draws the state of one job, task or upload instead of spelling it
+out, so a list of them is read down a column at a glance and the row's controls
+stop shifting as translated words change length:
+
+```tsx
+<StatusIcon status="running" label={t('jobs.status_running')} />
+```
+
+`status` is one of `idle | running | done | failed | cancelled` — map the app's
+own union onto it. `label` is required and is the whole accessible name: the
+marker carries no text, so the wording reaches a screen reader and a hovering
+pointer through `aria-label` and `title`. `running` renders the `Spinner` (its
+`role="status"` announces it as ongoing); the rest are the set's existing
+pass/fail/duration drawings, with `failed` and `cancelled` sharing the cross and
+differing only in tint.
 
 All styling uses semantic design tokens only (`bg-primary`, `text-muted-foreground`,
 `border-border`, `bg-chrome` (the `AppShell` frame background), …), so an app

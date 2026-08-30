@@ -45,6 +45,21 @@ label. The outline is identical in both drawings and only the inside changes —
 a spark appears where the fissure was — so the head lights up rather than being
 replaced.
 
+`v0.17.0` added three things at once, all replacing text in a job list. `PlayIcon`
+and its `PlayButton` are the "open the recording" action: a triangle closed with
+`z`, kept distinct from `SendIcon`'s plane, which is the other closed shape and
+can sit in the same toolbar. `DisclosureButton` promotes into the package the
+show/hide control docint had built in-app over `Button` — one `ChevronDownIcon`
+rotated under `aria-expanded`, never an up/down pair, since swapping the drawing
+would say the button _moves_ the row (that is `MoveUpButton`). And `StatusIcon`
+is the shared vocabulary for a unit of work's state: `StopwatchIcon` queued,
+`Spinner` running, `CheckIcon` done, `XIcon` failed or cancelled (tint is the
+only difference — an error to look at versus something the user stopped). Status
+words are what push a row's controls around as their length changes per
+language, so the wording moves to `aria-label` and `title` rather than being
+lost. The apps that hand-rolled these — docint's `SearchHit`, `GraphDebugPanel`
+and `IngestionStatus` — are expected to migrate onto the exports.
+
 An icon with more than one call site is exported **once** from `src/icons/` and
 imported everywhere, including by this package's own primitives: `CopyButton`
 and `FileList` each drew a private checkmark and cross of their own from before

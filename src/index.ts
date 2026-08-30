@@ -18,6 +18,9 @@ export {
   SendButton,
   SearchButton,
   RefreshButton,
+  PlayButton,
+  DisclosureButton,
+  type DisclosureButtonProps,
 } from './primitives/iconActions'
 export {
   DownloadIcon,
@@ -40,6 +43,7 @@ export {
   ArrowLeftIcon,
   BrainIcon,
   BrainActiveIcon,
+  PlayIcon,
   type IconProps,
 } from './icons'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'
@@ -56,6 +60,11 @@ export { Select } from './primitives/Select'
 export { SelectMenu, type SelectMenuProps, type SelectMenuOption } from './primitives/SelectMenu'
 export { Badge, type BadgeProps } from './primitives/Badge'
 export { Spinner, type SpinnerProps } from './primitives/Spinner'
+export {
+  StatusIcon,
+  type StatusIconProps,
+  type StatusIconStatus,
+} from './primitives/StatusIcon'
 export { Banner, type BannerProps } from './primitives/Banner'
 export { PageHeader, type PageHeaderProps } from './primitives/PageHeader'
 export { AppHeader, type AppHeaderProps } from './primitives/AppHeader'

@@ -10,6 +10,7 @@ import {
   DownloadIcon,
   ExternalLinkIcon,
   InfoIcon,
+  PlayIcon,
   PlusIcon,
   RefreshIcon,
   ReportCheckIcon,
@@ -43,6 +44,7 @@ const ICONS = {
   ArrowLeftIcon,
   BrainIcon,
   BrainActiveIcon,
+  PlayIcon,
 }
 
 test('every icon is drawn geometry, not a text character', () => {
@@ -165,6 +167,21 @@ test('the back arrow is a full arrow, not a chevron', () => {
   // page. The shaft is what carries that difference.
   expect(back.querySelectorAll('path')).toHaveLength(2)
   expect(chevron.querySelectorAll('path')).toHaveLength(1)
+})
+
+test('play is one closed triangle, not the send plane or a chevron', () => {
+  const { container: play } = render(<PlayIcon />)
+  const { container: send } = render(<SendIcon />)
+  const { container: chevron } = render(<ChevronDownIcon />)
+  const paths = [...play.querySelectorAll('path')]
+  // One closed shape: the triangle only reads as "play" when it is filled-in
+  // geometry rather than two open strokes meeting at a point.
+  expect(paths).toHaveLength(1)
+  expect(paths[0]!.getAttribute('d')).toMatch(/z$/i)
+  // Both of its neighbours in a media toolbar point the same way, so the
+  // drawings have to differ: the plane is two paths, the chevron is open.
+  expect(paths[0]!.getAttribute('d')).not.toBe(send.querySelector('path')!.getAttribute('d'))
+  expect(paths[0]!.getAttribute('d')).not.toBe(chevron.querySelector('path')!.getAttribute('d'))
 })
 
 test('the brain pair is one head in two states', () => {
