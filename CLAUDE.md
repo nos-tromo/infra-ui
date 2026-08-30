@@ -68,8 +68,9 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   runtime deps are limited to the styling utilities (cva, clsx,
   tailwind-merge).
 - Primitive set: `AppShell`, `SidebarGroup`, `PageHeader`, `UserMenu`, `AppHeader`,
-  `Button`, `CopyButton`, `Card`, `Input`, `Select`, `SelectMenu`, `Badge`,
-  `Spinner`, `Banner`, `FileList`, `ForceGraph`, `IconButton`/`IconLink`,
+  `Button`, `ToggleButton`, `CopyButton`, `Card`, `Input`, `Select`, `SelectMenu`,
+  `Badge`, `Spinner`, `Banner`, `StatusIcon`, `FileList`, `ForceGraph`,
+  `IconButton`/`IconLink`,
   `HoverIconAction` and the named icon actions, plus the `cn` helper.
   `SelectMenu` is the custom picker for when a native `<select>` popup cannot be
   styled — reach for `Select` first.

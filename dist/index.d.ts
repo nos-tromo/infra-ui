@@ -23,6 +23,34 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantPr
 }
 declare const Button: react.ForwardRefExoticComponent<ButtonProps & react.RefAttributes<HTMLButtonElement>>;
 
+interface ToggleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, Pick<VariantProps<typeof button>, 'size'> {
+    /** Whether the option is on. Controlled — the caller owns the flip. */
+    pressed: boolean;
+}
+/**
+ * A labelled option that is on or off, and says which by its colour.
+ *
+ * A checkbox spends its width on a box and puts the answer in a mark small
+ * enough to hunt for; this fills with the app's accent instead, so a row of
+ * options reads as a set of lit and unlit panels at a glance. The two states
+ * are the `Button` recipe's `primary` and `secondary` variants, so a selected
+ * toggle is pixel-identical to the form's submit button and the focus ring,
+ * disabled treatment and colour transition all come from the same place.
+ *
+ * The state is a required prop and the component holds none of its own: what
+ * is selected is the caller's data, not this button's business.
+ *
+ * The label must say what the option *is* — "Summary", not "Add summary" or
+ * "Remove summary". `aria-pressed` is what carries on-ness to a screen reader,
+ * and a name that swaps with the state would announce the change twice and
+ * disagree with the colour. (That is the opposite of `DisclosureButton`, whose
+ * label names the next click because a disclosure has no persistent identity.)
+ *
+ * @param props - Native `<button>` props, plus `pressed` and the `Button` size.
+ * @returns A toggle button rendered as a real `<button>` with `aria-pressed`.
+ */
+declare const ToggleButton: react.ForwardRefExoticComponent<ToggleButtonProps & react.RefAttributes<HTMLButtonElement>>;
+
 interface HoverIconActionProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'aria-label' | 'title'> {
     /** The glyph to render. Passed as a node so the design system stays icon-library-agnostic. */
     icon: ReactNode;
@@ -905,4 +933,4 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlayButton, PlayIcon, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlayButton, PlayIcon, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };

@@ -66,12 +66,16 @@ worked example: [components.md](docs/components.md#appshell).
 `AppShell` (chrome frame: sidebar, home link, theme toggle, `UserMenu`) ·
 `SidebarGroup` (labeled sidebar section) · `PageHeader` (route title + caption,
 one per route) · `UserMenu` (identity + sign-out dropdown) ·
-`AppHeader` (portal link, identity, tri-state theme toggle) · `Button` (primary/secondary/ghost/danger · sm/md) · `CopyButton` (icon-only,
+`AppHeader` (portal link, identity, tri-state theme toggle) · `Button` (primary/secondary/ghost/danger · sm/md) ·
+`ToggleButton` (a labelled option that fills with the accent colour while on) ·
+`CopyButton` (icon-only,
 copies text to the clipboard) · `Card` (plain or tile-style with `title`/`interactive`) · `Input` · `Select` ·
 `SelectMenu` (custom value picker, for when a native popup cannot be styled) ·
 `Badge` (neutral/accent/danger) · `Spinner` · `Banner` (info/danger) ·
+`StatusIcon` (one job's state, drawn) ·
 `IconButton`/`IconLink` · `HoverIconAction` (the same icon button, kept invisible
-until its `.group` row is hovered or focused) · the named icon actions ·
+until its `.group` row is hovered or focused) · the named icon actions
+(`PlayButton`, `DisclosureButton`, …) ·
 `FileList` · `ForceGraph`.
 
 Props, keyboard maps and worked examples: [components.md](docs/components.md).

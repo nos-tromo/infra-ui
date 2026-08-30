@@ -177,6 +177,35 @@ All styling uses semantic design tokens only (`bg-primary`, `text-muted-foregrou
 `border-border`, `bg-chrome` (the `AppShell` frame background), …), so an app
 re-themes everything by setting `--app-accent`.
 
+### Toggle button
+
+`ToggleButton` is one option that is on or off, saying which by its colour. A
+checkbox spends its width on a box and hides the answer in a mark you have to
+hunt for; a row of these reads as lit and unlit panels instead:
+
+```tsx
+<ToggleButton pressed={summary} onClick={() => setSummary((v) => !v)} className="flex-1">
+  {t('options.summary')}
+</ToggleButton>
+```
+
+`pressed` is required and the component holds no state of its own — what is
+selected is the caller's data. The two states are the `Button` recipe's
+`primary` and `secondary` variants, so a selected toggle is pixel-identical to
+the form's submit button, and the focus ring, disabled treatment and colour
+transition all come from one place. `size` takes the same `sm`/`md`; anything
+else is a native `<button>` prop, and `type` defaults to `button` so a toggle
+inside a form never submits it.
+
+Label it with what the option **is** — "Summary", not "Add summary". On-ness
+travels to a screen reader through `aria-pressed`, and a name that swapped with
+the state would announce the change twice and contradict the colour. (That is
+the opposite of `DisclosureButton`, whose label names the next click because a
+disclosure has no persistent identity of its own.)
+
+Stretch a set of them across a form with `className="flex-1"` inside a
+`flex flex-wrap` row; give them a `min-w-*` so they wrap rather than crush.
+
 ## ForceGraph
 
 Interactive SVG force-directed graph with zoom, pan, drag, multi-node selection, and incremental merge support. Nodes and edges are token-themed, and the simulation layout is preserved across updates so expanding the graph with new nodes maintains the existing visual structure.
