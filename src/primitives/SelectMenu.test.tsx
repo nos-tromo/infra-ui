@@ -292,3 +292,282 @@ test('align pins the panel to the requested edge', async () => {
   await user.click(trigger)
   expect(screen.getByRole('listbox')).toHaveClass('right-0')
 })
+
+const GROUPED = [
+  { value: 'own:alpha', label: 'alpha' },
+  { value: 'own:beta', label: 'beta' },
+  { value: 'alice:gamma', label: 'gamma', group: 'alice' },
+  { value: 'alice:delta', label: 'delta', group: 'alice' },
+  { value: 'bob:epsilon', label: 'epsilon', group: 'bob' },
+]
+
+/** Longer than the component's own reset window. */
+const TYPEAHEAD_PAUSE_MS = 600
+
+const CATALOG = [
+  { value: 'ue', label: 'Übergabe' },
+  { value: 'c1', label: 'Case Alpha' },
+  { value: 'c2', label: 'Case Beta' },
+  { value: 'c3', label: 'Case Gamma' },
+  { value: 'd', label: 'Dossier', disabled: true },
+]
+
+function openGrouped(props: Partial<ComponentProps<typeof SelectMenu>> = {}) {
+  render(
+    <SelectMenu
+      label="Select collection"
+      options={GROUPED}
+      value="own:alpha"
+      onChange={vi.fn()}
+      {...props}
+    />,
+  )
+  const trigger = screen.getByRole('combobox')
+  trigger.focus()
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  return trigger
+}
+
+test('options carrying a group sit under a header naming it', () => {
+  openGrouped()
+  const groups = screen.getAllByRole('group')
+  expect(groups).toHaveLength(2)
+  expect(groups[0]).toHaveAccessibleName('alice')
+  expect(groups[1]).toHaveAccessibleName('bob')
+  // The headers are furniture, not choices: an owner is not a collection.
+  expect(screen.getAllByRole('option')).toHaveLength(GROUPED.length)
+  expect(screen.queryByRole('option', { name: 'alice' })).not.toBeInTheDocument()
+  // Ungrouped options stay at the top level, outside every group.
+  expect(groups[0].contains(screen.getByRole('option', { name: 'alpha' }))).toBe(false)
+  expect(groups[0].contains(screen.getByRole('option', { name: 'gamma' }))).toBe(true)
+})
+
+test('the arrows step over the group headers', () => {
+  const trigger = openGrouped()
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  expect(activeLabel()).toBe('beta')
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  // Straight from the last ungrouped option into the first grouped one: the
+  // headers are not in `options`, so nothing has to know to skip them.
+  expect(activeLabel()).toBe('gamma')
+  fireEvent.keyDown(trigger, { key: 'End' })
+  expect(activeLabel()).toBe('epsilon')
+})
+
+test('pressing on a group header changes nothing', () => {
+  const trigger = openGrouped()
+  const header = screen.getAllByRole('group')[0].firstElementChild!
+  const prevented = !fireEvent.mouseDown(header)
+  // Same guard the option rows carry: a mousedown that blurs the trigger takes
+  // `aria-activedescendant` down with it.
+  expect(prevented).toBe(true)
+  expect(trigger).toHaveFocus()
+  expect(screen.getByRole('listbox')).toBeInTheDocument()
+})
+
+test('an empty group string is no group at all', () => {
+  render(
+    <SelectMenu
+      label="Select collection"
+      options={[{ value: 'a', label: 'alpha', group: '' }]}
+      value="a"
+      onChange={vi.fn()}
+    />,
+  )
+  fireEvent.click(screen.getByRole('combobox'))
+  expect(screen.queryByRole('group')).not.toBeInTheDocument()
+})
+
+function typeAhead(props: Partial<ComponentProps<typeof SelectMenu>> = {}) {
+  const onChange = vi.fn()
+  render(
+    <SelectMenu
+      label="Select case"
+      options={CATALOG}
+      value={null}
+      onChange={onChange}
+      {...props}
+    />,
+  )
+  const trigger = screen.getByRole('combobox')
+  trigger.focus()
+  return { trigger, onChange }
+}
+
+/** Types `text` into the trigger one printable key at a time. */
+function typeKeys(trigger: HTMLElement, text: string) {
+  for (const key of text) fireEvent.keyDown(trigger, { key })
+}
+
+test('a letter jumps to the first option starting with it', () => {
+  const { trigger } = typeAhead()
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  typeKeys(trigger, 'c')
+  expect(activeLabel()).toBe('Case Alpha')
+})
+
+test('more letters narrow the search rather than restarting it', () => {
+  const { trigger } = typeAhead()
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  typeKeys(trigger, 'case b')
+  // The space is a character here, not a commit: a catalog full of two-word
+  // names is unusable if the first space chooses whatever is highlighted.
+  expect(activeLabel()).toBe('Case Beta')
+  expect(screen.getByRole('listbox')).toBeInTheDocument()
+})
+
+test('the same letter again steps to the next match and wraps', () => {
+  const { trigger } = typeAhead()
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  typeKeys(trigger, 'c')
+  expect(activeLabel()).toBe('Case Alpha')
+  typeKeys(trigger, 'c')
+  expect(activeLabel()).toBe('Case Beta')
+  typeKeys(trigger, 'c')
+  expect(activeLabel()).toBe('Case Gamma')
+  // Search wraps where the arrows clamp: repeating a letter is a request for
+  // "the next one", and there is nowhere else for the last one to go.
+  typeKeys(trigger, 'c')
+  expect(activeLabel()).toBe('Case Alpha')
+})
+
+test('the search folds case and diacritics', () => {
+  const { trigger } = typeAhead()
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  // Off the first row first, so reaching it again is the search doing work.
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  expect(activeLabel()).toBe('Case Alpha')
+  typeKeys(trigger, 'ü')
+  expect(activeLabel()).toBe('Übergabe')
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  expect(activeLabel()).toBe('Case Alpha')
+  // A German catalog is the case this has to survive: an operator typing `u`
+  // on a keyboard they are not thinking about must still reach `Übergabe`.
+  typeKeys(trigger, 'u')
+  expect(activeLabel()).toBe('Übergabe')
+})
+
+test('the buffer forgets between words', () => {
+  const { trigger } = typeAhead()
+  vi.useFakeTimers()
+  try {
+    fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+    typeKeys(trigger, 'c')
+    expect(activeLabel()).toBe('Case Alpha')
+    vi.advanceTimersByTime(TYPEAHEAD_PAUSE_MS)
+    // A pause ends the word. Carried over, this would search 'cü' and match
+    // nothing, leaving the highlight where it was.
+    typeKeys(trigger, 'ü')
+    expect(activeLabel()).toBe('Übergabe')
+  } finally {
+    vi.useRealTimers()
+  }
+})
+
+test('a pause is what ends a word, not each keystroke', () => {
+  const { trigger } = typeAhead()
+  vi.useFakeTimers()
+  try {
+    fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+    fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+    expect(activeLabel()).toBe('Case Alpha')
+    // 'd' matches nothing choosable, and 'ü' arriving straight after belongs to
+    // that same failed word: 'dü' is not a match either, so nothing moves. A
+    // buffer cleared per keystroke would read the 'ü' alone and jump.
+    typeKeys(trigger, 'dü')
+    expect(activeLabel()).toBe('Case Alpha')
+  } finally {
+    vi.useRealTimers()
+  }
+})
+
+test('the search skips what cannot be chosen', () => {
+  const { trigger } = typeAhead()
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  expect(activeLabel()).toBe('Case Alpha')
+  typeKeys(trigger, 'd')
+  // 'Dossier' is the only match and it is disabled, so the search finds
+  // nothing and the highlight holds where the user left it.
+  expect(activeLabel()).toBe('Case Alpha')
+})
+
+test('typing on a closed picker chooses without opening it', () => {
+  const { trigger, onChange } = typeAhead()
+  typeKeys(trigger, 'c')
+  // What a native <select> does, and what `variant="field"` sits in a form
+  // promising: the value changes under the keystroke, no popup involved.
+  expect(onChange).toHaveBeenCalledWith('c1')
+  expect(screen.queryByRole('listbox')).not.toBeInTheDocument()
+})
+
+test('a shortcut is not a search', () => {
+  const { trigger } = typeAhead()
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  fireEvent.keyDown(trigger, { key: 'ü', ctrlKey: true })
+  expect(activeLabel()).toBe('Case Alpha')
+})
+
+test('Escape clears the buffer as well as the panel', () => {
+  const { trigger } = typeAhead()
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  typeKeys(trigger, 'c')
+  expect(activeLabel()).toBe('Case Alpha')
+  fireEvent.keyDown(trigger, { key: 'Escape' })
+  fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+  typeKeys(trigger, 'c')
+  // A surviving buffer would read this second 'c' as "the next one" and land
+  // on Case Beta.
+  expect(activeLabel()).toBe('Case Alpha')
+})
+
+test('the field variant wears the same box as an Input', async () => {
+  const { user, trigger } = setup({ variant: 'field' })
+  expect(trigger).toHaveClass('h-10', 'w-full', 'border', 'border-border', 'bg-background', 'px-3')
+  expect(trigger).not.toHaveClass('bg-transparent')
+  await user.click(trigger)
+  // A native popup is at least as wide as its control; a form picker that
+  // opens narrower than the field it belongs to reads as a different control.
+  expect(screen.getByRole('listbox')).toHaveClass('min-w-full')
+})
+
+test('the inline variant stays the bare trigger it was', () => {
+  const { trigger } = setup()
+  expect(trigger).toHaveClass('bg-transparent')
+  expect(trigger).not.toHaveClass('h-10')
+  expect(trigger).not.toHaveClass('border')
+})
+
+test('the caret is sized by the variant that owns the text size', () => {
+  const { trigger, rerender } = setup()
+  // Inline: the caller owns the font size, so the caret tracks it.
+  expect(trigger.querySelector('svg')).toHaveClass('h-[0.8em]')
+  rerender(
+    <SelectMenu
+      label="Select report"
+      options={OPTIONS}
+      value="1"
+      onChange={vi.fn()}
+      variant="field"
+    />,
+  )
+  // Field: the variant fixes `text-sm`, and 0.8em of that is a smudge beside a
+  // 40px-tall box.
+  expect(screen.getByRole('combobox').querySelector('svg')).toHaveClass('h-4', 'w-4')
+})
+
+test('the field variant pushes its caret to the far edge', () => {
+  const { trigger } = setup({ variant: 'field' })
+  expect(trigger.querySelector('span')).toHaveClass('flex-1')
+  const { container } = render(
+    <SelectMenu label="Inline" options={OPTIONS} value="1" onChange={vi.fn()} />,
+  )
+  expect(container.querySelector('button span')).not.toHaveClass('flex-1')
+})
+
+test('triggerClassName still wins over the variant', () => {
+  const { trigger } = setup({ variant: 'field', triggerClassName: 'h-8' })
+  expect(trigger).toHaveClass('h-8')
+  expect(trigger).not.toHaveClass('h-10')
+})

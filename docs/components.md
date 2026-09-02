@@ -50,13 +50,19 @@ chrome renders no version at all.
 
 ## SelectMenu
 
-Native first. `Select` is a real `<select>` and gets the platform's keyboard,
-type-ahead and touch picker for free — reach for `SelectMenu` only when the
-_closed_ control must be styled past what the platform will honor. The case that
-forced it: a `<select>` sized as a page title at `text-2xl` opens a 24px popup
-that covers the header, because a native popup inherits its control's font size.
-`SelectMenu`'s panel is a sibling of the trigger and declares `text-sm` on
-itself.
+The federation's value picker, and the reason `Select` is deprecated. A native
+`<select>`'s popup is OS chrome: it ignores `--app-accent`, it cannot mark the
+chosen row in the app's own terms, and it inherits the control's font size — a
+`<select>` sized as a page title at `text-2xl` opens a 24px popup that covers
+the header. `SelectMenu`'s panel is a sibling of the trigger and declares
+`text-sm` on itself. What a native select still has and this does not: a touch
+picker, and participation in form submission.
+
+Two shapes. `variant="inline"` (the default) is the bare trigger — transparent
+and unboxed, sized by `triggerClassName`, for a page title or a control sitting
+in a line of text. `variant="field"` wears `Input`'s box (`h-10`, bordered,
+`bg-background`) for a form row, and opens a panel at least as wide as the
+field. Everything else is identical.
 
 ```tsx
 <SelectMenu
@@ -82,14 +88,106 @@ placeholder option also gives you. An empty `options` renders `emptyLabel` on th
 trigger and opens nothing, so "nothing to pick" stays where a native select put
 it — the closed control's own text.
 
+Grouped options carry a `group`, which draws an `<optgroup>`-style heading over
+the run that shares it:
+
+```tsx
+options={[
+  { value: 'own:transcripts', label: 'transcripts' },
+  { value: 'a:archive', label: 'archive', group: 'a.beispiel' },
+  { value: 'a:notes', label: 'field-notes', group: 'a.beispiel' },
+]}
+```
+
+Options sharing a group must be **adjacent** — nothing is sorted, so a repeated
+name after a gap draws a second heading. Headings are not options: they take no
+index and no id, so the arrows, `Home`/`End` and the type-ahead step over them
+without knowing they exist. Ungrouped options render at the top level, which is
+how "mine first, then one heading per owner" falls out.
+
 Keyboard: `↓`/`↑`/`Enter`/`Space` open · `↓`/`↑` move and clamp at the ends ·
-`Home`/`End` jump · `Enter`/`Space` commit · `Esc` closes · `Tab` closes and
-moves on. Focus never leaves the trigger (`aria-activedescendant`), so `Tab`
-behaves like a native select's rather than stranding focus in the panel.
-**Type-ahead is not implemented** and is the one real thing this gives up: it
-needs a keystroke buffer with a reset timer and an `Intl.Collator` for the German
-catalogs, and half of it is worse than none, because it looks like it works until
-the first umlaut.
+`Home`/`End` jump · `Enter` commits · `Esc` closes · `Tab` closes and moves on.
+Focus never leaves the trigger (`aria-activedescendant`), so `Tab` behaves like
+a native select's rather than stranding focus in the panel.
+
+Type-ahead: printable keys build a word that resets after 500 ms, a repeated
+letter steps through the run of options sharing that initial, and an
+`Intl.Collator` at base sensitivity folds case and diacritics, so `u` finds
+"Übergabe". The scan **wraps** where the arrows **clamp** — the arrows are a
+step and have ends, a search is a lookup and has none; that asymmetry is
+deliberate and matches a native select. `Space` therefore commits only on an
+empty buffer: mid-word it is a space, or the two-word names in these catalogs
+would be unreachable. Typing on a _closed_ picker changes the value where it
+stands, without opening anything, as a native select does.
+
+## Menu
+
+The action menu: a button that opens a list of things to _do_. `SelectMenu`'s
+sibling and its opposite — that one names a value (`role="listbox"`), this one
+runs an action (`role="menu"`) — sharing the same panel and rows so a page of
+both reads as one control repeated.
+
+```tsx
+<Menu trigger={(props) => <DownloadButton {...props} label="Export" className="gap-1 px-2" />}>
+  <MenuItem onSelect={runExport}>Combined JSONL</MenuItem>
+  <MenuItem href={csvHref} download>
+    CSV
+  </MenuItem>
+  <MenuItem href={htmlHref} target="_blank" rel="noreferrer">
+    HTML
+  </MenuItem>
+</Menu>
+```
+
+`trigger` is a render prop rather than an element to clone, so the caller keeps
+its own control — an `IconButton` with `busy`, `disabled` and `hint`, or a text
+button — and **spreads the props last**: they carry the ref and the
+`aria-*`/handler wiring, and a caller's own `id` or `onClick` placed after them
+would silently win.
+
+An item is a `<button>` (`onSelect`) or an `<a>` (`href`), and a link stays a
+real link so the browser's own download and new-tab handling applies. `disabled`
+is `aria-disabled`, never the attribute, so `hint` still shows the reason.
+`tone="danger"` tints a destructive row at rest, before the pointer reaches it.
+`closeOnSelect={false}` keeps the panel open for an item that opens a second
+step:
+
+```tsx
+<Menu
+  trigger={(props) => <DeleteButton {...props} label="Clear jobs" />}
+  onOpenChange={(open) => !open && setConfirming(false)}
+>
+  {({ close }) =>
+    confirming ? (
+      <ConfirmPrompt onCancel={() => setConfirming(false)} onConfirm={close} />
+    ) : (
+      <MenuItem tone="danger" closeOnSelect={false} onSelect={() => setConfirming(true)}>
+        Clear all
+      </MenuItem>
+    )
+  }
+</Menu>
+```
+
+`children` as a function receives `close`, which is what lets a confirmation
+live inside the panel it was asked from. `onOpenChange` fires on every path in
+and out — it is where that second step resets, so a menu never reopens
+mid-question.
+
+Unlike `SelectMenu`, real focus moves onto the rows: a `role="menu"` is not a
+descendant of its trigger, a link must actually be focused for Enter to run the
+browser's navigation, and a confirmation's buttons are not addressable by
+`aria-activedescendant`. So every close path hands focus back to the trigger.
+
+Keyboard: `↓`/`↑`/`Enter`/`Space` open (Down from the top, Up from the bottom) ·
+`↓`/`↑` move and clamp · `Home`/`End` jump · `Enter`/`Space` choose · `Esc`
+closes and restores focus · `Tab` closes and moves on. Escape is caught on the
+menu, never on `document`, so one press dismisses one layer rather than this
+menu plus the dialog holding it — an app that listens for Escape on `document`
+itself will still see the key.
+
+`UserMenu` is this component with one item; an app that needs a fourth popover
+should reach here rather than hand-roll one.
 
 ## Icon actions
 

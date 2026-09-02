@@ -73,12 +73,20 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   tailwind-merge).
 - Primitive set: `AppShell`, `SidebarGroup`, `PageHeader`, `UserMenu`, `AppHeader`,
   `Button`, `ToggleButton`, `CopyButton`, `Card`, `Input`, `Select`, `SelectMenu`,
+  `Menu`/`MenuItem`,
   `Badge`, `Spinner`, `Banner`, `StatusIcon`, `FileList`, `ForceGraph`,
   `IconButton`/`IconLink`,
   `HoverIconAction` and the named icon actions, plus the `cn` helper.
-  `SelectMenu` is the custom picker for when a native `<select>` popup cannot be
-  styled — reach for `Select` first.
   Every primitive has a unit test — keep that invariant when adding one.
+- **Two dropdowns, and only two.** `SelectMenu` picks a *value*
+  (`role="listbox"`); `Menu` runs an *action* (`role="menu"`). `SelectMenu` is
+  the federation's picker — `variant="field"` wears `Input`'s box for a form
+  row, options take a `group`, and it has type-ahead — so `Select`, a bare
+  native `<select>`, is **deprecated**: its popup is OS chrome that ignores
+  `--app-accent` and inherits the trigger's font size. Keep `Select` only for a
+  control that must participate in form submission. `UserMenu` is `Menu` with
+  one item, and an app that hand-rolls a fourth popover is the thing this pair
+  exists to stop.
 - **Icons are drawn, never typed.** The shared set is `src/icons/` — inline SVG,
   `currentColor`, `aria-hidden`, sized by the caller. Never a character such as
   `×`, `▾`, `⤓` or `☀`: those render from whatever font the browser and OS fall
@@ -164,7 +172,7 @@ it and this file in sync when behavior changes.
 
 - Never commit directly to `main`; always branch (`feat/`, `fix/`) and open a PR.
 - Never create a NEW PR when an existing PR for the work is open — push additional commits to that branch.
-- Release order is strict: bump VERSION file -> commit -> tag. Never tag before the VERSION bump.
+- Release order is strict: bump `package.json`'s `version` -> commit -> merge (the workflow tags). Never tag before the bump.
 - Use single, non-compound shell commands for `gh` operations (no `&&` chains); if `gh pr merge` is blocked, fall back to the GitHub MCP merge tool.
 
 ## Verification

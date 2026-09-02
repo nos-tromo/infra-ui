@@ -1,6 +1,6 @@
 import { ClassValue } from 'clsx';
 import * as react from 'react';
-import { ButtonHTMLAttributes, ReactNode, AnchorHTMLAttributes, SVGProps, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, ReactNode, AnchorHTMLAttributes, SVGProps, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes, Ref, KeyboardEvent } from 'react';
 import * as class_variance_authority_types from 'class-variance-authority/types';
 import { VariantProps } from 'class-variance-authority';
 
@@ -512,6 +512,15 @@ declare const Card: react.ForwardRefExoticComponent<CardProps & react.RefAttribu
 
 declare const Input: react.ForwardRefExoticComponent<InputHTMLAttributes<HTMLInputElement> & react.RefAttributes<HTMLInputElement>>;
 
+/**
+ * A native `<select>` in the package's box.
+ *
+ * @deprecated Prefer `<SelectMenu variant="field" />`, which wears this same
+ * box and adds the things a native popup cannot be given: rows that follow the
+ * app's accent, headings for grouped options, and a popup that is not sized by
+ * the trigger's font. Kept for the one case it still wins — a real form
+ * control that submits with the form around it.
+ */
 declare const Select: react.ForwardRefExoticComponent<SelectHTMLAttributes<HTMLSelectElement> & react.RefAttributes<HTMLSelectElement>>;
 
 interface SelectMenuOption {
@@ -528,6 +537,17 @@ interface SelectMenuOption {
     label: string;
     /** Rendered and announced, but not choosable. The arrows step over it. */
     disabled?: boolean;
+    /**
+     * Puts this option under a named heading — the `<optgroup>` a native
+     * `<select>` would give you.
+     *
+     * Purely a rendering concern: headings are not options, so they take no
+     * index, no id and no place in the keyboard's world. Options sharing a group
+     * must be **adjacent** — this never sorts, so a repeated name after a gap
+     * draws a second heading, which is the caller's ordering shown faithfully.
+     * Empty is no group at all.
+     */
+    group?: string;
 }
 interface SelectMenuProps {
     /** The list to choose from. Empty renders {@link SelectMenuProps.emptyLabel}. */
@@ -557,19 +577,27 @@ interface SelectMenuProps {
     triggerClassName?: string;
     /** Blocks the control entirely — distinct from having nothing to offer. */
     disabled?: boolean;
+    /**
+     * `'inline'` (the default) is the bare trigger: transparent, unboxed, sized
+     * by whatever `triggerClassName` says. `'field'` wears `Input`'s box, for a
+     * picker standing in a form row beside real inputs.
+     */
+    variant?: 'inline' | 'field';
 }
 /**
  * Pick one item from a list, with the trigger showing the current choice.
  *
- * The menu form of {@link Select}, and the reason it exists: a native
- * `<select>`'s popup inherits the element's own font size, so a `<select>`
- * styled as a page title at `text-2xl` opens a 24px list that covers the header
- * it sits in. Here the panel is a *sibling* of the trigger and declares
- * `text-sm` on itself, so the caller sizes the trigger text freely and the list
- * is unaffected. **Reach for `Select` first** — take this one only when the
- * closed control must be styled past what the platform will honor, because a
- * native select also brings type-ahead, a touch picker and form participation
- * that this cannot.
+ * **The federation's picker.** `Select` — a bare native `<select>` — is
+ * deprecated in its favour, because a native popup is OS chrome: it ignores the
+ * app's accent, cannot show a chosen row as chosen in the app's own terms, and
+ * inherits the trigger's font size, so a `<select>` styled as a page title at
+ * `text-2xl` opens a 24px list that covers the header it sits in. Here the
+ * panel is a *sibling* of the trigger and declares `text-sm` on itself, so the
+ * caller sizes the trigger text freely and the list is unaffected.
+ * `variant="field"` puts that same picker in `Input`'s box for a form row.
+ *
+ * What a native select still has that this does not: a touch picker, and
+ * participation in form submission. Reach past this only for those.
  *
  * Options are data rather than `children`: this component owns the active
  * index, the option ids, `aria-selected` and the empty state, all of which need
@@ -591,19 +619,136 @@ interface SelectMenuProps {
  * trigger. The price is that the browser scrolls nothing for us, so the active
  * row is scrolled into view by hand below.
  *
- * **No type-ahead yet** — the one real thing this gives up against a native
- * `<select>`. Doing it properly needs a keystroke buffer with a reset timer,
- * the same-letter-cycles rule, and an `Intl.Collator` so `Ü` finds "Übergabe"
- * in a German catalog; half of it is worse than none, because it looks like it
- * works until the first umlaut. It also wants `Space`, which currently commits.
+ * Type-ahead is implemented: printable keys build a word that resets after half
+ * a second, a repeated letter steps through the run of options sharing it, and
+ * an `Intl.Collator` at base sensitivity means `u` finds "Übergabe" in a German
+ * catalog. The scan wraps where the arrows clamp — the arrows are a step and
+ * have ends, a search is a lookup and has none. `Space` therefore commits only
+ * on an empty buffer; mid-word it is a space, because half these catalogs are
+ * two-word names. Typing on a *closed* picker changes the value where it
+ * stands, as a native select does.
  */
-declare function SelectMenu({ options, value, onChange, label, placeholder, emptyLabel, align, className, triggerClassName, disabled, }: SelectMenuProps): react.JSX.Element;
+declare function SelectMenu({ options, value, onChange, label, placeholder, emptyLabel, align, className, triggerClassName, disabled, variant, }: SelectMenuProps): react.JSX.Element;
 declare namespace SelectMenu {
     var displayName: string;
 }
 
+/** What {@link MenuProps.trigger} must spread onto its button. */
+interface MenuTriggerProps {
+    ref: Ref<HTMLButtonElement>;
+    id: string;
+    'aria-haspopup': 'menu';
+    'aria-expanded': boolean;
+    'aria-controls': string | undefined;
+    onClick: () => void;
+    onKeyDown: (event: KeyboardEvent<HTMLButtonElement>) => void;
+}
+/** Handed to a render-prop body so it can dismiss the menu itself. */
+interface MenuRenderContext {
+    /** Close the panel and return focus to the trigger. */
+    close: () => void;
+}
+interface MenuProps {
+    /**
+     * Renders the button that opens the menu. **Spread the props last** — they
+     * carry the ref and the `aria-*`/handler wiring, and a caller's own `id` or
+     * `onClick` placed after them would silently win.
+     */
+    trigger: (props: MenuTriggerProps) => ReactNode;
+    /**
+     * The `MenuItem`s, or a function when the body needs to dismiss the menu on
+     * its own — a confirmation step that replaces the items with a question.
+     */
+    children: ReactNode | ((context: MenuRenderContext) => ReactNode);
+    /** Accessible name for the panel. Defaults to the trigger's own name. */
+    label?: string;
+    /** Which edge the panel hangs from. `'start'` = left, `'end'` = right. */
+    align?: 'start' | 'end';
+    /** Classes for the positioning wrapper. */
+    className?: string;
+    /** Classes for the panel — width overrides. */
+    panelClassName?: string;
+    /**
+     * Fires on every open and close, whatever caused it. This is where a body
+     * with its own state resets it, so a menu never reopens mid-confirmation.
+     */
+    onOpenChange?: (open: boolean) => void;
+}
+interface MenuItemBase {
+    children: ReactNode;
+    /**
+     * Rendered and announced, but not choosable — `aria-disabled`, never the
+     * `disabled` attribute, because a disabled button shows no tooltip and
+     * {@link MenuItemBase.hint} is usually the reason it is unavailable.
+     */
+    disabled?: boolean;
+    /** `'danger'` tints the row at rest: destructive rows are told apart before the pointer arrives. */
+    tone?: 'default' | 'danger';
+    /** Tooltip — most often why the item is unavailable. */
+    hint?: string;
+    /** Default `true`. `false` keeps the panel open, for an item that opens a second step. */
+    closeOnSelect?: boolean;
+    className?: string;
+}
+type MenuItemProps = (MenuItemBase & {
+    onSelect: () => void;
+    href?: never;
+    download?: never;
+    target?: never;
+    rel?: never;
+}) | (MenuItemBase & {
+    /** Renders an `<a>`, so the browser's own download and popup handling applies. */
+    href: string;
+    download?: boolean | string;
+    target?: '_blank';
+    rel?: string;
+    onSelect?: () => void;
+});
+/**
+ * One row of a {@link Menu} — a button that does something, or a link the
+ * browser follows.
+ *
+ * @param props - `onSelect` or `href`; `disabled`, `tone`, `hint` and
+ *   `closeOnSelect` adjust the row.
+ * @returns The menu item.
+ */
+declare function MenuItem({ children, disabled, tone, hint, closeOnSelect, className, ...rest }: MenuItemProps): react.JSX.Element;
+declare namespace MenuItem {
+    var displayName: string;
+}
+/**
+ * A button that opens a list of actions.
+ *
+ * The action-menu companion to `SelectMenu`: same panel, same rows, but the
+ * items *do* things rather than name a value, so this is the WAI-ARIA
+ * menu-button pattern — `role="menu"` with real focus roving between
+ * `role="menuitem"` rows, not `SelectMenu`'s `aria-activedescendant`. Three
+ * things force real focus here: a `role="menu"` is not a descendant of the
+ * trigger, so it cannot be an active descendant of it; a link item must be a
+ * genuinely focused `<a>` for Enter to run the browser's own download and
+ * popup handling; and a confirmation body holds arbitrary buttons that
+ * `aria-activedescendant` cannot address. The price is that every close path
+ * owes the trigger its focus back, which is what `close(restoreFocus)` is.
+ *
+ * Keyboard: `↓`/`↑`/`Enter`/`Space` open (Down from the top, Up from the
+ * bottom) · `↓`/`↑` move and **clamp** at the ends, matching `SelectMenu` ·
+ * `Home`/`End` jump · `Enter`/`Space` choose · `Esc` closes and restores focus
+ * · `Tab` closes and moves on.
+ *
+ * Escape is handled here rather than on `document`, so one press dismisses one
+ * layer — this menu, not also the dialog holding it. An app that listens for
+ * Escape on `document` itself will still see it.
+ *
+ * @param props - `trigger` renders the button; `children` are the items.
+ * @returns The menu.
+ */
+declare function Menu({ trigger, children, label, align, className, panelClassName, onOpenChange, }: MenuProps): react.JSX.Element;
+declare namespace Menu {
+    var displayName: string;
+}
+
 declare const badge: (props?: ({
-    variant?: "danger" | "neutral" | "accent" | null | undefined;
+    variant?: "danger" | "accent" | "neutral" | null | undefined;
 } & class_variance_authority_types.ClassProp) | undefined) => string;
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badge> {
 }
@@ -712,6 +857,16 @@ interface UserMenuProps {
     signOutLabel?: string;
     menuLabel?: string;
 }
+/**
+ * Identity and sign-out, in the app chrome's top right.
+ *
+ * A thin arrangement of {@link Menu}: the keyboard map, the focus handling and
+ * the dismissal all live there, so the header's menu and an app's own action
+ * menus cannot drift apart.
+ *
+ * @param props - `user` names the signed-in account.
+ * @returns The account menu.
+ */
 declare function UserMenu({ user, signOutHref, signOutLabel, menuLabel, }: UserMenuProps): react.JSX.Element;
 
 declare const SIDEBAR_STORAGE_KEY = "infra-ui-sidebar";
@@ -933,4 +1088,4 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlayButton, PlayIcon, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlayButton, PlayIcon, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };

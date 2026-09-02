@@ -8,10 +8,14 @@ import {
   CopyButton,
   Card,
   FileList,
+  DeleteButton,
+  DownloadButton,
   ForceGraph,
   type ForceGraphEdge,
   type ForceGraphNode,
   Input,
+  Menu,
+  MenuItem,
   PageHeader,
   Select,
   SelectMenu,
@@ -45,6 +49,16 @@ const DEMO_PICKS = [
   { value: 'c', label: 'Retired case', disabled: true },
 ]
 
+/* Ungrouped first, then a heading per owner — the shape a collection list
+   arrives in. Type `ü` with the panel open to exercise the type-ahead. */
+const DEMO_COLLECTIONS = [
+  { value: 'own:transcripts', label: 'transcripts' },
+  { value: 'own:uebergabe', label: 'Übergabe' },
+  { value: 'a:field-notes', label: 'field-notes', group: 'a.beispiel' },
+  { value: 'a:archive', label: 'archive', group: 'a.beispiel' },
+  { value: 'j:intake', label: 'intake', group: 'j.muster' },
+]
+
 const INITIAL_GRAPH_NODES: ForceGraphNode[] = [
   { id: 'n1', label: 'Origin Alpha', kind: 'seed' },
   { id: 'n2', label: 'Contact Bravo', kind: 'person' },
@@ -67,6 +81,8 @@ const INITIAL_GRAPH_EDGES: ForceGraphEdge[] = [
 
 function Sink() {
   const [picked, setPicked] = useState<string | null>('a')
+  const [collection, setCollection] = useState<string | null>(null)
+  const [confirming, setConfirming] = useState(false)
   const [options, setOptions] = useState<Record<string, boolean>>({ speakers: true })
   const [demoFiles, setDemoFiles] = useState([
     { name: 'interview_2021_part1.mp4', size: 412_000_000 },
@@ -179,8 +195,76 @@ function Sink() {
               placeholder="Choose one…"
               triggerClassName="text-2xl font-semibold"
             />
+            {/* Field-shaped: the box above it is an Input, and the point is
+                that you cannot tell them apart until one opens. */}
+            <SelectMenu
+              variant="field"
+              label="Demo picker, field-shaped"
+              options={DEMO_PICKS}
+              value={picked}
+              onChange={setPicked}
+              placeholder="Choose one…"
+            />
+            <SelectMenu
+              variant="field"
+              label="Collection"
+              options={DEMO_COLLECTIONS}
+              value={collection}
+              onChange={setCollection}
+              placeholder="Choose a collection…"
+            />
           </div>
         </Card>
+
+        <section className="flex flex-wrap items-center gap-3">
+          <h2 className="w-full text-sm font-medium text-muted-foreground">Menus</h2>
+          <Menu trigger={(p) => <DownloadButton {...p} label="Export" className="gap-1 px-2" />}>
+            <MenuItem onSelect={() => window.alert('Exported')}>Combined JSONL</MenuItem>
+            <MenuItem href="#" download="report.csv">
+              CSV
+            </MenuItem>
+            <MenuItem href="#" target="_blank" rel="noreferrer">
+              HTML (new tab)
+            </MenuItem>
+          </Menu>
+
+          {/* The second step lives inside the same panel: a confirmation that
+              opens a dialog loses the row it was asked about. */}
+          <Menu
+            align="end"
+            trigger={(p) => <DeleteButton {...p} label="Clear jobs" className="gap-1 px-2" />}
+            onOpenChange={(open) => !open && setConfirming(false)}
+          >
+            {({ close }) =>
+              confirming ? (
+                <div className="px-3 py-2">
+                  <p className="max-w-[16rem] text-sm text-foreground">Clear all 4 jobs?</p>
+                  <div className="mt-2 flex justify-end gap-2">
+                    <Button size="sm" variant="secondary" onClick={() => setConfirming(false)}>
+                      Cancel
+                    </Button>
+                    <Button size="sm" variant="danger" onClick={close}>
+                      Clear
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <MenuItem disabled hint="No finished jobs yet" onSelect={() => {}}>
+                    Clear finished (0)
+                  </MenuItem>
+                  <MenuItem
+                    tone="danger"
+                    closeOnSelect={false}
+                    onSelect={() => setConfirming(true)}
+                  >
+                    Clear all (4)
+                  </MenuItem>
+                </>
+              )
+            }
+          </Menu>
+        </section>
 
         <Banner>Informational banner</Banner>
         <Banner variant="danger">Something went wrong</Banner>

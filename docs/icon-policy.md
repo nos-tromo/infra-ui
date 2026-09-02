@@ -45,6 +45,11 @@ label. The outline is identical in both drawings and only the inside changes —
 a spark appears where the fissure was — so the head lights up rather than being
 replaced.
 
+`Menu` follows the same rule from the other side: it draws no caret of its own,
+because its trigger is the caller's control. A menu trigger says it opens a list
+by carrying `<ChevronDownIcon className="h-3.5 w-3.5" />` as the named action's
+`children` — the adornment slot `IconButton` documents — never a typed `▾`.
+
 `v0.17.0` added three things at once, all replacing text in a job list. `PlayIcon`
 and its `PlayButton` are the "open the recording" action: a triangle closed with
 `z`, kept distinct from `SendIcon`'s plane, which is the other closed shape and
