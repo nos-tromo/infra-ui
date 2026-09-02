@@ -30,11 +30,21 @@ test('closes on Escape and on outside click', () => {
   )
   const btn = screen.getByRole('button', { name: /jane\.doe/ })
   fireEvent.click(btn)
-  fireEvent.keyDown(document, { key: 'Escape' })
+  // Escape is caught on the menu itself, never on `document`: a document-level
+  // listener here would close this menu *and* whatever dialog encloses it, on
+  // one press.
+  fireEvent.keyDown(screen.getByRole('menuitem'), { key: 'Escape' })
   expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+  expect(btn).toHaveFocus()
   fireEvent.click(btn)
   fireEvent.mouseDown(screen.getByText('outside'))
   expect(screen.queryByRole('menu')).not.toBeInTheDocument()
+})
+
+test('opening moves focus into the menu', () => {
+  render(<UserMenu user="jane.doe" />)
+  fireEvent.click(screen.getByRole('button', { name: /jane\.doe/ }))
+  expect(screen.getByRole('menuitem', { name: 'Sign out' })).toHaveFocus()
 })
 
 test('the caret is drawn, not typed', () => {

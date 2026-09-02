@@ -40,7 +40,8 @@ In your app's root CSS (e.g. `src/styles/globals.css`):
 ```tsx
 import {
   AppShell, SidebarGroup, PageHeader, UserMenu, AppHeader, Button, CopyButton,
-  Card, Input, Select, Badge, Spinner, Banner, FileList, ForceGraph, cn,
+  Card, Input, SelectMenu, Menu, MenuItem, Badge, Spinner, Banner, FileList,
+  ForceGraph, cn,
 } from '@infra/ui'
 ```
 
@@ -69,8 +70,10 @@ one per route) · `UserMenu` (identity + sign-out dropdown) ·
 `AppHeader` (portal link, identity, tri-state theme toggle) · `Button` (primary/secondary/ghost/danger · sm/md) ·
 `ToggleButton` (a labelled option that fills with the accent colour while on) ·
 `CopyButton` (icon-only,
-copies text to the clipboard) · `Card` (plain or tile-style with `title`/`interactive`) · `Input` · `Select` ·
-`SelectMenu` (custom value picker, for when a native popup cannot be styled) ·
+copies text to the clipboard) · `Card` (plain or tile-style with `title`/`interactive`) · `Input` ·
+`SelectMenu` (the value picker — inline or `variant="field"`, with grouped
+options and type-ahead) · `Menu`/`MenuItem` (the action menu) ·
+`Select` (**deprecated** — a bare native `<select>`; prefer `SelectMenu`) ·
 `Badge` (neutral/accent/danger) · `Spinner` · `Banner` (info/danger) ·
 `StatusIcon` (one job's state, drawn) ·
 `IconButton`/`IconLink` · `HoverIconAction` (the same icon button, kept invisible

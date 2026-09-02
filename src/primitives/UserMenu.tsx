@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
 import { cn } from '../cn'
 import { ChevronDownIcon } from '../icons'
+import { Menu, MenuItem } from './Menu'
 
 export interface UserMenuProps {
   /** Signed-in user name (from the trusted X-Auth-User header). */
@@ -12,62 +12,42 @@ export interface UserMenuProps {
   menuLabel?: string
 }
 
+/**
+ * Identity and sign-out, in the app chrome's top right.
+ *
+ * A thin arrangement of {@link Menu}: the keyboard map, the focus handling and
+ * the dismissal all live there, so the header's menu and an app's own action
+ * menus cannot drift apart.
+ *
+ * @param props - `user` names the signed-in account.
+ * @returns The account menu.
+ */
 export function UserMenu({
   user,
   signOutHref = '/auth/logout',
   signOutLabel = 'Sign out',
   menuLabel = 'Account',
 }: UserMenuProps) {
-  const [open, setOpen] = useState(false)
-  const rootRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    if (!open) return
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    const onDown = (e: MouseEvent) => {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false)
-    }
-    document.addEventListener('keydown', onKey)
-    document.addEventListener('mousedown', onDown)
-    return () => {
-      document.removeEventListener('keydown', onKey)
-      document.removeEventListener('mousedown', onDown)
-    }
-  }, [open])
-
   return (
-    <div ref={rootRef} className="relative">
-      <button
-        type="button"
-        aria-haspopup="menu"
-        aria-expanded={open}
-        aria-label={`${menuLabel}: ${user}`}
-        onClick={() => setOpen((v) => !v)}
-        className={cn(
-          'inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-3 text-sm',
-          'hover:border-primary hover:text-foreground',
-          open ? 'text-foreground' : 'text-muted-foreground',
-        )}
-      >
-        {user}
-        <ChevronDownIcon className="h-3.5 w-3.5" />
-      </button>
-      {open && (
-        <div
-          role="menu"
-          className="absolute right-0 top-full z-30 mt-1 min-w-40 rounded-lg border border-border bg-muted p-1"
+    <Menu
+      align="end"
+      trigger={(props) => (
+        <button
+          type="button"
+          {...props}
+          aria-label={`${menuLabel}: ${user}`}
+          className={cn(
+            'inline-flex h-8 items-center gap-1.5 rounded-md border border-border px-3 text-sm',
+            'hover:border-primary hover:text-foreground',
+            props['aria-expanded'] ? 'text-foreground' : 'text-muted-foreground',
+          )}
         >
-          <a
-            role="menuitem"
-            href={signOutHref}
-            className="block rounded-md px-3 py-1.5 text-sm text-foreground hover:bg-accent"
-          >
-            {signOutLabel}
-          </a>
-        </div>
+          {user}
+          <ChevronDownIcon className="h-3.5 w-3.5" />
+        </button>
       )}
-    </div>
+    >
+      <MenuItem href={signOutHref}>{signOutLabel}</MenuItem>
+    </Menu>
   )
 }

@@ -59,13 +59,17 @@ export { Card, type CardProps } from './primitives/Card'
 export { Input } from './primitives/Input'
 export { Select } from './primitives/Select'
 export { SelectMenu, type SelectMenuProps, type SelectMenuOption } from './primitives/SelectMenu'
+export {
+  Menu,
+  MenuItem,
+  type MenuProps,
+  type MenuItemProps,
+  type MenuTriggerProps,
+  type MenuRenderContext,
+} from './primitives/Menu'
 export { Badge, type BadgeProps } from './primitives/Badge'
 export { Spinner, type SpinnerProps } from './primitives/Spinner'
-export {
-  StatusIcon,
-  type StatusIconProps,
-  type StatusIconStatus,
-} from './primitives/StatusIcon'
+export { StatusIcon, type StatusIconProps, type StatusIconStatus } from './primitives/StatusIcon'
 export { Banner, type BannerProps } from './primitives/Banner'
 export { PageHeader, type PageHeaderProps } from './primitives/PageHeader'
 export { AppHeader, type AppHeaderProps } from './primitives/AppHeader'

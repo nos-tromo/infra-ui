@@ -9,7 +9,7 @@ primitive inventory) with topic-by-topic detail.
 
 | Document | What it covers |
 |---|---|
-| [components.md](components.md) | Props, keyboard maps and worked examples for `AppShell`, `SelectMenu`, the icon actions and `ForceGraph`, plus the icon inventory |
+| [components.md](components.md) | Props, keyboard maps and worked examples for `AppShell`, `SelectMenu`, `Menu`, the icon actions and `ForceGraph`, plus the icon inventory |
 | [icon-policy.md](icon-policy.md) | Why icons are drawn as inline SVG and never typed as characters, and what each named icon action is allowed to mean |
 | [pinning.md](pinning.md) | Why consumers pin a commit-SHA codeload tarball rather than a tag, and why `dist/` is committed instead of rebuilt on install |
 
