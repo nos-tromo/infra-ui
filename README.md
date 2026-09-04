@@ -69,6 +69,7 @@ worked example: [components.md](docs/components.md#appshell).
 one per route) · `UserMenu` (identity + sign-out dropdown) ·
 `AppHeader` (portal link, identity, tri-state theme toggle) · `Button` (primary/secondary/ghost/danger · sm/md) ·
 `ToggleButton` (a labelled option that fills with the accent colour while on) ·
+`CycleButton` (one icon button stepping through a setting's values) ·
 `CopyButton` (icon-only,
 copies text to the clipboard) · `Card` (plain or tile-style with `title`/`interactive`) · `Input` ·
 `SelectMenu` (the value picker — inline or `variant="field"`, with grouped

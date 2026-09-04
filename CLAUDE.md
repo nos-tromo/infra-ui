@@ -72,7 +72,7 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   runtime deps are limited to the styling utilities (cva, clsx,
   tailwind-merge).
 - Primitive set: `AppShell`, `SidebarGroup`, `PageHeader`, `UserMenu`, `AppHeader`,
-  `Button`, `ToggleButton`, `CopyButton`, `Card`, `Input`, `Select`, `SelectMenu`,
+  `Button`, `ToggleButton`, `CycleButton`, `CopyButton`, `Card`, `Input`, `Select`, `SelectMenu`,
   `Menu`/`MenuItem`,
   `Badge`, `Spinner`, `Banner`, `StatusIcon`, `FileList`, `ForceGraph`,
   `IconButton`/`IconLink`,

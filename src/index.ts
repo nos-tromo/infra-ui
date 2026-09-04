@@ -1,6 +1,11 @@
 export { cn } from './cn'
 export { Button, type ButtonProps } from './primitives/Button'
 export { ToggleButton, type ToggleButtonProps } from './primitives/ToggleButton'
+export {
+  CycleButton,
+  type CycleButtonProps,
+  type CycleButtonOption,
+} from './primitives/CycleButton'
 export { HoverIconAction, type HoverIconActionProps } from './primitives/HoverIconAction'
 export {
   IconButton,
@@ -45,6 +50,9 @@ export {
   BrainIcon,
   BrainActiveIcon,
   PlayIcon,
+  LayersIcon,
+  DocumentsIcon,
+  ImageIcon,
   type IconProps,
 } from './icons'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'

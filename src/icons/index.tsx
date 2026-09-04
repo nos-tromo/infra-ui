@@ -322,3 +322,51 @@ export const PlayIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
     <path d="M7 5v14l12-7z" />
   </svg>
 )
+
+/**
+ * Every source at once — the whole corpus, whatever it is made of.
+ *
+ * Stacked sheets seen edge-on: the drawing says "all of these together", which
+ * is what distinguishes it from the two icons it cycles with. It is not a
+ * document ({@link DocumentsIcon} is a page with a corner) and not a picture —
+ * it is the union, so it must not look like either half.
+ */
+export const LayersIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="m12 3 9 5-9 5-9-5z" />
+    <path d="m3 12 9 5 9-5" />
+    <path d="m3 16 9 5 9-5" />
+  </svg>
+)
+
+/**
+ * The written documents — a stack of pages, not one page.
+ *
+ * Deliberately not {@link ReportIcon}: that is a single sheet *with lines*, one
+ * document someone is assembling. This is a page with a second behind it, which
+ * reads as the corpus rather than a particular file. The two can appear in the
+ * same app, so the second sheet is what keeps them apart at 16px.
+ */
+export const DocumentsIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M9 3h6l4 4v9a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+    <path d="M15 3v4h4" />
+    <path d="M4 8v11a2 2 0 0 0 2 2h9" />
+  </svg>
+)
+
+/**
+ * Stored imagery — pictures, keyframes, scanned figures.
+ *
+ * The framed sun-over-a-hill every file browser and editor draws for an image,
+ * so it needs no label. Kept literal on purpose: a camera would say "take a
+ * photo" and a gallery grid would say "browse", where this one names a *kind of
+ * source*.
+ */
+export const ImageIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+    <circle cx="9" cy="9.5" r="1.5" />
+    <path d="m21 15-5-5-9 9" />
+  </svg>
+)

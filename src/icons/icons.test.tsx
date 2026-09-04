@@ -7,9 +7,12 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   ChevronsUpDownIcon,
+  DocumentsIcon,
   DownloadIcon,
   ExternalLinkIcon,
+  ImageIcon,
   InfoIcon,
+  LayersIcon,
   PlayIcon,
   PlusIcon,
   RefreshIcon,
@@ -45,6 +48,9 @@ const ICONS = {
   BrainIcon,
   BrainActiveIcon,
   PlayIcon,
+  LayersIcon,
+  DocumentsIcon,
+  ImageIcon,
 }
 
 test('every icon is drawn geometry, not a text character', () => {
