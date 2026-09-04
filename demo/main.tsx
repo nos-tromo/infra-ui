@@ -7,13 +7,17 @@ import {
   Button,
   CopyButton,
   Card,
+  CycleButton,
   FileList,
   DeleteButton,
+  DocumentsIcon,
   DownloadButton,
   ForceGraph,
+  ImageIcon,
   type ForceGraphEdge,
   type ForceGraphNode,
   Input,
+  LayersIcon,
   Menu,
   MenuItem,
   PageHeader,
@@ -84,6 +88,7 @@ function Sink() {
   const [collection, setCollection] = useState<string | null>(null)
   const [confirming, setConfirming] = useState(false)
   const [options, setOptions] = useState<Record<string, boolean>>({ speakers: true })
+  const [target, setTarget] = useState<'all' | 'documents' | 'visual'>('all')
   const [demoFiles, setDemoFiles] = useState([
     { name: 'interview_2021_part1.mp4', size: 412_000_000 },
     { name: 'witness_statement_final.pdf', size: 2_100_000 },
@@ -163,6 +168,23 @@ function Sink() {
               </ToggleButton>
             )
           })}
+        </section>
+
+        {/* One setting, three values, one 32px button — the row of icon
+            controls a chat header carries. */}
+        <section className="flex flex-wrap items-center gap-3">
+          <h2 className="w-full text-sm font-medium text-muted-foreground">Cycle button</h2>
+          <CycleButton
+            name="Answer from"
+            options={[
+              { value: 'all', icon: <LayersIcon />, label: 'Everything' },
+              { value: 'documents', icon: <DocumentsIcon />, label: 'Documents' },
+              { value: 'visual', icon: <ImageIcon />, label: 'Images' },
+            ]}
+            value={target}
+            onChange={setTarget}
+          />
+          <span className="text-sm text-muted-foreground">{target}</span>
         </section>
 
         <section className="flex flex-wrap items-center gap-3">

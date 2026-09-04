@@ -249,7 +249,8 @@ The set lives in `src/icons/`, all exported: `DownloadIcon`, `PlusIcon`,
 `XIcon`, `TrashIcon`, `ChevronDownIcon`, `ChevronUpIcon`, `ChevronsUpDownIcon`,
 `WarningIcon`, `InfoIcon`, `CheckIcon`, `StopwatchIcon`, `ExternalLinkIcon`,
 `ReportIcon`/`ReportCheckIcon`, `SendIcon`, `SearchIcon`, `RefreshIcon`,
-`ArrowLeftIcon`, `BrainIcon`/`BrainActiveIcon`, `PlayIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
+`ArrowLeftIcon`, `BrainIcon`/`BrainActiveIcon`, `PlayIcon`, `LayersIcon`,
+`DocumentsIcon`, `ImageIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
 the caller. Adding one is covered by
 [icon-policy.md](icon-policy.md#icons-are-drawn-never-typed).
 
@@ -303,6 +304,44 @@ disclosure has no persistent identity of its own.)
 
 Stretch a set of them across a form with `className="flex-1"` inside a
 `flex flex-wrap` row; give them a `min-w-*` so they wrap rather than crush.
+
+### Cycle button
+
+`CycleButton` is one 32px icon button that steps through a short run of values —
+the shape `ThemeToggle` already had, exported so an app stops reaching for a
+dropdown:
+
+```tsx
+<CycleButton
+  name={t('chat.retrieval_target')}
+  options={RETRIEVAL_TARGETS.map((value) => ({
+    value,
+    icon: TARGET_ICON[value],
+    label: t(`chat.retrieval_target.${value}`),
+  }))}
+  value={target}
+  onChange={setTarget}
+/>
+```
+
+Every option carries its own drawing, and the accessible name and tooltip read
+`"Name: Value"` — so what is selected reaches a screen reader and the pointer
+alike. One icon merely tinted would leave the state to a background colour, and
+a state legible only on hover is a state people leave set wrong. Note the name
+says what the value *is*, not what the next click does: the opposite of
+`DisclosureButton`, which has no persistent value to report.
+
+Controlled, like `ToggleButton` — the caller owns the step, and `onChange`
+receives the next value in the run, wrapping at the end. A `value` outside
+`options` renders the first option rather than nothing. Everything else is an
+`IconButton` prop (`disabled`, `className`, `hint`), so it sits at the same
+height as the icon actions beside it.
+
+Reach for it only where every value has a drawing someone can tell apart, and
+where the setting is changed rarely enough that stepping is no burden. A binary
+on/off is `IconButton` with `aria-pressed` and a two-icon state pair; a labelled
+choice is `ToggleButton`; more than about four values, or a form row, is
+`SelectMenu` — which can be read without clicking through it.
 
 ## ForceGraph
 

@@ -65,6 +65,18 @@ language, so the wording moves to `aria-label` and `title` rather than being
 lost. The apps that hand-rolled these — docint's `SearchHit`, `GraphDebugPanel`
 and `IngestionStatus` — are expected to migrate onto the exports.
 
+`v0.20.0` adds a *value triple* rather than a state pair: `LayersIcon`,
+`DocumentsIcon` and `ImageIcon` are the three sources a retrieval answer can be
+made of, and they belong together because `CycleButton` — the same release —
+draws exactly one of them at a time. That primitive is `ThemeToggle`'s shape
+promoted into the package: one icon button stepping through a short run of
+values, each with its own drawing, which is what a row of 32px icon controls
+wants where a labelled dropdown would read as a different kind of control
+entirely. `DocumentsIcon` is deliberately not `ReportIcon`: a report is one
+sheet *with lines*, a document someone is assembling, where this is a page with
+a second behind it — the corpus. The second sheet is what keeps them apart at
+16px, and an app can show both in one screen.
+
 An icon with more than one call site is exported **once** from `src/icons/` and
 imported everywhere, including by this package's own primitives: `CopyButton`
 and `FileList` each drew a private checkmark and cross of their own from before

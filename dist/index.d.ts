@@ -51,20 +51,6 @@ interface ToggleButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, Pic
  */
 declare const ToggleButton: react.ForwardRefExoticComponent<ToggleButtonProps & react.RefAttributes<HTMLButtonElement>>;
 
-interface HoverIconActionProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'aria-label' | 'title'> {
-    /** The glyph to render. Passed as a node so the design system stays icon-library-agnostic. */
-    icon: ReactNode;
-    /** Accessible name — drives both `aria-label` and `title`. Required (there is no text child). */
-    label: string;
-}
-/**
- * A ghost, square icon button that stays visually quiet until needed: it is
- * `opacity-0` until an ancestor marked `.group` is hovered or focus-within, or
- * the button itself receives keyboard focus. The consumer owns the `.group`
- * marker and the button's positioning.
- */
-declare const HoverIconAction: react.ForwardRefExoticComponent<HoverIconActionProps & react.RefAttributes<HTMLButtonElement>>;
-
 /**
  * The always-visible icon action, and the base every named action is built on.
  *
@@ -123,6 +109,62 @@ interface IconLinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'a
  * @returns The link, styled as the button it mirrors.
  */
 declare const IconLink: react.ForwardRefExoticComponent<IconLinkProps & react.RefAttributes<HTMLAnchorElement>>;
+
+interface CycleButtonOption<V extends string> {
+    /** The value this option selects. */
+    value: V;
+    /** Its drawing. Each option needs its own — the icon is the only visible state. */
+    icon: ReactNode;
+    /** Names the value; joined to `name` for the accessible name and the tooltip. */
+    label: string;
+}
+interface CycleButtonProps<V extends string> extends Omit<IconButtonProps, 'icon' | 'label' | 'onClick' | 'children' | 'busy' | 'name' | 'value' | 'onChange'> {
+    /** The setting's name — the constant half of "Name: Value". */
+    name: string;
+    /** The values, in the order the button steps through them. */
+    options: readonly CycleButtonOption<V>[];
+    /** The selected value. Controlled — the caller owns the step. */
+    value: V;
+    /** Called with the next value in the run, wrapping at the end. */
+    onChange: (next: V) => void;
+}
+/**
+ * One icon button that steps through a short run of values.
+ *
+ * The shape `ThemeToggle` already had, exported so an app stops reaching for a
+ * dropdown: for a setting with three or four values that is changed rarely and
+ * sits in a row of 32px icons, a labelled `SelectMenu` is a lot of furniture,
+ * and it reads as a different *kind* of control than the toggles beside it.
+ *
+ * Each value draws its own icon, never one icon tinted — a state legible only
+ * on hover is a state people leave set wrong — and the accessible name and
+ * tooltip read "Name: Value", so what is selected reaches a screen reader and
+ * the pointer alike. That is why the name does *not* say what the next click
+ * does, unlike `DisclosureButton`: this control has a persistent value.
+ *
+ * Reach for it only when every value has a drawing someone can tell apart.
+ * A binary on/off is `IconButton` with `aria-pressed` and a two-icon state
+ * pair; a labelled choice is `ToggleButton`; more than about four values, or a
+ * form row, is `SelectMenu`, which can be read without clicking through it.
+ *
+ * @param props - `name`, `options`, `value` and `onChange`; the rest go to `IconButton`.
+ * @returns The button, drawn as the current value.
+ */
+declare function CycleButton<V extends string>({ name, options, value, onChange, ...props }: CycleButtonProps<V>): react.JSX.Element;
+
+interface HoverIconActionProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'aria-label' | 'title'> {
+    /** The glyph to render. Passed as a node so the design system stays icon-library-agnostic. */
+    icon: ReactNode;
+    /** Accessible name — drives both `aria-label` and `title`. Required (there is no text child). */
+    label: string;
+}
+/**
+ * A ghost, square icon button that stays visually quiet until needed: it is
+ * `opacity-0` until an ancestor marked `.group` is hovered or focus-within, or
+ * the button itself receives keyboard focus. The consumer owns the `.group`
+ * marker and the button's positioning.
+ */
+declare const HoverIconAction: react.ForwardRefExoticComponent<HoverIconActionProps & react.RefAttributes<HTMLButtonElement>>;
 
 /**
  * The named icon actions.
@@ -432,6 +474,33 @@ declare const BrainActiveIcon: ({ className, ...props }: IconProps) => react.JSX
  * away in the same toolbar.
  */
 declare const PlayIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Every source at once — the whole corpus, whatever it is made of.
+ *
+ * Stacked sheets seen edge-on: the drawing says "all of these together", which
+ * is what distinguishes it from the two icons it cycles with. It is not a
+ * document ({@link DocumentsIcon} is a page with a corner) and not a picture —
+ * it is the union, so it must not look like either half.
+ */
+declare const LayersIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * The written documents — a stack of pages, not one page.
+ *
+ * Deliberately not {@link ReportIcon}: that is a single sheet *with lines*, one
+ * document someone is assembling. This is a page with a second behind it, which
+ * reads as the corpus rather than a particular file. The two can appear in the
+ * same app, so the second sheet is what keeps them apart at 16px.
+ */
+declare const DocumentsIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Stored imagery — pictures, keyframes, scanned figures.
+ *
+ * The framed sun-over-a-hill every file browser and editor draws for an image,
+ * so it needs no label. Kept literal on purpose: a camera would say "take a
+ * photo" and a gallery grid would say "browse", where this one names a *kind of
+ * source*.
+ */
+declare const ImageIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 
 interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'onClick' | 'aria-label' | 'title'> {
     /** Text written to the clipboard on click. */
@@ -1088,4 +1157,4 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, InfoIcon, Input, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlayButton, PlayIcon, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlayButton, PlayIcon, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
