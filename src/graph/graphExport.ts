@@ -117,19 +117,16 @@ function resolvePositions(
   if (missing.length === 0) return resolved
 
   let minX = Infinity
-  let minY = Infinity
   let maxX = -Infinity
   let maxY = -Infinity
   for (const id in resolved) {
     const { x, y } = resolved[id]
     minX = Math.min(minX, x)
-    minY = Math.min(minY, y)
     maxX = Math.max(maxX, x)
     maxY = Math.max(maxY, y)
   }
   if (!Number.isFinite(minX)) {
     minX = 0
-    minY = 0
     maxX = 0
     maxY = 0
   }
