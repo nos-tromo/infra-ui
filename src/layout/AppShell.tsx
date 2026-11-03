@@ -19,6 +19,11 @@ export interface AppShellProps {
   signOutLabel?: string
   /** Sidebar content; omit for header-only apps (Nextext, translator). */
   sidebar?: ReactNode
+  /**
+   * Controls for the header's right-hand group, placed before the theme
+   * toggle — where an app mounts its `PurposeBar`.
+   */
+  headerActions?: ReactNode
   sidebarToggleLabel?: string
   children: ReactNode
 }
@@ -41,6 +46,7 @@ export function AppShell({
   signOutHref,
   signOutLabel,
   sidebar,
+  headerActions,
   sidebarToggleLabel = 'Toggle sidebar',
   children,
 }: AppShellProps) {
@@ -82,7 +88,16 @@ export function AppShell({
         </a>
         <span className="text-sm font-semibold">{title}</span>
         {version && <span className="text-xs text-muted-foreground">{version}</span>}
-        <span className="flex-1" />
+        {headerActions ? (
+          // In the spacer's place, with no width of its own: the actions get
+          // only the room left over, and truncate into it rather than squeeze
+          // the chrome beside them.
+          <div className="flex min-w-8 flex-1 items-center justify-end gap-2 sm:min-w-0">
+            {headerActions}
+          </div>
+        ) : (
+          <span className="flex-1" />
+        )}
         <ThemeToggle labels={themeLabels} />
         {user && <UserMenu user={user} signOutHref={signOutHref} signOutLabel={signOutLabel} />}
       </header>

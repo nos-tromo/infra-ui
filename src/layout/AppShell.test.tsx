@@ -69,6 +69,21 @@ test('SidebarGroup renders an uppercase section label', () => {
   expect(screen.getByText('Entities')).toHaveClass('uppercase')
 })
 
+test('headerActions sit in the header, before the theme toggle and the account menu', () => {
+  render(
+    <AppShell title="t" user="jane.doe" headerActions={<button type="button">Purpose</button>}>
+      x
+    </AppShell>,
+  )
+  const action = screen.getByRole('button', { name: 'Purpose' })
+  expect(screen.getByRole('banner')).toContainElement(action)
+  const follows = (a: Element, b: Element) =>
+    Boolean(a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING)
+  // Those two stay the header's fixed far-right pair in every app.
+  expect(follows(action, screen.getByRole('button', { name: /theme/i }))).toBe(true)
+  expect(follows(action, screen.getByRole('button', { name: /jane\.doe/ }))).toBe(true)
+})
+
 test('the back link draws its arrow', () => {
   render(<AppShell title="docint">body</AppShell>)
   const link = screen.getByRole('link', { name: 'Apps' })

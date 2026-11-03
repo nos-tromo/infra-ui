@@ -72,6 +72,16 @@ test('omits version element when absent', () => {
   expect(screen.queryByTestId('appheader-version')).not.toBeInTheDocument()
 })
 
+test('actions sit first in the right-hand group, before the user and the toggle', () => {
+  render(
+    <AppHeader title="docint" user="jane.doe" actions={<button type="button">Purpose</button>} />,
+  )
+  const action = screen.getByRole('button', { name: 'Purpose' })
+  const user = screen.getByTestId('appheader-user')
+  // DOCUMENT_POSITION_FOLLOWING: the user block comes after the action.
+  expect(action.compareDocumentPosition(user) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+})
+
 test('the back link draws its arrow', () => {
   render(<AppHeader title="docint" homeLabel="Übersicht" />)
   const link = screen.getByRole('link', { name: 'Übersicht' })

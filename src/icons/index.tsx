@@ -370,3 +370,18 @@ export const ImageIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
     <path d="m21 15-5-5-9 9" />
   </svg>
 )
+
+/**
+ * A stated purpose — the label every request goes out with.
+ *
+ * A tag tied on, rather than a note or a clipboard: what it marks is not a
+ * document of its own but something attached to everything else the user
+ * does, and a tag is the drawing that says "this travels with it". The eyelet
+ * is what keeps the outline from reading as an arrow at 16px.
+ */
+export const TagIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M12.6 3.6A2 2 0 0 0 11.2 3H5a2 2 0 0 0-2 2v6.2a2 2 0 0 0 .6 1.4l7.8 7.8a2 2 0 0 0 2.8 0l6.2-6.2a2 2 0 0 0 0-2.8z" />
+    <circle cx="7.5" cy="7.5" r="1.5" />
+  </svg>
+)

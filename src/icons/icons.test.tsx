@@ -21,6 +21,7 @@ import {
   SearchIcon,
   SendIcon,
   StopwatchIcon,
+  TagIcon,
   TrashIcon,
   WarningIcon,
   XIcon,
@@ -51,6 +52,7 @@ const ICONS = {
   LayersIcon,
   DocumentsIcon,
   ImageIcon,
+  TagIcon,
 }
 
 test('every icon is drawn geometry, not a text character', () => {
@@ -203,4 +205,14 @@ test('the brain pair is one head in two states', () => {
   expect(active.querySelectorAll('path').length).toBeGreaterThan(
     idle.querySelectorAll('path').length,
   )
+})
+
+test('the tag keeps its eyelet', () => {
+  const { container } = render(<TagIcon />)
+  const svg = container.querySelector('svg')!
+  // One closed outline and the hole it is tied by: without the eyelet, a
+  // rotated pentagon at 16px reads as an arrow pointing down-right.
+  expect(svg.querySelectorAll('path')).toHaveLength(1)
+  expect(svg.querySelector('path')!.getAttribute('d')).toMatch(/z$/i)
+  expect(svg.querySelector('circle')).not.toBeNull()
 })

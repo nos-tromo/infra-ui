@@ -53,6 +53,7 @@ export {
   LayersIcon,
   DocumentsIcon,
   ImageIcon,
+  TagIcon,
   type IconProps,
 } from './icons'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'
@@ -103,3 +104,27 @@ export {
   type GraphHtmlExportOptions,
 } from './graph/graphExport'
 export { useTheme, THEME_STORAGE_KEY, type ThemeMode } from './theme/useTheme'
+export {
+  PURPOSE_HEADER,
+  PURPOSE_REQUIRED_STATUS,
+  MAX_PURPOSE_FIELD,
+  MAX_PURPOSE_HEADER,
+  PurposeError,
+  encodePurpose,
+  validatePurpose,
+  isPurposeStated,
+  getPurpose,
+  setPurpose,
+  clearPurpose,
+  clearAllPurposes,
+  subscribePurpose,
+  purposeHeaders,
+  requestPurpose,
+  withPurpose,
+  type Purpose,
+  type PurposeInput,
+  type PurposeErrors,
+  type PurposeFieldError,
+} from './purpose/purpose'
+export { usePurpose, type UsePurposeResult } from './purpose/usePurpose'
+export { PurposeBar, type PurposeBarProps, type PurposeBarLabels } from './purpose/PurposeBar'

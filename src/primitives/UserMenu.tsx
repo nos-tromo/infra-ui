@@ -1,5 +1,6 @@
 import { cn } from '../cn'
 import { ChevronDownIcon } from '../icons'
+import { clearAllPurposes } from '../purpose/purpose'
 import { Menu, MenuItem } from './Menu'
 
 export interface UserMenuProps {
@@ -17,7 +18,8 @@ export interface UserMenuProps {
  *
  * A thin arrangement of {@link Menu}: the keyboard map, the focus handling and
  * the dismissal all live there, so the header's menu and an app's own action
- * menus cannot drift apart.
+ * menus cannot drift apart. Signing out also clears every purpose stated in
+ * this tab (`clearAllPurposes`).
  *
  * @param props - `user` names the signed-in account.
  * @returns The account menu.
@@ -47,7 +49,11 @@ export function UserMenu({
         </button>
       )}
     >
-      <MenuItem href={signOutHref}>{signOutLabel}</MenuItem>
+      {/* A stated purpose belongs to the person who stated it: the next one to
+          sign in to this tab must not inherit it. */}
+      <MenuItem href={signOutHref} onSelect={clearAllPurposes}>
+        {signOutLabel}
+      </MenuItem>
     </Menu>
   )
 }
