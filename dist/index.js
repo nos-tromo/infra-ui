@@ -1314,10 +1314,15 @@ var PurposeError = class extends Error {
     this.errors = errors;
   }
 };
-var EDGE_SPACE = /^[\s\x1c-\x1f\x85]+|[\s\x1c-\x1f\x85]+$/g;
+var EDGE_CHAR = /[\s\x1c-\x1f\x85]/;
 var CONTROL = /[\x00-\x1f\x7f-\x9f\u2028\u2029]/;
 function trimField(value) {
-  return typeof value === "string" ? value.replace(EDGE_SPACE, "") : "";
+  if (typeof value !== "string") return "";
+  let start = 0;
+  let end = value.length;
+  while (start < end && EDGE_CHAR.test(value[start] ?? "")) start++;
+  while (end > start && EDGE_CHAR.test(value[end - 1] ?? "")) end--;
+  return value.slice(start, end);
 }
 function normalize(input) {
   return { caseRef: trimField(input?.caseRef), reason: trimField(input?.reason) };

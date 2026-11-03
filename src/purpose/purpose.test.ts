@@ -169,6 +169,16 @@ describe('validation', () => {
     }
   })
 
+  test('trimming takes linear time, also on a long inner run of whitespace', () => {
+    // An anchored `[…]+$` trim rescans an inner run from every start
+    // position: quadratic on a pasted wall of tabs between two characters.
+    const inner = `a${'\t'.repeat(100_000)}b`
+    const started = performance.now()
+    expect(validatePurpose({ reason: inner })).toEqual({ reason: 'control' })
+    expect(encodePurpose({ reason: `  ${inner}  ` })).toHaveLength('reason='.length + 3 * 100_000 + 2)
+    expect(performance.now() - started).toBeLessThan(1000)
+  })
+
   test('a control character is reported before the length, in the backend order', () => {
     expect(validatePurpose({ caseRef: `${'x'.repeat(300)}\tx` })).toEqual({ caseRef: 'control' })
   })

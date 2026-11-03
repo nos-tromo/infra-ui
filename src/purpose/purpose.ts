@@ -71,15 +71,22 @@ export class PurposeError extends Error {
 // The backend trims with Python's str.strip(), which also strips \x1c-\x1f and
 // \x85. Trimming those as well keeps what the bar shows identical to what is
 // recorded, instead of rejecting a value the backend would have accepted.
+// One character at a time from each end: an anchored `[…]+$` alternative
+// would take quadratic time on a long run of spaces that is not at the end.
 // eslint-disable-next-line no-control-regex
-const EDGE_SPACE = /^[\s\x1c-\x1f\x85]+|[\s\x1c-\x1f\x85]+$/g
+const EDGE_CHAR = /[\s\x1c-\x1f\x85]/
 
 // C0 and C1 controls, plus the two Unicode line separators: the backend's set.
 // eslint-disable-next-line no-control-regex
 const CONTROL = /[\x00-\x1f\x7f-\x9f\u2028\u2029]/
 
 function trimField(value: string | null | undefined): string {
-  return typeof value === 'string' ? value.replace(EDGE_SPACE, '') : ''
+  if (typeof value !== 'string') return ''
+  let start = 0
+  let end = value.length
+  while (start < end && EDGE_CHAR.test(value[start] ?? '')) start++
+  while (end > start && EDGE_CHAR.test(value[end - 1] ?? '')) end--
+  return value.slice(start, end)
 }
 
 function normalize(input: PurposeInput | null | undefined): Purpose {
