@@ -41,7 +41,7 @@ In your app's root CSS (e.g. `src/styles/globals.css`):
 import {
   AppShell, SidebarGroup, PageHeader, UserMenu, AppHeader, Button, CopyButton,
   Card, Input, SelectMenu, Menu, MenuItem, Badge, Spinner, Banner, FileList,
-  ForceGraph, cn,
+  ForceGraph, PurposeBar, withPurpose, cn,
 } from '@infra/ui'
 ```
 
@@ -59,8 +59,9 @@ The app-wide chrome — collapsible sidebar, home link, theme toggle, and
 </AppShell>
 ```
 
-Sidebar composition, the header-only shell (Nextext, translator) and the full
-worked example: [components.md](docs/components.md#appshell).
+Sidebar composition, the header-only shell (Nextext, translator), the
+`headerActions` slot and the full worked example:
+[components.md](docs/components.md#appshell).
 
 ## Primitives
 
@@ -80,9 +81,14 @@ options and type-ahead) · `Menu`/`MenuItem` (the action menu) ·
 `IconButton`/`IconLink` · `HoverIconAction` (the same icon button, kept invisible
 until its `.group` row is hovered or focused) · the named icon actions
 (`PlayButton`, `DisclosureButton`, …) ·
-`FileList` · `ForceGraph`.
+`FileList` · `ForceGraph` ·
+`PurposeBar` (the purpose a user states once for an app — case reference and/or
+reason — shown in the header and sent with every request as `X-Audit-Purpose`,
+with the store, `usePurpose` and `withPurpose` a fetch wrapper uses).
 
-Props, keyboard maps and worked examples: [components.md](docs/components.md).
+Props, keyboard maps and worked examples: [components.md](docs/components.md);
+the purpose wire contract and fetch-wrapper wiring:
+[components.md](docs/components.md#purposebar).
 Why the icons are drawn rather than typed, and what each named action may mean:
 [icon-policy.md](docs/icon-policy.md).
 
