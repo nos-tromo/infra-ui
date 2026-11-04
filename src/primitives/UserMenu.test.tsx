@@ -1,5 +1,23 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import { UserMenu } from './UserMenu'
+import { __resetPurposeStoreForTesting, getPurpose, setPurpose } from '../purpose/purpose'
+
+afterEach(() => {
+  sessionStorage.clear()
+  __resetPurposeStoreForTesting()
+})
+
+test('signing out clears every purpose stated in the tab', () => {
+  // The next person to sign in to this tab must not inherit a purpose they
+  // never stated.
+  setPurpose('chorus', { caseRef: 'AZ-12' })
+  sessionStorage.setItem('infra-ui-purpose:docint', JSON.stringify({ caseRef: '', reason: 'x' }))
+  render(<UserMenu user="jane.doe" />)
+  fireEvent.click(screen.getByRole('button', { name: /jane\.doe/ }))
+  fireEvent.click(screen.getByRole('menuitem', { name: 'Sign out' }))
+  expect(getPurpose('chorus')).toBeNull()
+  expect(getPurpose('docint')).toBeNull()
+})
 
 test('renders a closed menu button with the user name', () => {
   render(<UserMenu user="jane.doe" />)

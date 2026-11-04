@@ -21,11 +21,15 @@ import {
   Menu,
   MenuItem,
   PageHeader,
+  PURPOSE_HEADER,
+  PURPOSE_REQUIRED_STATUS,
+  PurposeBar,
   Select,
   SelectMenu,
   SidebarGroup,
   Spinner,
   ToggleButton,
+  withPurpose,
 } from '../src/index'
 import './styles.css'
 
@@ -89,6 +93,8 @@ function Sink() {
   const [confirming, setConfirming] = useState(false)
   const [options, setOptions] = useState<Record<string, boolean>>({ speakers: true })
   const [target, setTarget] = useState<'all' | 'documents' | 'visual'>('all')
+  const [purposeRequired, setPurposeRequired] = useState(true)
+  const [auditedOutcome, setAuditedOutcome] = useState('')
   const [demoFiles, setDemoFiles] = useState([
     { name: 'interview_2021_part1.mp4', size: 412_000_000 },
     { name: 'witness_statement_final.pdf', size: 2_100_000 },
@@ -121,6 +127,7 @@ function Sink() {
       title="kitchen-sink"
       version="v0.9.0"
       user="jane.doe"
+      headerActions={<PurposeBar scope="kitchen-sink" required={purposeRequired} />}
       sidebar={
         <SidebarGroup label="Sections">
           <a
@@ -185,6 +192,29 @@ function Sink() {
             onChange={setTarget}
           />
           <span className="text-sm text-muted-foreground">{target}</span>
+        </section>
+
+        {/* A stand-in backend that answers 428 until a purpose is stated:
+            withPurpose asks through the bar in the header, then sends again. */}
+        <section className="flex flex-wrap items-center gap-3">
+          <h2 className="w-full text-sm font-medium text-muted-foreground">Purpose</h2>
+          <Button
+            variant="secondary"
+            onClick={async () => {
+              const response = await withPurpose('kitchen-sink', async (headers) => ({
+                status: headers[PURPOSE_HEADER] ? 200 : PURPOSE_REQUIRED_STATUS,
+              }))
+              setAuditedOutcome(
+                response.status === 200 ? 'Sent with a purpose' : 'Refused: no purpose stated',
+              )
+            }}
+          >
+            Run an audited search
+          </Button>
+          <ToggleButton pressed={purposeRequired} onClick={() => setPurposeRequired((v) => !v)}>
+            Required
+          </ToggleButton>
+          <span className="text-sm text-muted-foreground">{auditedOutcome}</span>
         </section>
 
         <section className="flex flex-wrap items-center gap-3">

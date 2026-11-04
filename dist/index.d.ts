@@ -501,6 +501,15 @@ declare const DocumentsIcon: ({ className, ...props }: IconProps) => react.JSX.E
  * source*.
  */
 declare const ImageIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * A stated purpose — the label every request goes out with.
+ *
+ * A tag tied on, rather than a note or a clipboard: what it marks is not a
+ * document of its own but something attached to everything else the user
+ * does, and a tag is the drawing that says "this travels with it". The eyelet
+ * is what keeps the outline from reading as an arrow at 16px.
+ */
+declare const TagIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 
 interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'onClick' | 'aria-label' | 'title'> {
     /** Text written to the clipboard on click. */
@@ -908,8 +917,10 @@ interface AppHeaderProps extends HTMLAttributes<HTMLElement> {
         light: string;
         dark: string;
     };
+    /** Controls for the right-hand group, placed first in it — where a `PurposeBar` goes. */
+    actions?: ReactNode;
 }
-declare function AppHeader({ title, user, version, homeHref, homeLabel, themeLabels, className, ...props }: AppHeaderProps): react.JSX.Element;
+declare function AppHeader({ title, user, version, homeHref, homeLabel, themeLabels, actions, className, ...props }: AppHeaderProps): react.JSX.Element;
 
 interface ThemeToggleLabels {
     system: string;
@@ -931,7 +942,8 @@ interface UserMenuProps {
  *
  * A thin arrangement of {@link Menu}: the keyboard map, the focus handling and
  * the dismissal all live there, so the header's menu and an app's own action
- * menus cannot drift apart.
+ * menus cannot drift apart. Signing out also clears every purpose stated in
+ * this tab (`clearAllPurposes`).
  *
  * @param props - `user` names the signed-in account.
  * @returns The account menu.
@@ -952,10 +964,15 @@ interface AppShellProps {
     signOutLabel?: string;
     /** Sidebar content; omit for header-only apps (Nextext, translator). */
     sidebar?: ReactNode;
+    /**
+     * Controls for the header's right-hand group, placed before the theme
+     * toggle — where an app mounts its `PurposeBar`.
+     */
+    headerActions?: ReactNode;
     sidebarToggleLabel?: string;
     children: ReactNode;
 }
-declare function AppShell({ title, version, user, homeHref, homeLabel, themeLabels, signOutHref, signOutLabel, sidebar, sidebarToggleLabel, children, }: AppShellProps): react.JSX.Element;
+declare function AppShell({ title, version, user, homeHref, homeLabel, themeLabels, signOutHref, signOutLabel, sidebar, headerActions, sidebarToggleLabel, children, }: AppShellProps): react.JSX.Element;
 declare function SidebarGroup({ label, children }: {
     label?: string;
     children: ReactNode;
@@ -1157,4 +1174,268 @@ declare function useTheme(): {
     cycle: () => void;
 };
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MoveDownButton, MoveUpButton, NewButton, PageHeader, type PageHeaderProps, PlayButton, PlayIcon, PlusIcon, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopwatchIcon, THEME_STORAGE_KEY, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UserMenu, type UserMenuProps, WarningIcon, XIcon, cn, downloadText, mergeFiles, toGraphHtml, toGraphJson, toGraphML, useTheme };
+/**
+ * The stated purpose: a case reference and/or a short reason that a user
+ * states once and every API request of an app then carries, so a backend that
+ * keeps an audit trail can record why data was looked at.
+ *
+ * Framework-agnostic on purpose: a plain fetch wrapper reads it with
+ * {@link purposeHeaders} or {@link withPurpose}, React reads it with
+ * `usePurpose`, and `PurposeBar` is where the user states it.
+ *
+ * The wire format is the backend's — `parse_purpose_header` in the shared
+ * audit runtime (`nos-tromo/.github`, `configs/audit/audit_runtime.py`): the
+ * `application/x-www-form-urlencoded` serialization of up to two fields,
+ * `case_ref` and `reason`, in the {@link PURPOSE_HEADER} request header. This
+ * module produces exactly that and refuses anything the parser would reject,
+ * so a stored purpose can never turn a request into a `400`.
+ */
+/** Request header carrying the caller's stated purpose. */
+declare const PURPOSE_HEADER = "X-Audit-Purpose";
+/** Response status for "this request needs a stated purpose" (428 Precondition Required). */
+declare const PURPOSE_REQUIRED_STATUS = 428;
+/** Longest accepted field once trimmed, in characters — Unicode code points, as the backend counts. */
+declare const MAX_PURPOSE_FIELD = 256;
+/** Longest accepted header value, in characters. */
+declare const MAX_PURPOSE_HEADER = 4096;
+/** A stated purpose. Both fields are trimmed, and at least one is non-empty. */
+interface Purpose {
+    /** A case or file reference; empty when not given. */
+    readonly caseRef: string;
+    /** A short justification; empty when not given. */
+    readonly reason: string;
+}
+/** A purpose as a caller hands it in: either field may be missing, blank or untrimmed. */
+interface PurposeInput {
+    caseRef?: string | null;
+    reason?: string | null;
+}
+/** Why one field cannot be sent: it is too long, or it holds control characters. */
+type PurposeFieldError = 'length' | 'control';
+/**
+ * What is wrong with a purpose, per field. `header` means both fields are
+ * acceptable on their own but encode to a header longer than
+ * {@link MAX_PURPOSE_HEADER}; it is reported only once neither field has an
+ * error of its own.
+ */
+interface PurposeErrors {
+    caseRef?: PurposeFieldError;
+    reason?: PurposeFieldError;
+    header?: 'length';
+}
+/** Thrown by {@link setPurpose} for a purpose the backend would reject. */
+declare class PurposeError extends Error {
+    /** The problems {@link validatePurpose} found. */
+    readonly errors: PurposeErrors;
+    constructor(errors: PurposeErrors);
+}
+/**
+ * Whether a purpose is stated: at least one field is non-blank.
+ *
+ * @param input - The purpose to check; `null` is not stated.
+ * @returns `true` when a case reference or a reason is given.
+ */
+declare function isPurposeStated(input: PurposeInput | null | undefined): boolean;
+/**
+ * Encode a purpose as the {@link PURPOSE_HEADER} value.
+ *
+ * Each field is trimmed and a blank one is left out, so a purpose with neither
+ * field yields `''` — send no header at all then. The result is what
+ * `new URLSearchParams([['case_ref', …], ['reason', …]]).toString()` produces:
+ * pure ASCII, with spaces as `+` and everything else outside `*-._` and the
+ * alphanumerics percent-encoded as UTF-8.
+ *
+ * @param input - The purpose to encode.
+ * @returns The header value, e.g. `case_ref=AZ-12&reason=Pr%C3%BCfung+des+Hinweises`.
+ */
+declare function encodePurpose(input: PurposeInput): string;
+/**
+ * Check a purpose against the backend's rules, so the dialog and an app's own
+ * code share one rule set.
+ *
+ * A blank purpose is valid — it is simply not stated ({@link isPurposeStated}).
+ *
+ * @param input - The purpose to check, before or after trimming.
+ * @returns The problems found, or `null` when the purpose can be sent.
+ */
+declare function validatePurpose(input: PurposeInput): PurposeErrors | null;
+/**
+ * The purpose stated in this app.
+ *
+ * The same object is returned until the purpose changes, so it can serve as a
+ * snapshot for `useSyncExternalStore`.
+ *
+ * @param scope - The app's scope, e.g. `"chorus"`.
+ * @returns The stated purpose, or `null` when none is stated.
+ */
+declare function getPurpose(scope: string): Purpose | null;
+/**
+ * State the purpose for an app, persist it for the browser tab's session and
+ * tell every subscriber. A blank purpose clears it.
+ *
+ * Also answers a pending {@link requestPurpose}: whatever is stated now is
+ * what the waiting request is retried with.
+ *
+ * @param scope - The app's scope, e.g. `"chorus"`.
+ * @param input - The new purpose; `null` or blank clears it.
+ * @returns The purpose now stated, trimmed, or `null` when it was cleared.
+ * @throws {PurposeError} If the purpose breaks the backend's rules
+ *   ({@link validatePurpose}); the stored purpose is then left as it was.
+ */
+declare function setPurpose(scope: string, input: PurposeInput | null): Purpose | null;
+/**
+ * Clear the purpose stated for an app. A pending {@link requestPurpose}
+ * resolves with `null`.
+ *
+ * @param scope - The app's scope.
+ */
+declare function clearPurpose(scope: string): void;
+/**
+ * Clear the purpose of every app in this browser tab — what signing out does.
+ *
+ * The apps share one origin behind the gateway, so their stored purposes sit
+ * side by side in the same `sessionStorage`; this removes all of them, not
+ * only the scopes this page has read.
+ */
+declare function clearAllPurposes(): void;
+/**
+ * Be told whenever an app's purpose changes.
+ *
+ * @param scope - The app's scope.
+ * @param listener - Called with the new purpose, or `null` once cleared.
+ * @returns A function that unsubscribes.
+ */
+declare function subscribePurpose(scope: string, listener: (purpose: Purpose | null) => void): () => void;
+/**
+ * The headers a request needs for the purpose stated in this app — spread
+ * them into a `fetch` call's `headers`.
+ *
+ * @param scope - The app's scope.
+ * @returns `{ 'X-Audit-Purpose': … }`, or `{}` when no purpose is stated.
+ */
+declare function purposeHeaders(scope: string): Record<string, string>;
+/**
+ * Ask the user for a purpose — what a fetch wrapper does after a
+ * {@link PURPOSE_REQUIRED_STATUS} response.
+ *
+ * Opens the editor of the `PurposeBar` mounted for this scope. Requests made
+ * while one is pending share it, so a burst of `428`s opens one dialog, not
+ * several.
+ *
+ * @param scope - The app's scope.
+ * @returns A promise of the purpose the user saved — retry the request with it
+ *   — or of `null` when they cancelled or no `PurposeBar` is mounted to ask
+ *   with, in which case the request should fail as it is.
+ */
+declare function requestPurpose(scope: string): Promise<Purpose | null>;
+/**
+ * Send a request with the purpose stated in this app; on a `428`, ask for a
+ * purpose and send it once more.
+ *
+ * `send` performs the request with the given headers merged into its own, and
+ * may run twice — so it must build its body afresh each time (a string or
+ * `FormData`, never an already-consumed stream).
+ *
+ * @param scope - The app's scope.
+ * @param send - Performs the request with these headers added.
+ * @returns The response — the original `428` when the user declined to state
+ *   a purpose, so the caller's usual error handling applies.
+ */
+declare function withPurpose<R extends {
+    status: number;
+}>(scope: string, send: (headers: Record<string, string>) => Promise<R>): Promise<R>;
+
+interface UsePurposeResult {
+    /** The stated purpose, or `null` when none is stated. */
+    purpose: Purpose | null;
+    /** {@link setPurpose} for this scope: validates, stores and broadcasts; blank clears. */
+    setPurpose: (input: PurposeInput | null) => Purpose | null;
+    /** {@link clearPurpose} for this scope. */
+    clearPurpose: () => void;
+}
+/**
+ * The purpose stated in this app, kept current.
+ *
+ * A view over the module store, so a purpose set from a plain fetch wrapper,
+ * a `PurposeBar` or another component re-renders every reader of the scope.
+ *
+ * @param scope - The app's scope, e.g. `"chorus"`.
+ * @returns The current purpose and the two scope-bound setters.
+ */
+declare function usePurpose(scope: string): UsePurposeResult;
+
+interface PurposeBarLabels {
+    /** Names the purpose in the bar and its accessible name ("Purpose: …"). */
+    purpose: string;
+    /** The bar when no purpose is stated. */
+    empty: string;
+    /** The bar when no purpose is stated and the app requires one. */
+    required: string;
+    /** The dialog's title. */
+    title: string;
+    /** The dialog's line on what a stated purpose does. */
+    description: string;
+    /** The dialog's note when a request is waiting for a purpose. */
+    requested: string;
+    /** The case-reference field. */
+    caseRef: string;
+    /** The reason field. */
+    reason: string;
+    save: string;
+    cancel: string;
+    /** Removes the stated purpose; shown only while one is stated. */
+    clear: string;
+    /** A field is too long. The literal `{max}` is replaced with the limit. */
+    errorLength: string;
+    /** A field holds a line break, tab or other control character. */
+    errorControl: string;
+    /** Both fields are within their limit but too long to send together. */
+    errorHeader: string;
+    /** Saving no purpose where one is needed. */
+    errorEmpty: string;
+}
+interface PurposeBarProps {
+    /**
+     * The app this purpose belongs to — `"chorus"`, `"docint"`, … It keys the
+     * stored purpose and routes {@link requestPurpose}, so pass the same string
+     * the app's fetch wrapper uses.
+     */
+    scope: string;
+    /**
+     * The app's backend refuses some requests without a stated purpose: the
+     * empty bar becomes a warning, and saving a blank purpose is refused.
+     */
+    required?: boolean;
+    /** Localized strings; English defaults fill any not given. */
+    labels?: Partial<PurposeBarLabels>;
+    /** Classes for the bar's button — margins, width. */
+    className?: string;
+}
+/**
+ * The purpose stated in this app, shown in the header, and the dialog that
+ * states it.
+ *
+ * The bar is one compact button sized for `AppShell`'s `headerActions` slot:
+ * the purpose when one is stated, a dashed "No purpose stated" when not, and a
+ * warning when the app `required`s one. It opens a modal `<dialog>` with the
+ * two fields, validated inline against the backend's rules. The dialog is
+ * also what {@link requestPurpose} opens after a `428`, so a request that
+ * needs a purpose can wait for the user to state one and then be retried.
+ *
+ * A native modal dialog rather than a hand-rolled overlay: the browser makes
+ * the rest of the page inert and puts the dialog in the top layer, above any
+ * stacking context the header sits in. Focus moves to the first field on
+ * open and back to whatever held it on close — the bar, or the control whose
+ * request asked. Escape and Cancel discard the edit; Enter in a field saves.
+ * The scrim does not dismiss it, so a stray click never loses what was typed.
+ *
+ * @param props - `scope` names the app; `required`, `labels` and `className`
+ *   adjust it.
+ * @returns The bar, plus the dialog while it is open.
+ */
+declare function PurposeBar({ scope, required, labels, className }: PurposeBarProps): react.JSX.Element;
+declare namespace PurposeBar {
+    var displayName: string;
+}
+
+export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, type UsePurposeResult, UserMenu, type UserMenuProps, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };

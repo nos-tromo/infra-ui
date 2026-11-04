@@ -76,7 +76,8 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   `Menu`/`MenuItem`,
   `Badge`, `Spinner`, `Banner`, `StatusIcon`, `FileList`, `ForceGraph`,
   `IconButton`/`IconLink`,
-  `HoverIconAction` and the named icon actions, plus the `cn` helper.
+  `HoverIconAction` and the named icon actions, `PurposeBar` (with its
+  framework-agnostic store, `usePurpose` and `withPurpose`), plus the `cn` helper.
   Every primitive has a unit test — keep that invariant when adding one.
 - **Two dropdowns, and only two.** `SelectMenu` picks a *value*
   (`role="listbox"`); `Menu` runs an *action* (`role="menu"`). `SelectMenu` is
@@ -114,7 +115,24 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
 - `AppShell` is the chrome frame apps wrap their routed content in (sidebar via
   `SidebarGroup`, `PageHeader` per route, `UserMenu` for identity) and styles
   its frame background from the `--color-chrome` token — declared in
-  `src/theme.css` alongside the other semantic tokens.
+  `src/theme.css` alongside the other semantic tokens. Its `headerActions`
+  slot (`actions` on `AppHeader`) takes the spacer's place with no width of its
+  own, so what an app puts there truncates into the leftover room rather than
+  squeezing the chrome.
+- **`src/purpose/purpose.ts` is the client half of a backend contract.** The
+  `X-Audit-Purpose` header it encodes is parsed by `parse_purpose_header` in
+  the hub's `configs/audit/audit_runtime.py`, and the constants
+  (`MAX_PURPOSE_FIELD` 256, `MAX_PURPOSE_HEADER` 4096, status 428), the
+  trimming (JS `trim()` plus the `\x1c`–`\x1f` and NEL that Python's
+  `str.strip()` also takes off the ends), the
+  control-character set and the code-point length count all mirror it exactly
+  — so `setPurpose` can refuse everything the backend would answer with a
+  `400`. Change both sides together or neither. The store is scoped per app
+  because the apps share one origin and so one `sessionStorage`; `UserMenu`'s
+  sign-out clears every scope. `PurposeBar` is a native modal `<dialog>`
+  portalled to `<body>` — happy-dom's `showModal()` only sets `open`, so the
+  component moves focus and handles Escape itself rather than relying on the
+  browser for either.
 - **`dist/tokens.css` is generated, never hand-edited.** It's a plain-CSS
   (non-Tailwind) export of the same tokens in `src/theme.css`, for build-free
   static-HTML consumers (e.g. edge-plane's portal) that can't process a

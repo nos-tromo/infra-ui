@@ -1,8 +1,8 @@
 # Component reference
 
-Props, keyboard maps and worked examples for the four things that need more than
-a one-line description: `AppShell`, `SelectMenu`, the icon actions and
-`ForceGraph`. The other primitives take a prop or two and are listed, with what
+Props, keyboard maps and worked examples for the things that need more than a
+one-line description: `AppShell`, `SelectMenu`, `Menu`, the icon actions,
+`ForceGraph` and `PurposeBar`. The other primitives take a prop or two and are listed, with what
 each is for, in the top-level [README](../README.md#primitives), which also
 carries the install and the Tailwind wiring; this file is the detail behind it.
 Why the icons are drawn rather than typed, and what each named action means, is
@@ -47,6 +47,13 @@ prop entirely for a header-only shell.
 apps read it from their config endpoint and pass it through (see
 `frontend/src/layout/Shell.tsx` in chorus or docint). Omit the prop and the
 chrome renders no version at all.
+
+`headerActions` puts controls of the app's own into the header's right-hand
+group, before the theme toggle and the account menu — it is where
+[`PurposeBar`](#purposebar) goes. The slot takes the spacer's place and has no
+width of its own: it gets only the room the chrome leaves over, so a long
+purpose truncates into it instead of squeezing the title or the toggles.
+`AppHeader` has the same slot as `actions`.
 
 ## SelectMenu
 
@@ -250,7 +257,7 @@ The set lives in `src/icons/`, all exported: `DownloadIcon`, `PlusIcon`,
 `WarningIcon`, `InfoIcon`, `CheckIcon`, `StopwatchIcon`, `ExternalLinkIcon`,
 `ReportIcon`/`ReportCheckIcon`, `SendIcon`, `SearchIcon`, `RefreshIcon`,
 `ArrowLeftIcon`, `BrainIcon`/`BrainActiveIcon`, `PlayIcon`, `LayersIcon`,
-`DocumentsIcon`, `ImageIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
+`DocumentsIcon`, `ImageIcon`, `TagIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
 the caller. Adding one is covered by
 [icon-policy.md](icon-policy.md#icons-are-drawn-never-typed).
 
@@ -362,3 +369,167 @@ The `nodes` prop accepts new nodes that merge into the existing layout without r
 Selection is a set (`selectedIds`/`onSelectionChange`), not a single id: a plain click replaces the selection with one node, shift+click toggles a node in/out of the set, shift+drag on the background draws a dashed marquee and selects every node inside it (unioned with whatever was already selected), and a plain click on empty canvas clears the selection. The Expand button (and double-click-to-expand) only appears when exactly one node is selected. An optional `onDeleteNodes` prop adds a Remove button — singular ("Remove node") at one selection, or the `removeSelectedMany` label (default "Remove {n} nodes") above that — plus Backspace/Delete support for the whole selected set. Supply multiple expand actions per node kind via `expandActions` and `onExpandAction` callbacks — double-click fires the first action.
 
 Graph exporters (JSON/GraphML/self-contained interactive HTML) ship with the package (`toGraphJson`, `toGraphML`, `toGraphHtml`, `downloadText`).
+
+## PurposeBar
+
+A backend that keeps an audit trail records the purpose each request states,
+and can be configured to refuse a request that states none with
+`428 Precondition Required`. `PurposeBar` is where the user states it once — a
+case reference, a short reason, or both — and the purpose store beside it is
+how every request of the app then carries it.
+
+```tsx
+<AppShell
+  title="chorus"
+  user={user}
+  headerActions={<PurposeBar scope="chorus" required={purposeRequired} labels={purposeLabels} />}
+>
+  {children}
+</AppShell>
+```
+
+| Prop | |
+|---|---|
+| `scope` | The app's name — `"chorus"`, `"docint"`, … It keys the stored purpose and routes `requestPurpose`, so the fetch wrapper passes the same string. |
+| `required` | The backend refuses some of this app's requests without a purpose: the empty bar becomes a warning, and saving a blank purpose is refused. Default `false`. |
+| `labels` | `Partial<PurposeBarLabels>`; English defaults fill any not given (table below). |
+| `className` | Classes for the bar's button. |
+
+The bar is one button in three states, also exposed as `data-state`: `set`
+shows the purpose (`Purpose AZ-12 · Prüfung des Hinweises`, truncated, with
+both fields whole in the tooltip), `empty` is a dashed "No purpose stated", and
+`required` is the same slot as a warning — `Banner`'s danger recipe and the
+`WarningIcon`. Its accessible name is `"Purpose: …"`, the federation's
+`"Name: Value"`, or the state's own words. Below `sm` it is a 32px icon button
+like its neighbours, the tag lit with `--app-accent` once a purpose is stated.
+
+It opens a native modal `<dialog>`, portalled to `<body>`: the browser makes
+the page behind it inert and lifts it above any stacking context, and it is not
+announced as part of the header's banner landmark. Focus moves to the first
+field, and goes back on close to whatever held it — the bar, or the control
+whose request asked. Both fields are validated as they are typed, against the
+same rules `validatePurpose` applies, and Save moves focus to the field to fix.
+**Clear** removes the stated purpose and is offered only while there is one;
+saving both fields blank clears it too, unless `required` is set or a request
+is waiting, where it is refused with `errorEmpty`. The scrim does not dismiss
+the dialog, so a stray click never loses what was typed.
+
+Keyboard: `Enter`/`Space` on the bar opens · `Tab` moves through the fields and
+buttons · `Enter` in a field saves · `Esc` cancels. Escape is handled on the
+dialog and stops there, so one press closes one layer — the same rule as
+`Menu`.
+
+| Label | Default |
+|---|---|
+| `purpose` | Purpose |
+| `empty` | No purpose stated |
+| `required` | Purpose required |
+| `title` | Purpose |
+| `description` | Sent with each request you make in this app until you change or clear it, or the session ends. |
+| `requested` | This action needs a stated purpose. (shown while a request waits) |
+| `caseRef` / `reason` | Case reference / Reason |
+| `save` / `cancel` / `clear` | Save / Cancel / Clear |
+| `errorLength` | At most {max} characters. (`{max}` is replaced with the limit) |
+| `errorControl` | Remove line breaks, tabs and other control characters. |
+| `errorHeader` | Too long to send together. Shorten one of the fields. |
+| `errorEmpty` | Enter a case reference or a reason. |
+
+### The wire contract
+
+The backend half is `parse_purpose_header` in the shared audit runtime
+(`nos-tromo/.github`, `configs/audit/audit_runtime.py`); this package is the
+client half, and the two must change together.
+
+- The `X-Audit-Purpose` header (`PURPOSE_HEADER`) carries
+  `new URLSearchParams([['case_ref', …], ['reason', …]]).toString()`: each
+  field trimmed, a blank one left out, and no header at all when both are
+  blank. `encodePurpose` produces it — `case_ref=AZ-12&reason=Pr%C3%BCfung+des+Hinweises`.
+- Each field holds at most `MAX_PURPOSE_FIELD` (256) characters, counted in
+  code points as the backend counts them — an emoji is one — and no control
+  characters: C0, C1, U+2028 and U+2029. Trimming follows the backend's, which
+  also strips `\x1c`–`\x1f` and NEL from the ends.
+- The encoded header holds at most `MAX_PURPOSE_HEADER` (4096) characters. Two
+  fields each within their limit can still exceed it: percent-encoding turns a
+  CJK character into nine and an emoji into twelve.
+- `428` (`PURPOSE_REQUIRED_STATUS`) means the request needs a stated purpose.
+  `400` means the header was malformed — `setPurpose` refuses anything that
+  would cause one, so it can only come from a header written outside this
+  package.
+
+`validatePurpose(input)` returns `null` when a purpose can be sent, or the
+problems per field: `caseRef` and `reason` are `'length'` or `'control'`, and
+`header: 'length'` is reported once neither field has an error of its own. A
+blank purpose is valid; `isPurposeStated` says whether one is given.
+
+### The store
+
+The purpose lives in a store keyed by `scope`, with no React in it, so a plain
+fetch wrapper reads the same value the bar shows:
+
+| Function | |
+|---|---|
+| `getPurpose(scope)` | The stated purpose (`{ caseRef, reason }`, trimmed, frozen), or `null`. The same object until it changes. |
+| `setPurpose(scope, input)` | Validates, stores and tells subscribers; blank clears. Throws `PurposeError` (with `.errors`) for what the backend would reject, leaving the stored purpose as it was. |
+| `clearPurpose(scope)` | Clears it. |
+| `clearAllPurposes()` | Clears every scope in the tab — what signing out through `UserMenu` does. |
+| `subscribePurpose(scope, listener)` | Called with each new purpose; returns the unsubscribe. |
+| `purposeHeaders(scope)` | `{ 'X-Audit-Purpose': … }`, or `{}` — spread into `fetch`'s headers. |
+| `requestPurpose(scope)` | Opens the mounted bar's dialog; resolves with the saved purpose, or `null`. |
+| `withPurpose(scope, send)` | Sends with the purpose, and on a `428` asks and sends once more. |
+| `usePurpose(scope)` | The React view: `{ purpose, setPurpose, clearPurpose }`, re-rendering on every change. |
+
+It persists in `sessionStorage` under `infra-ui-purpose:<scope>`, so a purpose
+lasts as long as the browser tab — across reloads, but not into another tab —
+and every access is guarded: with storage blocked it lives in memory for the
+page instead. It is scoped because the apps share one origin behind the
+gateway, so they share one `sessionStorage`: an unscoped purpose stated in one
+app would follow the user into the next. Signing out through `UserMenu` clears
+every scope, so the next person to sign in to the tab starts with none.
+
+### Wiring a fetch wrapper
+
+`withPurpose` is the whole of it for most requests:
+
+```ts
+import { withPurpose } from '@infra/ui'
+
+const PURPOSE_SCOPE = 'chorus'
+
+export async function apiPost<T>(path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
+  const res = await withPurpose(PURPOSE_SCOPE, (purpose) =>
+    fetch(url(path), {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', ...purpose },
+      body: JSON.stringify(body),
+      signal,
+    }),
+  )
+  return handle<T>(res)
+}
+```
+
+It sends the request with the purpose stated now. On a `428` it asks through
+`requestPurpose`, which opens the bar's dialog with the `requested` note; when
+the user saves, it sends the request once more with the new header, and when
+they cancel it hands back the `428`, so the wrapper's usual error handling
+reports it. A purpose stated while the request was in flight — say, by the
+prompt of a parallel request — is used without asking again, and a burst of
+`428`s opens one dialog, not one each. `send` may run twice, so build the body
+inside it; a string or `FormData` can be sent again, an already-consumed stream
+cannot.
+
+Where a wrapper cannot hand its request over that way, the two halves are
+there to use directly:
+
+```ts
+const send = () => fetch(url(path), { headers: { ...purposeHeaders(PURPOSE_SCOPE) } })
+let res = await send()
+if (res.status === PURPOSE_REQUIRED_STATUS && (await requestPurpose(PURPOSE_SCOPE))) {
+  res = await send()
+}
+```
+
+`requestPurpose` resolves with `null` at once when no `PurposeBar` is mounted
+for the scope, so a request is never left waiting on a dialog that cannot open.
+`EventSource` cannot send headers at all: a stream that needs a purpose has to
+be read through `fetch`, as the apps' streaming helpers already are.

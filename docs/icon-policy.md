@@ -77,6 +77,15 @@ sheet *with lines*, a document someone is assembling, where this is a page with
 a second behind it — the corpus. The second sheet is what keeps them apart at
 16px, and an app can show both in one screen.
 
+`v0.21.0` adds `TagIcon` for `PurposeBar`: the purpose a user states, drawn
+as a tag tied on, because what it marks is not a document of its own — that
+would be `ReportIcon` or `DocumentsIcon` — but something attached to everything
+else the user does. The eyelet is what keeps the outline from reading as an
+arrow at 16px. In the bar it is lit with `--app-accent` once a purpose is
+stated, so below `sm`, where the words are hidden, the drawing alone still
+tells the set and empty states apart; the state that needs attention swaps it
+for the set's existing `WarningIcon` rather than tinting the tag.
+
 An icon with more than one call site is exported **once** from `src/icons/` and
 imported everywhere, including by this package's own primitives: `CopyButton`
 and `FileList` each drew a private checkmark and cross of their own from before

@@ -1,4 +1,4 @@
-import { type HTMLAttributes } from 'react'
+import { type HTMLAttributes, type ReactNode } from 'react'
 import { cn } from '../cn'
 import { ArrowLeftIcon } from '../icons'
 import { ThemeToggle } from './ThemeToggle'
@@ -16,6 +16,8 @@ export interface AppHeaderProps extends HTMLAttributes<HTMLElement> {
   homeLabel?: string
   /** i18n hook for the toggle's accessible names, keyed by mode. */
   themeLabels?: { system: string; light: string; dark: string }
+  /** Controls for the right-hand group, placed first in it — where a `PurposeBar` goes. */
+  actions?: ReactNode
 }
 
 export function AppHeader({
@@ -25,6 +27,7 @@ export function AppHeader({
   homeHref = '/',
   homeLabel = 'Apps',
   themeLabels = { system: 'system', light: 'light', dark: 'dark' },
+  actions,
   className,
   ...props
 }: AppHeaderProps) {
@@ -51,7 +54,14 @@ export function AppHeader({
           </span>
         )}
       </div>
-      <span className="flex-1" />
+      {actions ? (
+        // In the spacer's place, as in AppShell: leftover room only.
+        <div className="flex min-w-8 flex-1 items-center justify-end gap-2 sm:min-w-0">
+          {actions}
+        </div>
+      ) : (
+        <span className="flex-1" />
+      )}
       {user && (
         <span data-testid="appheader-user" className="text-sm text-muted-foreground">
           {user}
