@@ -155,7 +155,7 @@ bump loop, so rolling a new release out is manual:
 # 1. Resolve the new tag to its commit SHA
 git ls-remote https://github.com/nos-tromo/infra-ui refs/tags/vX.Y.Z
 
-# 2. In each consumer frontend (chorus, docint, Nextext, translator):
+# 2. In each consumer frontend (docint, Nextext, translator):
 #    replace the SHA in package.json's @infra/ui codeload URL, then
 pnpm install --no-frozen-lockfile   # refresh the lockfile
 pnpm build && pnpm test             # verify before the PR

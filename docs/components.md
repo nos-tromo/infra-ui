@@ -45,7 +45,7 @@ prop entirely for a header-only shell.
 
 `version` is the _consuming app's_ own version string, not `@infra/ui`'s — the
 apps read it from their config endpoint and pass it through (see
-`frontend/src/layout/Shell.tsx` in chorus or docint). Omit the prop and the
+`frontend/src/layout/Shell.tsx` in docint). Omit the prop and the
 chrome renders no version at all.
 
 `headerActions` puts controls of the app's own into the header's right-hand
@@ -207,7 +207,7 @@ format, a count, a caret) where several sit side by side; pass `busy` to swap in
 a `Spinner` and block the second click. `IconLink` is the same shell over an
 `<a>`, for a file the server streams.
 
-Import the _action_, not the icon plus a button — that is what keeps four apps
+Import the _action_, not the icon plus a button — that is what keeps three apps
 looking alike:
 
 ```tsx
@@ -380,9 +380,9 @@ how every request of the app then carries it.
 
 ```tsx
 <AppShell
-  title="chorus"
+  title="docint"
   user={user}
-  headerActions={<PurposeBar scope="chorus" required={purposeRequired} labels={purposeLabels} />}
+  headerActions={<PurposeBar scope="docint" required={purposeRequired} labels={purposeLabels} />}
 >
   {children}
 </AppShell>
@@ -390,7 +390,7 @@ how every request of the app then carries it.
 
 | Prop | |
 |---|---|
-| `scope` | The app's name — `"chorus"`, `"docint"`, … It keys the stored purpose and routes `requestPurpose`, so the fetch wrapper passes the same string. |
+| `scope` | The app's name — `"docint"`, `"nextext"`, … It keys the stored purpose and routes `requestPurpose`, so the fetch wrapper passes the same string. |
 | `required` | The backend refuses some of this app's requests without a purpose: the empty bar becomes a warning, and saving a blank purpose is refused. Default `false`. |
 | `labels` | `Partial<PurposeBarLabels>`; English defaults fill any not given (table below). |
 | `className` | Classes for the bar's button. |
@@ -493,7 +493,7 @@ every scope, so the next person to sign in to the tab starts with none.
 ```ts
 import { withPurpose } from '@infra/ui'
 
-const PURPOSE_SCOPE = 'chorus'
+const PURPOSE_SCOPE = 'docint'
 
 export async function apiPost<T>(path: string, body?: unknown, signal?: AbortSignal): Promise<T> {
   const res = await withPurpose(PURPOSE_SCOPE, (purpose) =>
