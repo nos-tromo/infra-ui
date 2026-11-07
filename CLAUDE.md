@@ -26,7 +26,7 @@ For any non-trivial change (>1 file or any root-cause fix), present a plan and w
 
 `@infra/ui` — the shared React design system for the nos-tromo federation:
 Tailwind v4 tokens (`src/theme.css`) plus light/dark themeable, minimal UI primitives (OS-preference default), consumed
-by the four app frontends (chorus, docint, Nextext, translator) as a
+by the three app frontends (docint, Nextext, translator) as a
 **commit-SHA-pinned pnpm tarball dependency**
 (`https://codeload.github.com/nos-tromo/infra-ui/tar.gz/<full-40-hex-sha>`) —
 never a tag, never the `github:` shorthand; each consumer's CI enforces the
@@ -101,7 +101,7 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   the ten named actions in `src/primitives/iconActions.tsx` — `DownloadButton`,
   `DownloadLink`, `NewButton`, `RemoveButton`, `DeleteButton`, `MoveUpButton`,
   `MoveDownButton`, `SendButton`, `SearchButton`, `RefreshButton` — bind one icon
-  to one meaning so four apps do not each arrive somewhere slightly different.
+  to one meaning so three apps do not each arrive somewhere slightly different.
   Adding one — print, share — is an icon in `src/icons/` plus a wrapper of the
   same few lines; do not answer a new need by hand-rolling a button in an app.
   `RemoveButton` (`×`) takes something out of a list or view, `DeleteButton`
@@ -148,7 +148,7 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   to set a scale but to *export* one: build-free consumers can't reach
   Tailwind's defaults, so without these they hand-type every size and radius.
   Because `@theme` merges with the default theme rather than replacing it,
-  re-declaring a default emits nothing new for the four Tailwind consumers —
+  re-declaring a default emits nothing new for the three Tailwind consumers —
   which is what makes changing one dangerous. Editing a value here silently
   restyles every SPA. `src/dimensional-tokens.test.ts` pins each to
   `node_modules/tailwindcss/theme.css` and fails if they diverge, including
@@ -183,7 +183,7 @@ it and this file in sync when behavior changes.
   and not a tag, why `dist/` is committed).
 - `docs/design.md` + `docs/implementation-plan.md` — the superseded v0.1.0
   spec, kept as design history only; dated design/plan files sit alongside.
-- Federation context (how the four apps consume this, workspace layout):
+- Federation context (how the three apps consume this, workspace layout):
   `../CLAUDE.md`.
 
 ## Git & PR Workflow
