@@ -56,3 +56,15 @@ test('renders nothing when every slot is empty', () => {
   const { container } = render(<SectionHeader actions={false} />)
   expect(container.firstChild).toBeNull()
 })
+
+test('with a title and a caption, actions align to the title line', () => {
+  const { container } = render(
+    <SectionHeader title="Merge topics" caption="Two lines" actions={<button>Undo</button>} />,
+  )
+  expect(container.firstElementChild).toHaveClass('items-start')
+})
+
+test('a one-line header centres its actions', () => {
+  const { container } = render(<SectionHeader caption="3 files" actions={<button>Clear</button>} />)
+  expect(container.firstElementChild).toHaveClass('items-center')
+})

@@ -41,10 +41,12 @@ export function SectionHeader({
   const hasText = filled(title) || filled(caption)
   if (!hasText && !filled(actions)) return null
   const Heading = level === 3 ? 'h3' : 'h2'
+  // Under a two-line title block, centred actions would sit beside the caption.
+  const align = filled(title) && filled(caption) ? 'items-start' : 'items-center'
   return (
-    <div className={cn('flex flex-wrap items-center gap-x-3 gap-y-2', className)} {...props}>
+    <div className={cn('flex flex-wrap gap-x-3 gap-y-2', align, className)} {...props}>
       {hasText && (
-        <div className="min-w-0 grow basis-60">
+        <div className="min-w-0 grow basis-40">
           {filled(title) && (
             <Heading
               id={titleId}
