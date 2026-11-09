@@ -25,6 +25,8 @@ export {
   SearchButton,
   RefreshButton,
   PlayButton,
+  UndoButton,
+  StopButton,
   DisclosureButton,
   type DisclosureButtonProps,
 } from './primitives/iconActions'
@@ -54,6 +56,8 @@ export {
   DocumentsIcon,
   ImageIcon,
   TagIcon,
+  UndoIcon,
+  StopIcon,
   type IconProps,
 } from './icons'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'

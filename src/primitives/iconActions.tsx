@@ -9,7 +9,9 @@ import {
   RefreshIcon,
   SearchIcon,
   SendIcon,
+  StopIcon,
   TrashIcon,
+  UndoIcon,
   XIcon,
 } from '../icons'
 import {
@@ -186,6 +188,36 @@ export const PlayButton = forwardRef<HTMLButtonElement, ActionButtonProps>((prop
   <IconButton ref={ref} icon={<PlayIcon />} {...props} />
 ))
 PlayButton.displayName = 'PlayButton'
+
+/**
+ * Return to the state before the last change.
+ *
+ * Distinct from {@link RefreshButton}, which rebuilds what is on screen, and
+ * from {@link RemoveButton}, which takes something out of a view: this puts an
+ * earlier state back. Pair it with a confirmation when undoing starts work.
+ *
+ * @param props - `label` names what gets undone.
+ * @returns The undo button.
+ */
+export const UndoButton = forwardRef<HTMLButtonElement, ActionButtonProps>((props, ref) => (
+  <IconButton ref={ref} icon={<UndoIcon />} {...props} />
+))
+UndoButton.displayName = 'UndoButton'
+
+/**
+ * Abort a running process — an import, a translation pass, a job.
+ *
+ * Tints `danger` because what the run has done so far is lost; pair it with a
+ * confirmation when that is more than a moment's work. Not `×`: that takes
+ * something out of a list, and a running job is not removed by stopping it.
+ *
+ * @param props - `label` names what gets stopped.
+ * @returns The stop button.
+ */
+export const StopButton = forwardRef<HTMLButtonElement, ActionButtonProps>((props, ref) => (
+  <IconButton ref={ref} icon={<StopIcon />} tone="danger" {...props} />
+))
+StopButton.displayName = 'StopButton'
 
 export interface DisclosureButtonProps extends ActionButtonProps {
   /** Whether the section this controls is open. Drives the rotation and `aria-expanded`. */
