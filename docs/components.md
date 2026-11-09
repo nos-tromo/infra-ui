@@ -1,8 +1,9 @@
 # Component reference
 
 Props, keyboard maps and worked examples for the things that need more than a
-one-line description: `AppShell`, `SelectMenu`, `Menu`, the icon actions,
-`ForceGraph` and `PurposeBar`. The other primitives take a prop or two and are listed, with what
+one-line description: `AppShell`, `SelectMenu`, `Menu`, where actions go
+(`SectionHeader`, `ActionBar`, `EmptyState`), the icon actions, `ForceGraph`
+and `PurposeBar`. The other primitives take a prop or two and are listed, with what
 each is for, in the top-level [README](../README.md#primitives), which also
 carries the install and the Tailwind wiring; this file is the detail behind it.
 Why the icons are drawn rather than typed, and what each named action means, is
@@ -196,6 +197,86 @@ itself will still see the key.
 `UserMenu` is this component with one item; an app that needs a fourth popover
 should reach here rather than hand-roll one.
 
+## Where actions go
+
+Every app places a control by what it acts on, not by where there happened to
+be room. A button left under whatever it belongs to reads as an afterthought and
+breaks the line of a page that otherwise runs edge to edge.
+
+1. **Header row.** Every block — page, card, section — has one header row:
+   title and/or caption on the left, the block's quiet actions on the right
+   (icon actions; a `ghost` `sm` text button only where no icon fits the verb,
+   as `FileList`'s "Clear all"). A filled or large button never goes in a
+   header. The actions stay right when the row wraps.
+2. **Footer bar.** Actions that commit the block's work — submit, apply,
+   discard, start — sit in an `ActionBar` at its foot: full width, equal
+   shares, primary last, the rest `secondary` (never `ghost`, which reads as
+   plain text in a row of buttons). At most one primary per block; a single
+   action takes the full width too. `md` buttons, `sm` in popovers and dialogs.
+3. **Row and card actions** are icons at the far right of the row or the
+   card's header: `RemoveButton` takes it out of the view, `DeleteButton`
+   destroys it, `StopButton` aborts it, `DisclosureButton` opens it. Never a
+   text button under a row or a card; where no icon fits, `ghost` `sm` text at
+   the right edge.
+4. **Empty.** A block with nothing in it shows `EmptyState`, with at most one
+   labelled primary action that says what it will make. Only where empty can
+   actually happen.
+5. **List end.** "Load more" looks the same everywhere: centred, under a
+   `border-t`, `secondary` `sm`.
+6. **Inputs** sharing a row with buttons match their height — use `Input`.
+7. **Live regions.** A status box that announces itself (`aria-live`) keeps
+   its actions and any ticking timer outside the live region, or every tick
+   and every label swap is read out.
+
+| Kind of action | Where | Component |
+|---|---|---|
+| Acts on the whole block (export, refresh, add, undo) | header row, right | `SectionHeader` / `Card` `actions` + icon actions |
+| Commits the block's work (submit, apply, discard, start) | foot, full width, primary last | `ActionBar` + `Button` |
+| Acts on one row or card (dismiss, delete, abort, expand) | row or card header, far right | `RemoveButton`, `DeleteButton`, `StopButton`, `DisclosureButton` |
+| Creates the first item of an empty block | centred in the block | `EmptyState` `action` |
+
+Headings follow the same structure: one `PageHeader` (`h1`) per route, a card
+or section is an `h2` (`SectionHeader`, `Card` `title`), and a subsection inside
+one is an `h3` (`level={3}` / `titleLevel={3}`).
+
+```tsx
+import { ActionBar, Button, Card, EmptyState, NewButton, SectionHeader, UndoButton } from '@infra/ui'
+
+<Card
+  title="Data extracts"
+  caption="Full transcripts and document texts as files"
+  actions={extracts.length > 0 && <NewButton label="Build extract" onClick={build} />}
+>
+  {extracts.length === 0 ? (
+    <EmptyState action={<Button onClick={build}>Build extract</Button>}>No extracts yet.</EmptyState>
+  ) : (
+    <ExtractList extracts={extracts} />
+  )}
+</Card>
+
+<SectionHeader
+  level={3}
+  title="Merge topics"
+  caption="Draws similar topics together into fewer, broader ones."
+  actions={<UndoButton label="Restore the original topics" onClick={restore} />}
+/>
+<ActionBar>
+  <Button variant="secondary" disabled={!dirty} onClick={discard}>Discard</Button>
+  <Button disabled={!dirty} onClick={apply}>Apply</Button>
+</ActionBar>
+```
+
+`SectionHeader` takes `title`, `caption`, `actions`, `level` (`2` by default)
+and `titleId` — the heading's `id`, for a region that names itself with
+`aria-labelledby`. Leave out `title` for a caption-only row such as a list's
+count; a slot given `false` renders nothing, so `cond && <X/>` is safe, and a
+header with every slot empty renders nothing at all. It is a `<div>`, never a
+`<header>`, which outside `<main>` would become a second banner landmark.
+`Card` passes `title`, `caption`, `actions`, `titleId` and `titleLevel` through
+to the same row. `ActionBar` sizes its *direct* children, so each must be the
+button itself or a fragment of buttons; a label too long for its share wraps
+the bar instead of being squeezed.
+
 ## Icon actions
 
 `IconButton` is the always-visible icon control (`HoverIconAction` is the
@@ -214,7 +295,7 @@ looking alike:
 import {
   DownloadButton, DownloadLink, NewButton, RemoveButton, DeleteButton,
   MoveUpButton, MoveDownButton, SendButton, SearchButton, RefreshButton,
-  PlayButton, DisclosureButton,
+  PlayButton, UndoButton, StopButton, DisclosureButton,
 } from '@infra/ui'
 
 <DownloadButton label="Download transcript" onClick={save} />
@@ -229,6 +310,8 @@ import {
 <SearchButton label="Search" type="submit" />
 <RefreshButton label="Refresh summary" busy={rebuilding} onClick={rebuild} />
 <PlayButton label="Open player" onClick={play} />
+<UndoButton label="Undo placement" onClick={undo} />
+<StopButton label="Abort import" disabled={stopping} onClick={abort} />
 <DisclosureButton
   expanded={open}
   controls={panelId}

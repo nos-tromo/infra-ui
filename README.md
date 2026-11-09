@@ -67,12 +67,14 @@ Sidebar composition, the header-only shell (Nextext, translator), the
 
 `AppShell` (chrome frame: sidebar, home link, theme toggle, `UserMenu`) ·
 `SidebarGroup` (labeled sidebar section) · `PageHeader` (route title + caption,
-one per route) · `UserMenu` (identity + sign-out dropdown) ·
+one per route) · `SectionHeader` (a block's header row: title/caption left, quiet
+actions right) · `ActionBar` (a block's full-width footer, primary last) ·
+`EmptyState` (what an empty block shows, with one labelled action) · `UserMenu` (identity + sign-out dropdown) ·
 `AppHeader` (portal link, identity, tri-state theme toggle) · `Button` (primary/secondary/ghost/danger · sm/md) ·
 `ToggleButton` (a labelled option that fills with the accent colour while on) ·
 `CycleButton` (one icon button stepping through a setting's values) ·
 `CopyButton` (icon-only,
-copies text to the clipboard) · `Card` (plain or tile-style with `title`/`interactive`) · `Input` ·
+copies text to the clipboard) · `Card` (plain or tile-style with `title`/`caption`/`actions`/`interactive`) · `Input` ·
 `SelectMenu` (the value picker — inline or `variant="field"`, with grouped
 options and type-ahead) · `Menu`/`MenuItem` (the action menu) ·
 `Select` (**deprecated** — a bare native `<select>`; prefer `SelectMenu`) ·
@@ -86,6 +88,7 @@ until its `.group` row is hovered or focused) · the named icon actions
 reason — shown in the header and sent with every request as `X-Audit-Purpose`,
 with the store, `usePurpose` and `withPurpose` a fetch wrapper uses).
 
+Where each kind of action goes: [components.md](docs/components.md#where-actions-go).
 Props, keyboard maps and worked examples: [components.md](docs/components.md);
 the purpose wire contract and fetch-wrapper wiring:
 [components.md](docs/components.md#purposebar).

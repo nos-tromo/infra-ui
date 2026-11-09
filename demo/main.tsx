@@ -1,6 +1,7 @@
 import { StrictMode, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import {
+  ActionBar,
   AppShell,
   Badge,
   Banner,
@@ -12,6 +13,7 @@ import {
   DeleteButton,
   DocumentsIcon,
   DownloadButton,
+  EmptyState,
   ForceGraph,
   ImageIcon,
   type ForceGraphEdge,
@@ -20,6 +22,7 @@ import {
   LayersIcon,
   Menu,
   MenuItem,
+  NewButton,
   PageHeader,
   PURPOSE_HEADER,
   PURPOSE_REQUIRED_STATUS,
@@ -28,7 +31,9 @@ import {
   SelectMenu,
   SidebarGroup,
   Spinner,
+  StopButton,
   ToggleButton,
+  UndoButton,
   withPurpose,
 } from '../src/index'
 import './styles.css'
@@ -215,6 +220,40 @@ function Sink() {
             Required
           </ToggleButton>
           <span className="text-sm text-muted-foreground">{auditedOutcome}</span>
+        </section>
+
+        {/* Where actions go: quiet icons in the header row, commit actions in a
+            full-width bar at the foot, a labelled create action only while empty. */}
+        <section className="grid gap-4 lg:grid-cols-2">
+          <h2 className="text-sm font-medium text-muted-foreground lg:col-span-2">
+            Action placement
+          </h2>
+          <Card
+            title="Merge topics"
+            caption="Draws similar topics together into fewer, broader ones."
+            actions={
+              <>
+                <NewButton label="New topic" />
+                <UndoButton label="Restore the original topics" />
+                <StopButton label="Abort" />
+              </>
+            }
+          >
+            <p className="mb-4 text-sm text-muted-foreground">12 topics, 2 selected.</p>
+            <ActionBar>
+              <Button variant="secondary">Discard</Button>
+              <Button>Apply</Button>
+            </ActionBar>
+          </Card>
+          <Card title="Data extracts" caption="Full transcripts and document texts as files">
+            <EmptyState action={<Button>Build extract</Button>}>No extracts yet.</EmptyState>
+          </Card>
+          <Card title="Long labels" className="lg:col-span-2">
+            <ActionBar>
+              <Button variant="secondary">Ursprüngliche Themen wiederherstellen</Button>
+              <Button>Übernehmen</Button>
+            </ActionBar>
+          </Card>
         </section>
 
         <section className="flex flex-wrap items-center gap-3">

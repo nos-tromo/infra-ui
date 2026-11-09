@@ -98,9 +98,10 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   `ghost` by default so it has no background until hovered), `HoverIconAction`
   (the same control, `opacity-0` until its `.group` row is hovered or focused)
   and `IconLink` (the `<a>` shell, for a file the server streams) are the base;
-  the ten named actions in `src/primitives/iconActions.tsx` — `DownloadButton`,
+  the fourteen named actions in `src/primitives/iconActions.tsx` — `DownloadButton`,
   `DownloadLink`, `NewButton`, `RemoveButton`, `DeleteButton`, `MoveUpButton`,
-  `MoveDownButton`, `SendButton`, `SearchButton`, `RefreshButton` — bind one icon
+  `MoveDownButton`, `SendButton`, `SearchButton`, `RefreshButton`, `PlayButton`,
+  `DisclosureButton`, `UndoButton`, `StopButton` — bind one icon
   to one meaning so three apps do not each arrive somewhere slightly different.
   Adding one — print, share — is an icon in `src/icons/` plus a wrapper of the
   same few lines; do not answer a new need by hand-rolling a button in an app.

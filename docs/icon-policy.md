@@ -119,6 +119,18 @@ out of a list, a selection or a view and nothing is destroyed; `DeleteButton`
 (trash) destroys stored data — reserve it for what does not come back, and pair
 it with a confirmation. Both tint `danger` on hover.
 
+`UndoButton` returns to the state before the last change — restoring the
+original topics, taking back a placement. It is not `RefreshButton`, which
+rebuilds what is on screen, and the drawings keep the two apart: one arrow
+turning back means *undo*, a closed pair of arcs means *again*. Pair it with a
+confirmation when undoing starts work.
+
+`StopButton` aborts a running process — an import, a translation pass. It tints
+`danger`, because what the run has done so far is lost; pair it with a
+confirmation when that is more than a moment's work. It is not `×`: a running
+job is not taken out of a list by stopping it, and once it has stopped the
+card's `RemoveButton` dismisses it from the same place.
+
 The remaining four actions carry no constraint beyond their name, and the choice
 between them is mechanical rather than a judgement about meaning:
 `DownloadButton` versus `DownloadLink` is a click handler versus an `<a>` the
