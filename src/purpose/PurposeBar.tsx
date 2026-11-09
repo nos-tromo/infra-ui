@@ -15,6 +15,7 @@ import { createPortal } from 'react-dom'
 import { cva } from 'class-variance-authority'
 import { cn } from '../cn'
 import { InfoIcon, TagIcon, WarningIcon } from '../icons'
+import { ActionBar } from '../primitives/ActionBar'
 import { Button } from '../primitives/Button'
 import { Input } from '../primitives/Input'
 import {
@@ -423,20 +424,19 @@ export function PurposeBar({ scope, required = false, labels, className }: Purpo
                   {formError}
                 </p>
               )}
-              <div className="flex items-center gap-2 pt-1">
+              <ActionBar className="pt-1">
                 {purpose && (
-                  <Button type="button" variant="ghost" size="sm" onClick={clear}>
+                  <Button type="button" variant="secondary" size="sm" onClick={clear}>
                     {L.clear}
                   </Button>
                 )}
-                <span className="flex-1" />
                 <Button type="button" variant="secondary" size="sm" onClick={cancel}>
                   {L.cancel}
                 </Button>
                 <Button type="submit" size="sm">
                   {L.save}
                 </Button>
-              </div>
+              </ActionBar>
             </form>
           </dialog>,
           document.body,

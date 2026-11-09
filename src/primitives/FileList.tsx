@@ -2,6 +2,7 @@ import { cn } from '../cn'
 import { XIcon } from '../icons'
 import { Button } from './Button'
 import { HoverIconAction } from './HoverIconAction'
+import { SectionHeader } from './SectionHeader'
 
 export interface FileLike {
   name: string
@@ -97,17 +98,22 @@ export function FileList({ files, onRemove, onClear, labels, className }: FileLi
 
   return (
     <div className={cn('rounded-lg border border-border bg-muted/30', className)}>
-      <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
-        <span className="text-sm text-muted-foreground">
-          {filesLabel(files.length)}
-          {totalBytes > 0 && <> · {formatBytes(totalBytes)}</>}
-        </span>
-        {onClear && (
-          <Button variant="ghost" size="sm" onClick={onClear}>
-            {clearAllLabel}
-          </Button>
-        )}
-      </div>
+      <SectionHeader
+        className="border-b border-border px-3 py-2"
+        caption={
+          <>
+            {filesLabel(files.length)}
+            {totalBytes > 0 && <> · {formatBytes(totalBytes)}</>}
+          </>
+        }
+        actions={
+          onClear && (
+            <Button variant="ghost" size="sm" onClick={onClear}>
+              {clearAllLabel}
+            </Button>
+          )
+        }
+      />
       <ul className="max-h-64 divide-y divide-border overflow-y-auto">
         {files.map((file, index) => (
           <li
