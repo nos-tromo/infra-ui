@@ -445,21 +445,33 @@ function SectionHeader({
   const hasText = filled(title) || filled(caption);
   if (!hasText && !filled(actions)) return null;
   const Heading = level === 3 ? "h3" : "h2";
-  const align = filled(title) && filled(caption) ? "items-start" : "items-center";
-  return /* @__PURE__ */ jsxs4("div", { className: cn("flex flex-wrap gap-x-3 gap-y-2", align, className), ...props, children: [
-    hasText && /* @__PURE__ */ jsxs4("div", { className: "min-w-0 grow basis-40", children: [
-      filled(title) && /* @__PURE__ */ jsx10(
-        Heading,
-        {
-          id: titleId,
-          className: level === 3 ? "text-sm font-semibold" : "text-lg font-semibold text-primary",
-          children: title
-        }
+  const hasTitle = filled(title);
+  const pull = hasTitle ? level === 3 ? "-mt-1.5" : "-mt-0.5" : void 0;
+  return /* @__PURE__ */ jsxs4(
+    "div",
+    {
+      className: cn(
+        "flex flex-wrap gap-x-3 gap-y-2",
+        hasTitle ? "items-start" : "items-center",
+        className
       ),
-      filled(caption) && /* @__PURE__ */ jsx10("div", { className: cn("text-muted-foreground", level === 3 ? "text-xs" : "text-sm"), children: caption })
-    ] }),
-    filled(actions) && /* @__PURE__ */ jsx10("div", { className: "ml-auto flex shrink-0 items-center gap-1", children: actions })
-  ] });
+      ...props,
+      children: [
+        hasText && /* @__PURE__ */ jsxs4("div", { className: "min-w-0 grow basis-40", children: [
+          filled(title) && /* @__PURE__ */ jsx10(
+            Heading,
+            {
+              id: titleId,
+              className: level === 3 ? "text-sm font-semibold" : "text-lg font-semibold text-primary",
+              children: title
+            }
+          ),
+          filled(caption) && /* @__PURE__ */ jsx10("div", { className: cn("text-muted-foreground", level === 3 ? "text-xs" : "text-sm"), children: caption })
+        ] }),
+        filled(actions) && /* @__PURE__ */ jsx10("div", { className: cn("ml-auto flex shrink-0 items-center gap-1", pull), children: actions })
+      ]
+    }
+  );
 }
 
 // src/primitives/FileList.tsx
