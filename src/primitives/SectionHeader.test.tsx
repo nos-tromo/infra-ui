@@ -51,3 +51,8 @@ test('a slot given false renders nothing, so `cond && <X/>` is safe', () => {
   const { container } = render(<SectionHeader title="Files" actions={false} />)
   expect(container.querySelector('.ml-auto')).toBeNull()
 })
+
+test('renders nothing when every slot is empty', () => {
+  const { container } = render(<SectionHeader actions={false} />)
+  expect(container.firstChild).toBeNull()
+})

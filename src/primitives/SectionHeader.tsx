@@ -27,7 +27,7 @@ const filled = (node: ReactNode) => node != null && node !== false && node !== '
  * a `<header>` becomes a banner landmark, which the app chrome already owns.
  *
  * @param props - `title`, `caption`, `actions`, `level` and `titleId`, plus div props.
- * @returns The header row.
+ * @returns The header row, or nothing when every slot is empty.
  */
 export function SectionHeader({
   title,
@@ -38,10 +38,12 @@ export function SectionHeader({
   className,
   ...props
 }: SectionHeaderProps) {
+  const hasText = filled(title) || filled(caption)
+  if (!hasText && !filled(actions)) return null
   const Heading = level === 3 ? 'h3' : 'h2'
   return (
     <div className={cn('flex flex-wrap items-center gap-x-3 gap-y-2', className)} {...props}>
-      {(filled(title) || filled(caption)) && (
+      {hasText && (
         <div className="min-w-0 grow basis-60">
           {filled(title) && (
             <Heading
