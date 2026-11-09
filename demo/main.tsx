@@ -27,6 +27,7 @@ import {
   PURPOSE_HEADER,
   PURPOSE_REQUIRED_STATUS,
   PurposeBar,
+  SectionHeader,
   Select,
   SelectMenu,
   SidebarGroup,
@@ -240,6 +241,13 @@ function Sink() {
             }
           >
             <p className="mb-4 text-sm text-muted-foreground">12 topics, 2 selected.</p>
+            <SectionHeader
+              level={3}
+              title="Unassigned chunks"
+              caption="Places each chunk with its nearest topic when it is at least this similar."
+              actions={<UndoButton label="Undo placement" />}
+              className="mb-2"
+            />
             <ActionBar>
               <Button variant="secondary">Discard</Button>
               <Button>Apply</Button>

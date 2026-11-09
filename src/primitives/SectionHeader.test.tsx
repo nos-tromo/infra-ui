@@ -57,14 +57,38 @@ test('renders nothing when every slot is empty', () => {
   expect(container.firstChild).toBeNull()
 })
 
-test('with a title and a caption, actions align to the title line', () => {
+test('with a title, actions centre on its first line', () => {
   const { container } = render(
     <SectionHeader title="Merge topics" caption="Two lines" actions={<button>Undo</button>} />,
   )
   expect(container.firstElementChild).toHaveClass('items-start')
+  // A 32px icon button against the h2's 28px line: pulled up by half the difference.
+  expect(screen.getByRole('button', { name: 'Undo' }).parentElement).toHaveClass('-mt-0.5')
+})
+
+test('a level-3 title pulls its actions up to its shorter line', () => {
+  render(
+    <SectionHeader
+      level={3}
+      title="Unassigned chunks"
+      caption="Places each chunk with its nearest topic."
+      actions={<button>Undo placement</button>}
+    />,
+  )
+  // 32px against the h3's 20px line, so the icon sits on the title, not across the caption.
+  expect(screen.getByRole('button', { name: 'Undo placement' }).parentElement).toHaveClass(
+    '-mt-1.5',
+  )
 })
 
 test('a one-line header centres its actions', () => {
   const { container } = render(<SectionHeader caption="3 files" actions={<button>Clear</button>} />)
   expect(container.firstElementChild).toHaveClass('items-center')
+})
+
+test('a caption-only row adds no pull', () => {
+  render(<SectionHeader caption="3 files" actions={<button>Clear</button>} />)
+  const wrapper = screen.getByRole('button', { name: 'Clear' }).parentElement!
+  expect(wrapper).not.toHaveClass('-mt-0.5')
+  expect(wrapper).not.toHaveClass('-mt-1.5')
 })

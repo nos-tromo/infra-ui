@@ -71,8 +71,8 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
 - **Peer deps, not deps.** `react`/`react-dom` (v19) stay peer dependencies;
   runtime deps are limited to the styling utilities (cva, clsx,
   tailwind-merge).
-- Primitive set: `AppShell`, `SidebarGroup`, `PageHeader`, `UserMenu`, `AppHeader`,
-  `Button`, `ToggleButton`, `CycleButton`, `CopyButton`, `Card`, `Input`, `Select`, `SelectMenu`,
+- Primitive set: `AppShell`, `SidebarGroup`, `PageHeader`, `SectionHeader`, `UserMenu`, `AppHeader`,
+  `Button`, `ToggleButton`, `CycleButton`, `CopyButton`, `Card`, `ActionBar`, `EmptyState`, `Input`, `Select`, `SelectMenu`,
   `Menu`/`MenuItem`,
   `Badge`, `Spinner`, `Banner`, `StatusIcon`, `FileList`, `ForceGraph`,
   `IconButton`/`IconLink`,

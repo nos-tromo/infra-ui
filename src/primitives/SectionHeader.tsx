@@ -41,10 +41,19 @@ export function SectionHeader({
   const hasText = filled(title) || filled(caption)
   if (!hasText && !filled(actions)) return null
   const Heading = level === 3 ? 'h3' : 'h2'
-  // Under a two-line title block, centred actions would sit beside the caption.
-  const align = filled(title) && filled(caption) ? 'items-start' : 'items-center'
+  // Actions centre on the title's first line: a 32px button against a 28px (h2)
+  // or 20px (h3) line is pulled up by half the difference.
+  const hasTitle = filled(title)
+  const pull = hasTitle ? (level === 3 ? '-mt-1.5' : '-mt-0.5') : undefined
   return (
-    <div className={cn('flex flex-wrap gap-x-3 gap-y-2', align, className)} {...props}>
+    <div
+      className={cn(
+        'flex flex-wrap gap-x-3 gap-y-2',
+        hasTitle ? 'items-start' : 'items-center',
+        className,
+      )}
+      {...props}
+    >
       {hasText && (
         <div className="min-w-0 grow basis-40">
           {filled(title) && (
@@ -64,7 +73,9 @@ export function SectionHeader({
           )}
         </div>
       )}
-      {filled(actions) && <div className="ml-auto flex shrink-0 items-center gap-1">{actions}</div>}
+      {filled(actions) && (
+        <div className={cn('ml-auto flex shrink-0 items-center gap-1', pull)}>{actions}</div>
+      )}
     </div>
   )
 }
