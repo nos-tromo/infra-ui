@@ -288,6 +288,28 @@ declare const RefreshButton: react.ForwardRefExoticComponent<ActionButtonProps &
  * @returns The play button.
  */
 declare const PlayButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
+ * Return to the state before the last change.
+ *
+ * Distinct from {@link RefreshButton}, which rebuilds what is on screen, and
+ * from {@link RemoveButton}, which takes something out of a view: this puts an
+ * earlier state back. Pair it with a confirmation when undoing starts work.
+ *
+ * @param props - `label` names what gets undone.
+ * @returns The undo button.
+ */
+declare const UndoButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
+ * Abort a running process — an import, a translation pass, a job.
+ *
+ * Tints `danger` because what the run has done so far is lost; pair it with a
+ * confirmation when that is more than a moment's work. Not `×`: that takes
+ * something out of a list, and a running job is not removed by stopping it.
+ *
+ * @param props - `label` names what gets stopped.
+ * @returns The stop button.
+ */
+declare const StopButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
 interface DisclosureButtonProps extends ActionButtonProps {
     /** Whether the section this controls is open. Drives the rotation and `aria-expanded`. */
     expanded: boolean;
@@ -510,6 +532,22 @@ declare const ImageIcon: ({ className, ...props }: IconProps) => react.JSX.Eleme
  * is what keeps the outline from reading as an arrow at 16px.
  */
 declare const TagIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Go back to the state before the last change.
+ *
+ * One arrow hooking back on itself, counter-clockwise. {@link RefreshIcon}'s
+ * closed pair of arcs means *again*; a single arrow turning back means *undo*,
+ * so the two stay distinct even at 16px.
+ */
+declare const UndoIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Stop what is running.
+ *
+ * The filled square every transport control draws for stop. Filled rather than
+ * outlined so it does not read as an empty checkbox, and drawn as a path so it
+ * renders as geometry like the rest of the set.
+ */
+declare const StopIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 
 interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'onClick' | 'aria-label' | 'title'> {
     /** Text written to the clipboard on click. */
@@ -581,8 +619,16 @@ declare namespace FileList {
 }
 
 interface CardProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
-    /** Optional tile heading, rendered accent-colored above the body. */
+    /** Tile heading, an accent `h2` (or `h3` via `titleLevel`) on the card's header row. */
     title?: ReactNode;
+    /** Muted line under the title. */
+    caption?: ReactNode;
+    /** Quiet controls on the right of the header row (icon actions). */
+    actions?: ReactNode;
+    /** `id` on the heading, for a region that names itself with `aria-labelledby`. */
+    titleId?: string;
+    /** Heading level of `title`; `2` by default. */
+    titleLevel?: 2 | 3;
     /** Interactive tiles signal affordance with a hover-accent border. */
     interactive?: boolean;
 }
@@ -895,10 +941,72 @@ interface PageHeaderProps extends HTMLAttributes<HTMLElement> {
     title: string;
     /** One-line muted subtitle under the title. */
     caption?: string;
-    /** Right-aligned controls on the title row (e.g. a primary Button). */
+    /**
+     * Quiet icon actions on the title row, right-aligned — never a filled
+     * button (see components.md § Where actions go).
+     */
     actions?: ReactNode;
 }
 declare function PageHeader({ title, caption, actions, className, ...props }: PageHeaderProps): react.JSX.Element;
+
+interface SectionHeaderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
+    /** Section heading. Omit for a caption-only row, e.g. a list's count. */
+    title?: ReactNode;
+    /** Muted line under the title, or the row's only text when there is no title. */
+    caption?: ReactNode;
+    /** Quiet controls on the right: icon actions, or a `ghost sm` button where no icon fits. */
+    actions?: ReactNode;
+    /** `2` (default) for a card or section, `3` for a subsection inside one. */
+    level?: 2 | 3;
+    /** `id` on the heading, so a region can name itself with `aria-labelledby`. */
+    titleId?: string;
+}
+/**
+ * The one header row every block uses: title and caption on the left, the
+ * block's actions on the right.
+ *
+ * Actions stay right-aligned when the row wraps on a narrow screen (`ml-auto`).
+ * Filled buttons do not belong here — a block's commit actions go in an
+ * `ActionBar` at its foot. Renders a `<div>`, never `<header>`: outside `<main>`
+ * a `<header>` becomes a banner landmark, which the app chrome already owns.
+ *
+ * @param props - `title`, `caption`, `actions`, `level` and `titleId`, plus div props.
+ * @returns The header row, or nothing when every slot is empty.
+ */
+declare function SectionHeader({ title, caption, actions, level, titleId, className, ...props }: SectionHeaderProps): react.JSX.Element | null;
+
+/**
+ * The foot of a block: the actions that commit its work — submit, apply,
+ * discard, start.
+ *
+ * Runs the block's full width and shares it evenly, so the buttons line up
+ * with the edges of what they act on instead of trailing off to one side.
+ * Order the children with the primary last; the rest are `secondary`, never
+ * `ghost`, which reads as plain text in a row of buttons. A label too long for
+ * its share wraps the bar rather than being squeezed. Each child must be the
+ * button itself (or a fragment of them), since the sizing applies to direct
+ * children.
+ *
+ * @param props - The buttons, plus div props.
+ * @returns The action bar.
+ */
+declare const ActionBar: react.ForwardRefExoticComponent<HTMLAttributes<HTMLDivElement> & react.RefAttributes<HTMLDivElement>>;
+
+interface EmptyStateProps extends HTMLAttributes<HTMLDivElement> {
+    /** The one labelled primary action that creates the block's first item. */
+    action?: ReactNode;
+}
+/**
+ * What a block shows while it has nothing in it: a short message, centred in
+ * a dashed box, and at most one labelled action that says what it will make.
+ *
+ * Use it only where empty can actually happen; a view that is never empty
+ * needs no placeholder.
+ *
+ * @param props - `children` is the message; `action` the call to action.
+ * @returns The empty state.
+ */
+declare function EmptyState({ action, className, children, ...props }: EmptyStateProps): react.JSX.Element;
 
 interface AppHeaderProps extends HTMLAttributes<HTMLElement> {
     /** App display name, rendered next to the home link. */
@@ -1438,4 +1546,4 @@ declare namespace PurposeBar {
     var displayName: string;
 }
 
-export { AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, type UsePurposeResult, UserMenu, type UserMenuProps, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };
+export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserMenu, type UserMenuProps, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };

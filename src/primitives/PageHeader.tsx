@@ -6,14 +6,17 @@ export interface PageHeaderProps extends HTMLAttributes<HTMLElement> {
   title: string
   /** One-line muted subtitle under the title. */
   caption?: string
-  /** Right-aligned controls on the title row (e.g. a primary Button). */
+  /**
+   * Quiet icon actions on the title row, right-aligned — never a filled
+   * button (see components.md § Where actions go).
+   */
   actions?: ReactNode
 }
 
 export function PageHeader({ title, caption, actions, className, ...props }: PageHeaderProps) {
   return (
     <div className={cn('mb-6', className)} {...props}>
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <h1 className="text-2xl font-semibold">{title}</h1>
         {actions && <div className="ml-auto flex items-center gap-2">{actions}</div>}
       </div>

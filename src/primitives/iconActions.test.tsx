@@ -13,6 +13,8 @@ import {
   RemoveButton,
   SearchButton,
   SendButton,
+  StopButton,
+  UndoButton,
 } from './iconActions'
 
 test('each action names itself and draws an icon rather than a text character', () => {
@@ -194,5 +196,25 @@ test('the disclosure draws one caret, never a swapped pair', () => {
   expect(open).toBe(closed)
   expect(open).toBe(
     screen.getByRole('button', { name: 'Hide' }).querySelector('path')!.getAttribute('d'),
+  )
+})
+
+test('undo and stop name themselves; only stop warns', () => {
+  render(
+    <>
+      <UndoButton label="Undo placement" />
+      <StopButton label="Abort" />
+    </>,
+  )
+  for (const name of ['Undo placement', 'Abort']) {
+    const btn = screen.getByRole('button', { name })
+    expect(btn).toHaveAttribute('title', name)
+    expect(btn.querySelector('svg')).toBeInTheDocument()
+    expect(btn).toHaveTextContent('')
+  }
+  // Stopping a run loses its progress; returning to an earlier state loses nothing.
+  expect(screen.getByRole('button', { name: 'Abort' })).toHaveClass('hover:text-danger')
+  expect(screen.getByRole('button', { name: 'Undo placement' })).not.toHaveClass(
+    'hover:text-danger',
   )
 })

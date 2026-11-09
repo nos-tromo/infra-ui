@@ -20,9 +20,11 @@ import {
   ReportIcon,
   SearchIcon,
   SendIcon,
+  StopIcon,
   StopwatchIcon,
   TagIcon,
   TrashIcon,
+  UndoIcon,
   WarningIcon,
   XIcon,
 } from './index'
@@ -53,6 +55,8 @@ const ICONS = {
   DocumentsIcon,
   ImageIcon,
   TagIcon,
+  UndoIcon,
+  StopIcon,
 }
 
 test('every icon is drawn geometry, not a text character', () => {

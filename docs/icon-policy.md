@@ -86,6 +86,14 @@ stated, so below `sm`, where the words are hidden, the drawing alone still
 tells the set and empty states apart; the state that needs attention swaps it
 for the set's existing `WarningIcon` rather than tinting the tag.
 
+`v0.22.0` adds `UndoIcon` and `StopIcon` with their actions, for the
+placement rules in [components.md](components.md#where-actions-go): an undo that
+used to be a grey text button under a list moves into the section's header, and
+an abort that sat under a job card moves into the card's own header row.
+`UndoIcon` is one arrow turning back, so it stays apart from `RefreshIcon`'s
+closed pair; `StopIcon` is the filled square of every transport control, filled
+so it does not read as an empty checkbox.
+
 An icon with more than one call site is exported **once** from `src/icons/` and
 imported everywhere, including by this package's own primitives: `CopyButton`
 and `FileList` each drew a private checkmark and cross of their own from before
@@ -118,6 +126,18 @@ The two removal actions differ on purpose: `RemoveButton` (`×`) takes something
 out of a list, a selection or a view and nothing is destroyed; `DeleteButton`
 (trash) destroys stored data — reserve it for what does not come back, and pair
 it with a confirmation. Both tint `danger` on hover.
+
+`UndoButton` returns to the state before the last change — restoring the
+original topics, taking back a placement. It is not `RefreshButton`, which
+rebuilds what is on screen, and the drawings keep the two apart: one arrow
+turning back means *undo*, a closed pair of arcs means *again*. Pair it with a
+confirmation when undoing starts work.
+
+`StopButton` aborts a running process — an import, a translation pass. It tints
+`danger`, because what the run has done so far is lost; pair it with a
+confirmation when that is more than a moment's work. It is not `×`: a running
+job is not taken out of a list by stopping it, and once it has stopped the
+card's `RemoveButton` dismisses it from the same place.
 
 The remaining four actions carry no constraint beyond their name, and the choice
 between them is mechanical rather than a judgement about meaning:

@@ -385,3 +385,33 @@ export const TagIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
     <circle cx="7.5" cy="7.5" r="1.5" />
   </svg>
 )
+
+/**
+ * Go back to the state before the last change.
+ *
+ * One arrow hooking back on itself, counter-clockwise. {@link RefreshIcon}'s
+ * closed pair of arcs means *again*; a single arrow turning back means *undo*,
+ * so the two stay distinct even at 16px.
+ */
+export const UndoIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M9 14 4 9l5-5" />
+    <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
+  </svg>
+)
+
+/**
+ * Stop what is running.
+ *
+ * The filled square every transport control draws for stop. Filled rather than
+ * outlined so it does not read as an empty checkbox, and drawn as a path so it
+ * renders as geometry like the rest of the set.
+ */
+export const StopIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path
+      d="M8.5 7h7A1.5 1.5 0 0 1 17 8.5v7a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 7 15.5v-7A1.5 1.5 0 0 1 8.5 7z"
+      fill="currentColor"
+    />
+  </svg>
+)

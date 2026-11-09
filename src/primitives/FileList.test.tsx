@@ -87,6 +87,12 @@ describe('FileList', () => {
     expect(onClear).toHaveBeenCalled()
   })
 
+  test('the header is a caption row with Clear all on the right', () => {
+    render(<FileList files={[f('a.txt', 1)]} onClear={() => {}} />)
+    expect(screen.getByRole('button', { name: 'Clear all' }).parentElement).toHaveClass('ml-auto')
+    expect(screen.queryByRole('heading')).toBeNull()
+  })
+
   test('renders no remove control when onRemove is omitted', () => {
     render(<FileList files={[f('a.txt', 1)]} />)
     expect(screen.queryByRole('button', { name: /Remove/ })).toBeNull()

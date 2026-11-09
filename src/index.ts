@@ -25,6 +25,8 @@ export {
   SearchButton,
   RefreshButton,
   PlayButton,
+  UndoButton,
+  StopButton,
   DisclosureButton,
   type DisclosureButtonProps,
 } from './primitives/iconActions'
@@ -54,6 +56,8 @@ export {
   DocumentsIcon,
   ImageIcon,
   TagIcon,
+  UndoIcon,
+  StopIcon,
   type IconProps,
 } from './icons'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'
@@ -81,6 +85,9 @@ export { Spinner, type SpinnerProps } from './primitives/Spinner'
 export { StatusIcon, type StatusIconProps, type StatusIconStatus } from './primitives/StatusIcon'
 export { Banner, type BannerProps } from './primitives/Banner'
 export { PageHeader, type PageHeaderProps } from './primitives/PageHeader'
+export { SectionHeader, type SectionHeaderProps } from './primitives/SectionHeader'
+export { ActionBar } from './primitives/ActionBar'
+export { EmptyState, type EmptyStateProps } from './primitives/EmptyState'
 export { AppHeader, type AppHeaderProps } from './primitives/AppHeader'
 export { type ThemeToggleLabels } from './primitives/ThemeToggle'
 export { UserMenu, type UserMenuProps } from './primitives/UserMenu'

@@ -195,6 +195,31 @@ describe('the dialog', () => {
     expect(screen.getByRole('button', { name: 'No purpose stated' })).toHaveFocus()
   })
 
+  test('the footer is one full-width bar, Save last', async () => {
+    render(<PurposeBar scope="chorus" />)
+    await open()
+    const footer = screen.getByRole('button', { name: 'Save' }).parentElement!
+    expect(footer).toHaveClass('flex-wrap', '*:flex-[1_1_8rem]')
+    expect(
+      within(footer)
+        .getAllByRole('button')
+        .map((b) => b.textContent),
+    ).toEqual(['Cancel', 'Save'])
+  })
+
+  test('with a purpose stated, Clear joins the bar as a bordered button', async () => {
+    setPurpose('chorus', { caseRef: 'AZ-12' })
+    render(<PurposeBar scope="chorus" />)
+    await open()
+    const footer = screen.getByRole('button', { name: 'Save' }).parentElement!
+    expect(
+      within(footer)
+        .getAllByRole('button')
+        .map((b) => b.textContent),
+    ).toEqual(['Clear', 'Cancel', 'Save'])
+    expect(screen.getByRole('button', { name: 'Clear' })).toHaveClass('border')
+  })
+
   test('where none is required, saving both fields blank clears the purpose', async () => {
     setPurpose('chorus', { caseRef: 'AZ-12' })
     render(<PurposeBar scope="chorus" />)

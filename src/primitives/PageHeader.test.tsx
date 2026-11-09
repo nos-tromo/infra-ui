@@ -25,3 +25,10 @@ test('renders actions on the title row', () => {
   render(<PageHeader title="Jobs" actions={<button>New</button>} />)
   expect(screen.getByRole('button', { name: 'New' })).toBeInTheDocument()
 })
+
+test('the title row wraps and keeps actions right', () => {
+  render(<PageHeader title="Jobs" actions={<button>New</button>} />)
+  const actions = screen.getByRole('button', { name: 'New' }).parentElement!
+  expect(actions).toHaveClass('ml-auto')
+  expect(actions.parentElement).toHaveClass('flex-wrap')
+})
