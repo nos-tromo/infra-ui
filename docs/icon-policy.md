@@ -86,6 +86,14 @@ stated, so below `sm`, where the words are hidden, the drawing alone still
 tells the set and empty states apart; the state that needs attention swaps it
 for the set's existing `WarningIcon` rather than tinting the tag.
 
+`v0.22.0` adds `UndoIcon` and `StopIcon` with their actions, for the
+placement rules in [components.md](components.md#where-actions-go): an undo that
+used to be a grey text button under a list moves into the section's header, and
+an abort that sat under a job card moves into the card's own header row.
+`UndoIcon` is one arrow turning back, so it stays apart from `RefreshIcon`'s
+closed pair; `StopIcon` is the filled square of every transport control, filled
+so it does not read as an empty checkbox.
+
 An icon with more than one call site is exported **once** from `src/icons/` and
 imported everywhere, including by this package's own primitives: `CopyButton`
 and `FileList` each drew a private checkmark and cross of their own from before
