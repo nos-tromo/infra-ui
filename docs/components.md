@@ -342,7 +342,7 @@ The set lives in `src/icons/`, all exported: `DownloadIcon`, `PlusIcon`,
 `WarningIcon`, `InfoIcon`, `CheckIcon`, `StopwatchIcon`, `ExternalLinkIcon`,
 `ReportIcon`/`ReportCheckIcon`, `SendIcon`, `SearchIcon`, `RefreshIcon`,
 `ArrowLeftIcon`, `BrainIcon`/`BrainActiveIcon`, `PlayIcon`, `LayersIcon`,
-`DocumentsIcon`, `ImageIcon`, `TagIcon`, `PaperclipIcon`, `MicIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
+`DocumentsIcon`, `ImageIcon`, `TagIcon`, `UndoIcon`, `StopIcon`, `PaperclipIcon`, `MicIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
 the caller. Adding one is covered by
 [icon-policy.md](icon-policy.md#icons-are-drawn-never-typed).
 
