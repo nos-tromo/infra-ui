@@ -259,6 +259,29 @@ declare const MoveDownButton: react.ForwardRefExoticComponent<ActionButtonProps 
  */
 declare const SendButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
 /**
+ * Add a file to what is about to be sent — a chat message, a prompt.
+ *
+ * It adds; it does not send, which is why it stays quiet chrome beside
+ * {@link SendButton} rather than wearing a `danger` tint or `variant="primary"`.
+ * What the click opens, a file picker or a drop zone, is the app's.
+ *
+ * @param props - `label` names the action; `busy` covers a file in flight.
+ * @returns The attach button.
+ */
+declare const AttachButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
+ * Start dictation — speak what would otherwise be typed.
+ *
+ * It starts and nothing else: a recording in progress is ended with
+ * {@link StopButton}, which tints `danger` because what has been said so far
+ * is lost. Swap the two as the state changes, and swap `label` with them, so
+ * the name always says what the next click does.
+ *
+ * @param props - `label` names the action; `busy` covers a recording being set up.
+ * @returns The microphone button.
+ */
+declare const MicButton: react.ForwardRefExoticComponent<ActionButtonProps & react.RefAttributes<HTMLButtonElement>>;
+/**
  * Run the search the neighbouring field describes.
  *
  * @param props - `label` names the action; pass `type="submit"` inside a form.
@@ -548,6 +571,25 @@ declare const UndoIcon: ({ className, ...props }: IconProps) => react.JSX.Elemen
  * renders as geometry like the rest of the set.
  */
 declare const StopIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Add a file to what is about to be sent.
+ *
+ * A paperclip, drawn as the one bent wire it is: three bends, two at the head
+ * and one at the foot, and nothing closed. That is what keeps it from reading
+ * as a page ({@link ReportIcon}) or a tag ({@link TagIcon}) in the same
+ * composer row.
+ */
+declare const PaperclipIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Speak instead of type.
+ *
+ * The upright capsule on its stand, the drawing every dictation control has
+ * agreed on. The closed capsule is the microphone itself; the open arc under
+ * it, the stem and the foot are what stop it reading as a pill. It starts
+ * dictation and nothing else — a recording is ended with {@link StopIcon}, so
+ * this drawing never has to say "recording" or "stop".
+ */
+declare const MicIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 
 interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'onClick' | 'aria-label' | 'title'> {
     /** Text written to the clipboard on click. */
@@ -1546,4 +1588,4 @@ declare namespace PurposeBar {
     var displayName: string;
 }
 
-export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserMenu, type UserMenuProps, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };
+export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserMenu, type UserMenuProps, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };

@@ -139,6 +139,12 @@ confirmation when that is more than a moment's work. It is not `×`: a running
 job is not taken out of a list by stopping it, and once it has stopped the
 card's `RemoveButton` dismisses it from the same place.
 
+`AttachButton` adds a file to what is sent. It adds and does not send, so it
+takes no `danger` tint and is not the primary control.
+
+`MicButton` starts dictation. A recording is stopped with `StopButton`, not by
+this button changing its drawing.
+
 The remaining four actions carry no constraint beyond their name, and the choice
 between them is mechanical rather than a judgement about meaning:
 `DownloadButton` versus `DownloadLink` is a click handler versus an `<a>` the

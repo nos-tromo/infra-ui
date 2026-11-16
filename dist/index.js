@@ -315,6 +315,12 @@ var StopIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx7("sv
     fill: "currentColor"
   }
 ) });
+var PaperclipIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx7("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx7("path", { d: "M10 15V8a2 2 0 0 1 4 0v9a4 4 0 0 1-8 0V8a6 6 0 0 1 12 0v8" }) });
+var MicIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx7("path", { d: "M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z" }),
+  /* @__PURE__ */ jsx7("path", { d: "M5 11v1a7 7 0 0 0 14 0v-1" }),
+  /* @__PURE__ */ jsx7("path", { d: "M12 19v2M9 21h6" })
+] });
 
 // src/primitives/iconActions.tsx
 import { jsx as jsx8 } from "react/jsx-runtime";
@@ -334,6 +340,10 @@ var MoveDownButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton
 MoveDownButton.displayName = "MoveDownButton";
 var SendButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(SendIcon, {}), ...props }));
 SendButton.displayName = "SendButton";
+var AttachButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(PaperclipIcon, {}), ...props }));
+AttachButton.displayName = "AttachButton";
+var MicButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(MicIcon, {}), ...props }));
+MicButton.displayName = "MicButton";
 var SearchButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(SearchIcon, {}), ...props }));
 SearchButton.displayName = "SearchButton";
 var RefreshButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(RefreshIcon, {}), ...props }));
@@ -3295,6 +3305,7 @@ export {
   AppHeader,
   AppShell,
   ArrowLeftIcon,
+  AttachButton,
   Badge,
   Banner,
   BrainActiveIcon,
@@ -3328,12 +3339,15 @@ export {
   MAX_PURPOSE_HEADER,
   Menu,
   MenuItem,
+  MicButton,
+  MicIcon,
   MoveDownButton,
   MoveUpButton,
   NewButton,
   PURPOSE_HEADER,
   PURPOSE_REQUIRED_STATUS,
   PageHeader,
+  PaperclipIcon,
   PlayButton,
   PlayIcon,
   PlusIcon,

@@ -4,6 +4,8 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   DownloadIcon,
+  MicIcon,
+  PaperclipIcon,
   PlayIcon,
   PlusIcon,
   RefreshIcon,
@@ -146,6 +148,37 @@ export const SendButton = forwardRef<HTMLButtonElement, ActionButtonProps>((prop
   <IconButton ref={ref} icon={<SendIcon />} {...props} />
 ))
 SendButton.displayName = 'SendButton'
+
+/**
+ * Add a file to what is about to be sent — a chat message, a prompt.
+ *
+ * It adds; it does not send, which is why it stays quiet chrome beside
+ * {@link SendButton} rather than wearing a `danger` tint or `variant="primary"`.
+ * What the click opens, a file picker or a drop zone, is the app's.
+ *
+ * @param props - `label` names the action; `busy` covers a file in flight.
+ * @returns The attach button.
+ */
+export const AttachButton = forwardRef<HTMLButtonElement, ActionButtonProps>((props, ref) => (
+  <IconButton ref={ref} icon={<PaperclipIcon />} {...props} />
+))
+AttachButton.displayName = 'AttachButton'
+
+/**
+ * Start dictation — speak what would otherwise be typed.
+ *
+ * It starts and nothing else: a recording in progress is ended with
+ * {@link StopButton}, which tints `danger` because what has been said so far
+ * is lost. Swap the two as the state changes, and swap `label` with them, so
+ * the name always says what the next click does.
+ *
+ * @param props - `label` names the action; `busy` covers a recording being set up.
+ * @returns The microphone button.
+ */
+export const MicButton = forwardRef<HTMLButtonElement, ActionButtonProps>((props, ref) => (
+  <IconButton ref={ref} icon={<MicIcon />} {...props} />
+))
+MicButton.displayName = 'MicButton'
 
 /**
  * Run the search the neighbouring field describes.

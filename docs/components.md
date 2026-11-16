@@ -294,8 +294,8 @@ looking alike:
 ```tsx
 import {
   DownloadButton, DownloadLink, NewButton, RemoveButton, DeleteButton,
-  MoveUpButton, MoveDownButton, SendButton, SearchButton, RefreshButton,
-  PlayButton, UndoButton, StopButton, DisclosureButton,
+  MoveUpButton, MoveDownButton, SendButton, AttachButton, MicButton, SearchButton,
+  RefreshButton, PlayButton, UndoButton, StopButton, DisclosureButton,
 } from '@infra/ui'
 
 <DownloadButton label="Download transcript" onClick={save} />
@@ -307,6 +307,8 @@ import {
 <MoveUpButton label="Move up" disabled={first} onClick={() => move(-1)} />
 <MoveDownButton label="Move down" disabled={last} onClick={() => move(1)} />
 <SendButton label="Send" type="submit" variant="primary" busy={inflight} />
+<AttachButton label="Attach a file" onClick={pick} />
+<MicButton label="Dictate" onClick={dictate} />
 <SearchButton label="Search" type="submit" />
 <RefreshButton label="Refresh summary" busy={rebuilding} onClick={rebuild} />
 <PlayButton label="Open player" onClick={play} />
@@ -340,7 +342,7 @@ The set lives in `src/icons/`, all exported: `DownloadIcon`, `PlusIcon`,
 `WarningIcon`, `InfoIcon`, `CheckIcon`, `StopwatchIcon`, `ExternalLinkIcon`,
 `ReportIcon`/`ReportCheckIcon`, `SendIcon`, `SearchIcon`, `RefreshIcon`,
 `ArrowLeftIcon`, `BrainIcon`/`BrainActiveIcon`, `PlayIcon`, `LayersIcon`,
-`DocumentsIcon`, `ImageIcon`, `TagIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
+`DocumentsIcon`, `ImageIcon`, `TagIcon`, `UndoIcon`, `StopIcon`, `PaperclipIcon`, `MicIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
 the caller. Adding one is covered by
 [icon-policy.md](icon-policy.md#icons-are-drawn-never-typed).
 
