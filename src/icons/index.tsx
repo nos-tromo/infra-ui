@@ -415,3 +415,34 @@ export const StopIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
     />
   </svg>
 )
+
+/**
+ * Add a file to what is about to be sent.
+ *
+ * A paperclip, drawn as the one bent wire it is: three bends, two at the head
+ * and one at the foot, and nothing closed. That is what keeps it from reading
+ * as a page ({@link ReportIcon}) or a tag ({@link TagIcon}) in the same
+ * composer row.
+ */
+export const PaperclipIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M10 15V8a2 2 0 0 1 4 0v9a4 4 0 0 1-8 0V8a6 6 0 0 1 12 0v8" />
+  </svg>
+)
+
+/**
+ * Speak instead of type.
+ *
+ * The upright capsule on its stand, the drawing every dictation control has
+ * agreed on. The closed capsule is the microphone itself; the open arc under
+ * it, the stem and the foot are what stop it reading as a pill. It starts
+ * dictation and nothing else — a recording is ended with {@link StopIcon}, so
+ * this drawing never has to say "recording" or "stop".
+ */
+export const MicIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z" />
+    <path d="M5 11v1a7 7 0 0 0 14 0v-1" />
+    <path d="M12 19v2M9 21h6" />
+  </svg>
+)

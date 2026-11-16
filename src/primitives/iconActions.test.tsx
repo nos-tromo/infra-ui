@@ -1,10 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MicIcon, PaperclipIcon } from '../icons'
 import {
+  AttachButton,
   DeleteButton,
   DisclosureButton,
   DownloadButton,
   DownloadLink,
+  MicButton,
   MoveDownButton,
   MoveUpButton,
   NewButton,
@@ -217,4 +220,47 @@ test('undo and stop name themselves; only stop warns', () => {
   expect(screen.getByRole('button', { name: 'Undo placement' })).not.toHaveClass(
     'hover:text-danger',
   )
+})
+
+test('attach and dictate name themselves and draw their own icons', () => {
+  render(
+    <>
+      <AttachButton label="Attach a file" />
+      <MicButton label="Dictate" />
+      <SendButton label="Send" />
+    </>,
+  )
+  const attach = screen.getByRole('button', { name: 'Attach a file' })
+  const mic = screen.getByRole('button', { name: 'Dictate' })
+  // The label is the whole affordance in a control with no text of its own.
+  expect(attach).toHaveAttribute('title', 'Attach a file')
+  expect(mic).toHaveAttribute('title', 'Dictate')
+  expect(attach).toHaveTextContent('')
+  expect(mic).toHaveTextContent('')
+  const attachDrawing = attach.querySelector('svg')!.innerHTML
+  const micDrawing = mic.querySelector('svg')!.innerHTML
+  // Each action is its icon, byte for byte, not a lookalike drawn afresh.
+  expect(attachDrawing).toBe(render(<PaperclipIcon />).container.querySelector('svg')!.innerHTML)
+  expect(micDrawing).toBe(render(<MicIcon />).container.querySelector('svg')!.innerHTML)
+  const sendDrawing = screen.getByRole('button', { name: 'Send' }).querySelector('svg')!.innerHTML
+  expect(new Set([attachDrawing, micDrawing, sendDrawing]).size).toBe(3)
+})
+
+test('attach and dictate are constructive: no danger tint, and a busy one blocks the second click', async () => {
+  const onAttach = vi.fn()
+  const onMic = vi.fn()
+  render(
+    <>
+      <AttachButton label="Attach a file" busy onClick={onAttach} />
+      <MicButton label="Dictate" busy onClick={onMic} />
+    </>,
+  )
+  // Adding a file or starting a recording takes nothing away; the recording is
+  // stopped with StopButton, which is the one that warns.
+  for (const name of ['Attach a file', 'Dictate']) {
+    expect(screen.getByRole('button', { name })).not.toHaveClass('hover:text-danger')
+    await userEvent.click(screen.getByRole('button', { name }))
+  }
+  expect(onAttach).not.toHaveBeenCalled()
+  expect(onMic).not.toHaveBeenCalled()
 })

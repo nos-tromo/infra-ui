@@ -13,6 +13,8 @@ import {
   ImageIcon,
   InfoIcon,
   LayersIcon,
+  MicIcon,
+  PaperclipIcon,
   PlayIcon,
   PlusIcon,
   RefreshIcon,
@@ -57,6 +59,8 @@ const ICONS = {
   TagIcon,
   UndoIcon,
   StopIcon,
+  PaperclipIcon,
+  MicIcon,
 }
 
 test('every icon is drawn geometry, not a text character', () => {
@@ -219,4 +223,35 @@ test('the tag keeps its eyelet', () => {
   expect(svg.querySelectorAll('path')).toHaveLength(1)
   expect(svg.querySelector('path')!.getAttribute('d')).toMatch(/z$/i)
   expect(svg.querySelector('circle')).not.toBeNull()
+})
+
+test('the paperclip is one open wire with three bends, not a sheet or a tag', () => {
+  const { container } = render(<PaperclipIcon />)
+  const svg = container.querySelector('svg')!
+  const paths = [...svg.querySelectorAll('path')]
+  // A clip is a single bent wire: closed, it would read as the report page or
+  // the tag, and a circle would turn it into a ring. The three bends (two at
+  // the top, one at the foot) are what say "clip" rather than "squiggle".
+  expect(paths).toHaveLength(1)
+  expect(paths[0]!.getAttribute('d')).not.toMatch(/z$/i)
+  expect(paths[0]!.getAttribute('d')!.match(/a/g)).toHaveLength(3)
+  expect(svg.querySelector('circle')).toBeNull()
+})
+
+test('the microphone keeps its capsule and its stand', () => {
+  const { container } = render(<MicIcon />)
+  const paths = [...container.querySelectorAll('path')]
+  // The closed capsule is the microphone; the open arc under it, the stem and
+  // the foot are what stop it reading as a pill or a lozenge at 16px.
+  expect(paths.length).toBeGreaterThanOrEqual(3)
+  expect(paths[0]!.getAttribute('d')).toMatch(/z$/i)
+  expect(paths.slice(1).some((p) => /[aA]/.test(p.getAttribute('d') ?? ''))).toBe(true)
+})
+
+test('the attach and dictate drawings differ from each other and from the plane', () => {
+  const drawing = (icon: React.ReactElement) =>
+    render(icon).container.querySelector('svg')!.innerHTML
+  const drawings = [<PaperclipIcon />, <MicIcon />, <SendIcon />].map(drawing)
+  // All three sit in one composer toolbar, a few pixels apart.
+  expect(new Set(drawings).size).toBe(3)
 })

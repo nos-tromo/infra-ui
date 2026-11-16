@@ -22,6 +22,8 @@ export {
   MoveUpButton,
   MoveDownButton,
   SendButton,
+  AttachButton,
+  MicButton,
   SearchButton,
   RefreshButton,
   PlayButton,
@@ -58,6 +60,8 @@ export {
   TagIcon,
   UndoIcon,
   StopIcon,
+  PaperclipIcon,
+  MicIcon,
   type IconProps,
 } from './icons'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'
