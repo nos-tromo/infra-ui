@@ -17,6 +17,8 @@
   --color-chrome: hsl(240 5% 96%);
   --color-primary: var(--app-accent, hsl(217 91% 60%));
   --color-primary-foreground: hsl(0 0% 100%);
+  --color-bubble: var(--app-bubble, var(--color-primary));
+  --color-bubble-foreground: hsl(0 0% 100%);
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;
   --radius: 0.5rem;

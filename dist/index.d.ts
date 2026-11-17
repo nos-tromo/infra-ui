@@ -1,6 +1,6 @@
 import { ClassValue } from 'clsx';
 import * as react from 'react';
-import { ButtonHTMLAttributes, ReactNode, AnchorHTMLAttributes, SVGProps, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes, Ref, KeyboardEvent } from 'react';
+import { ButtonHTMLAttributes, ReactNode, AnchorHTMLAttributes, SVGProps, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes, Ref, KeyboardEvent, TextareaHTMLAttributes } from 'react';
 import * as class_variance_authority_types from 'class-variance-authority/types';
 import { VariantProps } from 'class-variance-authority';
 
@@ -978,6 +978,38 @@ interface BannerProps extends HTMLAttributes<HTMLDivElement>, VariantProps<typeo
 }
 declare function Banner({ className, variant, ...props }: BannerProps): react.JSX.Element;
 
+interface ChatComposerProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+    /** Actions before the text: attach, dictate. */
+    start?: ReactNode;
+    /** Actions after the text: options, then send or stop. */
+    end?: ReactNode;
+    /** Classes for the pill around the text and the actions; `className` styles the textarea. */
+    boxClassName?: string;
+}
+/**
+ * A chat's message box: one rounded pill holding the actions and the text.
+ *
+ * The text starts on one line and grows upward as it is written, up to a cap,
+ * then scrolls; the actions stay on the bottom line. Buttons inside the pill
+ * are drawn round. The ref is the textarea's, and every textarea prop
+ * (`value`, `onChange`, `onKeyDown`, `aria-label`, `placeholder`, …) goes to it.
+ * Wrap it in the `<form>` that sends, and keep what sits above or below it
+ * (chips of attached files, notes, errors) outside.
+ */
+declare const ChatComposer: react.ForwardRefExoticComponent<ChatComposerProps & react.RefAttributes<HTMLTextAreaElement>>;
+
+type UserBubbleProps = HTMLAttributes<HTMLDivElement>;
+/**
+ * One message the user wrote, set apart from the answers: right-aligned, in the
+ * app's accent with white text (`bg-bubble`, `text-bubble-foreground`).
+ *
+ * The bubble is as wide as its text, up to 85% of the column. What goes in it
+ * (the text, chips of attached files) and any data attributes are the caller's;
+ * something drawn inside reads on the accent with `bubble-foreground` at low
+ * opacity, e.g. `border-bubble-foreground/30 bg-bubble-foreground/15`.
+ */
+declare function UserBubble({ className, ...props }: UserBubbleProps): react.JSX.Element;
+
 interface PageHeaderProps extends HTMLAttributes<HTMLElement> {
     /** Route title — exactly one PageHeader (one h1) per route. */
     title: string;
@@ -1588,4 +1620,4 @@ declare namespace PurposeBar {
     var displayName: string;
 }
 
-export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserMenu, type UserMenuProps, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };
+export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };

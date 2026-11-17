@@ -26,6 +26,11 @@ test('exposes the per-app accent override hook with a blue family default', () =
   expect(css).toContain('--color-primary: var(--app-accent, hsl(217 91% 60%))')
 })
 
+test('exposes the per-app bubble override hook, falling back to the accent', () => {
+  expect(css).toContain('--color-bubble: var(--app-bubble, var(--color-primary))')
+  expect(css).toContain('--color-bubble-foreground: hsl(0 0% 100%)')
+})
+
 test('dark palette exists under both the data-theme attribute and the media fallback', () => {
   expect(css).toContain(":root[data-theme='dark']")
   expect(css).toContain(':root:not([data-theme])')
