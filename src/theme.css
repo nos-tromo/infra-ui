@@ -17,6 +17,13 @@
   --color-primary: var(--app-accent, hsl(217 91% 60%));
   --color-primary-foreground: hsl(0 0% 100%);
 
+  /* the user's own chat messages (UserBubble): white text on the app's accent.
+     An app whose accent is too light for white text in a theme (below 4.5:1,
+     typically the dark one) sets --app-bubble to a darker shade of it, kept in
+     both themes. */
+  --color-bubble: var(--app-bubble, var(--color-primary));
+  --color-bubble-foreground: hsl(0 0% 100%);
+
   /* type + shape */
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-mono: ui-monospace, 'SFMono-Regular', Menlo, monospace;

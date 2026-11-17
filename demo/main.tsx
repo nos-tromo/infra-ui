@@ -5,7 +5,9 @@ import {
   AppShell,
   Badge,
   Banner,
+  AttachButton,
   Button,
+  ChatComposer,
   CopyButton,
   Card,
   CycleButton,
@@ -32,9 +34,11 @@ import {
   SelectMenu,
   SidebarGroup,
   Spinner,
+  SendButton,
   StopButton,
   ToggleButton,
   UndoButton,
+  UserBubble,
   withPurpose,
 } from '../src/index'
 import './styles.css'
@@ -101,6 +105,7 @@ function Sink() {
   const [target, setTarget] = useState<'all' | 'documents' | 'visual'>('all')
   const [purposeRequired, setPurposeRequired] = useState(true)
   const [auditedOutcome, setAuditedOutcome] = useState('')
+  const [chatDraft, setChatDraft] = useState('')
   const [demoFiles, setDemoFiles] = useState([
     { name: 'interview_2021_part1.mp4', size: 412_000_000 },
     { name: 'witness_statement_final.pdf', size: 2_100_000 },
@@ -198,6 +203,36 @@ function Sink() {
             onChange={setTarget}
           />
           <span className="text-sm text-muted-foreground">{target}</span>
+        </section>
+
+        {/* A chat's foot: what the user wrote in the accent bubble, the answer
+            as plain text, and the message box as one pill below them. */}
+        <section className="flex max-w-3xl flex-col gap-3">
+          <h2 className="text-sm font-medium text-muted-foreground">Chat</h2>
+          <UserBubble>Summarise the minutes of the planning meeting.</UserBubble>
+          <p className="text-sm">The meeting agreed on three dates and left the budget open.</p>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault()
+              setChatDraft('')
+            }}
+          >
+            <ChatComposer
+              aria-label="Write a message"
+              placeholder="Write a message"
+              value={chatDraft}
+              onChange={(event) => setChatDraft(event.target.value)}
+              start={<AttachButton label="Attach files" />}
+              end={
+                <SendButton
+                  type="submit"
+                  variant="primary"
+                  label="Send"
+                  disabled={!chatDraft.trim()}
+                />
+              }
+            />
+          </form>
         </section>
 
         {/* A stand-in backend that answers 428 until a purpose is stated:

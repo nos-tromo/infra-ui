@@ -2,8 +2,8 @@
 
 Props, keyboard maps and worked examples for the things that need more than a
 one-line description: `AppShell`, `SelectMenu`, `Menu`, where actions go
-(`SectionHeader`, `ActionBar`, `EmptyState`), the icon actions, `ForceGraph`
-and `PurposeBar`. The other primitives take a prop or two and are listed, with what
+(`SectionHeader`, `ActionBar`, `EmptyState`), the icon actions, the chat
+composer and user bubble, `ForceGraph` and `PurposeBar`. The other primitives take a prop or two and are listed, with what
 each is for, in the top-level [README](../README.md#primitives), which also
 carries the install and the Tailwind wiring; this file is the detail behind it.
 Why the icons are drawn rather than typed, and what each named action means, is
@@ -434,6 +434,63 @@ where the setting is changed rarely enough that stepping is no burden. A binary
 on/off is `IconButton` with `aria-pressed` and a two-icon state pair; a labelled
 choice is `ToggleButton`; more than about four values, or a form row, is
 `SelectMenu` — which can be read without clicking through it.
+
+## Chat composer and user bubble
+
+A chat page has two pieces every app draws alike: the box the user writes in,
+and what they wrote, set apart from the answers.
+
+`ChatComposer` is the box: one rounded pill with the actions before the text
+(`start`: attach, dictate) and after it (`end`: options, then send or stop).
+The text starts on one line and grows upward as it is written, up to
+`max-h-48`, then scrolls; the actions stay on the bottom line, and buttons
+inside the pill are drawn round. The ref and every textarea prop go to the
+textarea; `className` styles it and `boxClassName` the pill. The form, the
+chips of attached files above it and any note or error below it stay the
+app's.
+
+```tsx
+<form onSubmit={send} className="mx-auto w-full max-w-3xl px-4 py-2">
+  <ChatComposer
+    ref={textRef}
+    aria-label={t('composer.placeholder')}
+    placeholder={t('composer.placeholder')}
+    value={text}
+    onChange={(event) => setText(event.target.value)}
+    onKeyDown={sendOnEnter}
+    start={<AttachButton label={t('composer.attach')} onClick={pick} />}
+    end={<SendButton type="submit" variant="primary" label={t('composer.send')} disabled={!text.trim()} />}
+  />
+</form>
+```
+
+Give the form the message column's width, so the pill lines up with the
+messages above it.
+
+`UserBubble` is one message the user wrote: right-aligned, as wide as its text
+up to 85% of the column, white text on `bg-bubble`. The content and any data
+attributes are the caller's; something drawn inside it, such as a chip of an
+attached file, reads on the accent with `bubble-foreground` at low opacity
+(`border-bubble-foreground/30 bg-bubble-foreground/15`). The answers stay
+unboxed, full width.
+
+```tsx
+<UserBubble data-role="user">
+  <p className="whitespace-pre-wrap">{message.content}</p>
+</UserBubble>
+```
+
+`--color-bubble` is the app's accent unless the app sets `--app-bubble`.
+White text needs 4.5:1 on it, and a dark theme's accent is usually lighter
+than the light one's: set `--app-bubble` once, in `:root` only, to a shade that
+holds in both themes (often the light theme's accent).
+
+```css
+:root {
+  --app-accent: hsl(217 91% 45%);
+  --app-bubble: hsl(217 91% 45%); /* white is ~6:1 here, ~3.6:1 on the dark accent (60%) */
+}
+```
 
 ## ForceGraph
 
