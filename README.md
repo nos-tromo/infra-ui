@@ -32,6 +32,10 @@ In your app's root CSS (e.g. `src/styles/globals.css`):
 :root { --app-accent: hsl(160 84% 39%); }
 ```
 
+An app that shows `UserBubble` and whose accent is too light for white text in
+one theme also sets `--app-bubble`; see
+[components.md](docs/components.md#chat-composer-and-user-bubble).
+
 > The `@source` line is required — without it Tailwind won't generate the utility
 > classes the primitives reference, and they'll render unstyled.
 
@@ -79,6 +83,8 @@ copies text to the clipboard) · `Card` (plain or tile-style with `title`/`capti
 options and type-ahead) · `Menu`/`MenuItem` (the action menu) ·
 `Select` (**deprecated** — a bare native `<select>`; prefer `SelectMenu`) ·
 `Badge` (neutral/accent/danger) · `Spinner` · `Banner` (info/danger) ·
+`ChatComposer` (a chat's message box: one pill with actions before and after
+the text) · `UserBubble` (what the user wrote, in the accent) ·
 `StatusIcon` (one job's state, drawn) ·
 `IconButton`/`IconLink` · `HoverIconAction` (the same icon button, kept invisible
 until its `.group` row is hovered or focused) · the named icon actions
