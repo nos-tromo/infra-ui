@@ -193,11 +193,33 @@ var HoverIconAction = forwardRef4(
 );
 HoverIconAction.displayName = "HoverIconAction";
 
-// src/primitives/iconActions.tsx
+// src/primitives/DisclosureText.tsx
 import { forwardRef as forwardRef5 } from "react";
+import { jsx as jsx7 } from "react/jsx-runtime";
+var DisclosureText = forwardRef5(
+  ({ expanded, controls, className, ...props }, ref) => /* @__PURE__ */ jsx7(
+    "button",
+    {
+      ref,
+      type: "button",
+      "aria-expanded": expanded,
+      "aria-controls": controls,
+      className: cn(
+        "max-w-full cursor-pointer break-words rounded-sm text-left transition-colors hover:text-foreground",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+        className
+      ),
+      ...props
+    }
+  )
+);
+DisclosureText.displayName = "DisclosureText";
+
+// src/primitives/iconActions.tsx
+import { forwardRef as forwardRef6 } from "react";
 
 // src/icons/index.tsx
-import { jsx as jsx7, jsxs as jsxs2 } from "react/jsx-runtime";
+import { jsx as jsx8, jsxs as jsxs2 } from "react/jsx-runtime";
 var base = {
   viewBox: "0 0 24 24",
   fill: "none",
@@ -208,160 +230,165 @@ var base = {
   "aria-hidden": true
 };
 var DownloadIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M12 3v12" }),
-  /* @__PURE__ */ jsx7("path", { d: "m7.5 10.5 4.5 4.5 4.5-4.5" }),
-  /* @__PURE__ */ jsx7("path", { d: "M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" })
+  /* @__PURE__ */ jsx8("path", { d: "M12 3v12" }),
+  /* @__PURE__ */ jsx8("path", { d: "m7.5 10.5 4.5 4.5 4.5-4.5" }),
+  /* @__PURE__ */ jsx8("path", { d: "M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" })
 ] });
-var PlusIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx7("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx7("path", { d: "M12 5v14M5 12h14" }) });
-var XIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx7("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx7("path", { d: "M18 6 6 18M6 6l12 12" }) });
+var PlusIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx8("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx8("path", { d: "M12 5v14M5 12h14" }) });
+var XIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx8("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx8("path", { d: "M18 6 6 18M6 6l12 12" }) });
 var TrashIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M4 7h16M10 11v6M14 11v6" }),
-  /* @__PURE__ */ jsx7("path", { d: "M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12" }),
-  /* @__PURE__ */ jsx7("path", { d: "M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" })
+  /* @__PURE__ */ jsx8("path", { d: "M4 7h16M10 11v6M14 11v6" }),
+  /* @__PURE__ */ jsx8("path", { d: "M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12" }),
+  /* @__PURE__ */ jsx8("path", { d: "M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" })
 ] });
-var ChevronDownIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx7("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx7("path", { d: "m6 9 6 6 6-6" }) });
-var ChevronUpIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx7("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx7("path", { d: "m6 15 6-6 6 6" }) });
+var ChevronDownIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx8("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx8("path", { d: "m6 9 6 6 6-6" }) });
+var ChevronUpIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx8("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx8("path", { d: "m6 15 6-6 6 6" }) });
 var ChevronsUpDownIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "m7 15 5 5 5-5" }),
-  /* @__PURE__ */ jsx7("path", { d: "m7 9 5-5 5 5" })
+  /* @__PURE__ */ jsx8("path", { d: "m7 15 5 5 5-5" }),
+  /* @__PURE__ */ jsx8("path", { d: "m7 9 5-5 5 5" })
 ] });
 var WarningIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0" }),
-  /* @__PURE__ */ jsx7("path", { d: "M12 9v4M12 17h.01" })
+  /* @__PURE__ */ jsx8("path", { d: "M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0" }),
+  /* @__PURE__ */ jsx8("path", { d: "M12 9v4M12 17h.01" })
 ] });
 var InfoIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("circle", { cx: "12", cy: "12", r: "9" }),
-  /* @__PURE__ */ jsx7("path", { d: "M12 16v-5M12 8h.01" })
+  /* @__PURE__ */ jsx8("circle", { cx: "12", cy: "12", r: "9" }),
+  /* @__PURE__ */ jsx8("path", { d: "M12 16v-5M12 8h.01" })
 ] });
-var CheckIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx7("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx7("path", { d: "M20 6 9 17l-5-5" }) });
+var CheckIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx8("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx8("path", { d: "M20 6 9 17l-5-5" }) });
 var ExternalLinkIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" }),
-  /* @__PURE__ */ jsx7("path", { d: "M15 3h6v6" }),
-  /* @__PURE__ */ jsx7("path", { d: "M10 14 21 3" })
+  /* @__PURE__ */ jsx8("path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" }),
+  /* @__PURE__ */ jsx8("path", { d: "M15 3h6v6" }),
+  /* @__PURE__ */ jsx8("path", { d: "M10 14 21 3" })
 ] });
 var StopwatchIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("circle", { cx: "12", cy: "14", r: "8" }),
-  /* @__PURE__ */ jsx7("path", { d: "M12 14v-4" }),
-  /* @__PURE__ */ jsx7("path", { d: "M9 2h6" }),
-  /* @__PURE__ */ jsx7("path", { d: "M12 2v4" })
+  /* @__PURE__ */ jsx8("circle", { cx: "12", cy: "14", r: "8" }),
+  /* @__PURE__ */ jsx8("path", { d: "M12 14v-4" }),
+  /* @__PURE__ */ jsx8("path", { d: "M9 2h6" }),
+  /* @__PURE__ */ jsx8("path", { d: "M12 2v4" })
 ] });
 var ReportIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" }),
-  /* @__PURE__ */ jsx7("path", { d: "M14 3v5h5" }),
-  /* @__PURE__ */ jsx7("path", { d: "M9 13h6M9 17h6" })
+  /* @__PURE__ */ jsx8("path", { d: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" }),
+  /* @__PURE__ */ jsx8("path", { d: "M14 3v5h5" }),
+  /* @__PURE__ */ jsx8("path", { d: "M9 13h6M9 17h6" })
 ] });
 var ReportCheckIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" }),
-  /* @__PURE__ */ jsx7("path", { d: "M14 3v5h5" }),
-  /* @__PURE__ */ jsx7("path", { d: "m9 15 2 2 4-4" })
+  /* @__PURE__ */ jsx8("path", { d: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" }),
+  /* @__PURE__ */ jsx8("path", { d: "M14 3v5h5" }),
+  /* @__PURE__ */ jsx8("path", { d: "m9 15 2 2 4-4" })
 ] });
 var SendIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M21.5 2.5 11 13" }),
-  /* @__PURE__ */ jsx7("path", { d: "M21.5 2.5 15 21.5 11 13 2.5 9z" })
+  /* @__PURE__ */ jsx8("path", { d: "M21.5 2.5 11 13" }),
+  /* @__PURE__ */ jsx8("path", { d: "M21.5 2.5 15 21.5 11 13 2.5 9z" })
 ] });
 var SearchIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("circle", { cx: "11", cy: "11", r: "7" }),
-  /* @__PURE__ */ jsx7("path", { d: "m20 20-3.6-3.6" })
+  /* @__PURE__ */ jsx8("circle", { cx: "11", cy: "11", r: "7" }),
+  /* @__PURE__ */ jsx8("path", { d: "m20 20-3.6-3.6" })
 ] });
 var RefreshIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M20.5 12a8.5 8.5 0 0 1-14.6 5.9L3 15" }),
-  /* @__PURE__ */ jsx7("path", { d: "M3.5 12a8.5 8.5 0 0 1 14.6-5.9L21 9" }),
-  /* @__PURE__ */ jsx7("path", { d: "M3 20.5V15h5.5" }),
-  /* @__PURE__ */ jsx7("path", { d: "M21 3.5V9h-5.5" })
+  /* @__PURE__ */ jsx8("path", { d: "M20.5 12a8.5 8.5 0 0 1-14.6 5.9L3 15" }),
+  /* @__PURE__ */ jsx8("path", { d: "M3.5 12a8.5 8.5 0 0 1 14.6-5.9L21 9" }),
+  /* @__PURE__ */ jsx8("path", { d: "M3 20.5V15h5.5" }),
+  /* @__PURE__ */ jsx8("path", { d: "M21 3.5V9h-5.5" })
 ] });
 var ArrowLeftIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M19 12H5" }),
-  /* @__PURE__ */ jsx7("path", { d: "m12 19-7-7 7-7" })
+  /* @__PURE__ */ jsx8("path", { d: "M19 12H5" }),
+  /* @__PURE__ */ jsx8("path", { d: "m12 19-7-7 7-7" })
 ] });
 var BrainIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M12 5a3 3 0 1 0-5.9.6A3 3 0 0 0 4 9.5a3 3 0 0 0 .5 5A3 3 0 0 0 7 19a3 3 0 0 0 5-1.5" }),
-  /* @__PURE__ */ jsx7("path", { d: "M12 5a3 3 0 1 1 5.9.6A3 3 0 0 1 20 9.5a3 3 0 0 1-.5 5A3 3 0 0 1 17 19a3 3 0 0 1-5-1.5" }),
-  /* @__PURE__ */ jsx7("path", { d: "M12 5v12.5" })
+  /* @__PURE__ */ jsx8("path", { d: "M12 5a3 3 0 1 0-5.9.6A3 3 0 0 0 4 9.5a3 3 0 0 0 .5 5A3 3 0 0 0 7 19a3 3 0 0 0 5-1.5" }),
+  /* @__PURE__ */ jsx8("path", { d: "M12 5a3 3 0 1 1 5.9.6A3 3 0 0 1 20 9.5a3 3 0 0 1-.5 5A3 3 0 0 1 17 19a3 3 0 0 1-5-1.5" }),
+  /* @__PURE__ */ jsx8("path", { d: "M12 5v12.5" })
 ] });
 var BrainActiveIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M12 5a3 3 0 1 0-5.9.6A3 3 0 0 0 4 9.5a3 3 0 0 0 .5 5A3 3 0 0 0 7 19a3 3 0 0 0 5-1.5" }),
-  /* @__PURE__ */ jsx7("path", { d: "M12 5a3 3 0 1 1 5.9.6A3 3 0 0 1 20 9.5a3 3 0 0 1-.5 5A3 3 0 0 1 17 19a3 3 0 0 1-5-1.5" }),
-  /* @__PURE__ */ jsx7("path", { d: "M12 5v2.5M12 15v2.5" }),
-  /* @__PURE__ */ jsx7("path", { d: "M12 8.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" })
+  /* @__PURE__ */ jsx8("path", { d: "M12 5a3 3 0 1 0-5.9.6A3 3 0 0 0 4 9.5a3 3 0 0 0 .5 5A3 3 0 0 0 7 19a3 3 0 0 0 5-1.5" }),
+  /* @__PURE__ */ jsx8("path", { d: "M12 5a3 3 0 1 1 5.9.6A3 3 0 0 1 20 9.5a3 3 0 0 1-.5 5A3 3 0 0 1 17 19a3 3 0 0 1-5-1.5" }),
+  /* @__PURE__ */ jsx8("path", { d: "M12 5v2.5M12 15v2.5" }),
+  /* @__PURE__ */ jsx8("path", { d: "M12 8.5l1 2.5 2.5 1-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z" })
 ] });
-var PlayIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx7("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx7("path", { d: "M7 5v14l12-7z" }) });
+var PlayIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx8("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx8("path", { d: "M7 5v14l12-7z" }) });
 var LayersIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "m12 3 9 5-9 5-9-5z" }),
-  /* @__PURE__ */ jsx7("path", { d: "m3 12 9 5 9-5" }),
-  /* @__PURE__ */ jsx7("path", { d: "m3 16 9 5 9-5" })
+  /* @__PURE__ */ jsx8("path", { d: "m12 3 9 5-9 5-9-5z" }),
+  /* @__PURE__ */ jsx8("path", { d: "m3 12 9 5 9-5" }),
+  /* @__PURE__ */ jsx8("path", { d: "m3 16 9 5 9-5" })
 ] });
 var DocumentsIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M9 3h6l4 4v9a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" }),
-  /* @__PURE__ */ jsx7("path", { d: "M15 3v4h4" }),
-  /* @__PURE__ */ jsx7("path", { d: "M4 8v11a2 2 0 0 0 2 2h9" })
+  /* @__PURE__ */ jsx8("path", { d: "M9 3h6l4 4v9a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" }),
+  /* @__PURE__ */ jsx8("path", { d: "M15 3v4h4" }),
+  /* @__PURE__ */ jsx8("path", { d: "M4 8v11a2 2 0 0 0 2 2h9" })
 ] });
 var ImageIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" }),
-  /* @__PURE__ */ jsx7("circle", { cx: "9", cy: "9.5", r: "1.5" }),
-  /* @__PURE__ */ jsx7("path", { d: "m21 15-5-5-9 9" })
+  /* @__PURE__ */ jsx8("path", { d: "M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" }),
+  /* @__PURE__ */ jsx8("circle", { cx: "9", cy: "9.5", r: "1.5" }),
+  /* @__PURE__ */ jsx8("path", { d: "m21 15-5-5-9 9" })
 ] });
 var TagIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M12.6 3.6A2 2 0 0 0 11.2 3H5a2 2 0 0 0-2 2v6.2a2 2 0 0 0 .6 1.4l7.8 7.8a2 2 0 0 0 2.8 0l6.2-6.2a2 2 0 0 0 0-2.8z" }),
-  /* @__PURE__ */ jsx7("circle", { cx: "7.5", cy: "7.5", r: "1.5" })
+  /* @__PURE__ */ jsx8("path", { d: "M12.6 3.6A2 2 0 0 0 11.2 3H5a2 2 0 0 0-2 2v6.2a2 2 0 0 0 .6 1.4l7.8 7.8a2 2 0 0 0 2.8 0l6.2-6.2a2 2 0 0 0 0-2.8z" }),
+  /* @__PURE__ */ jsx8("circle", { cx: "7.5", cy: "7.5", r: "1.5" })
 ] });
 var UndoIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M9 14 4 9l5-5" }),
-  /* @__PURE__ */ jsx7("path", { d: "M4 9h10.5a5.5 5.5 0 0 1 0 11H11" })
+  /* @__PURE__ */ jsx8("path", { d: "M9 14 4 9l5-5" }),
+  /* @__PURE__ */ jsx8("path", { d: "M4 9h10.5a5.5 5.5 0 0 1 0 11H11" })
 ] });
-var StopIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx7("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx7(
+var StopIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx8("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx8(
   "path",
   {
     d: "M8.5 7h7A1.5 1.5 0 0 1 17 8.5v7a1.5 1.5 0 0 1-1.5 1.5h-7A1.5 1.5 0 0 1 7 15.5v-7A1.5 1.5 0 0 1 8.5 7z",
     fill: "currentColor"
   }
 ) });
-var PaperclipIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx7("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx7("path", { d: "M10 15V8a2 2 0 0 1 4 0v9a4 4 0 0 1-8 0V8a6 6 0 0 1 12 0v8" }) });
+var PaperclipIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx8("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx8("path", { d: "M10 15V8a2 2 0 0 1 4 0v9a4 4 0 0 1-8 0V8a6 6 0 0 1 12 0v8" }) });
 var MicIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
-  /* @__PURE__ */ jsx7("path", { d: "M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z" }),
-  /* @__PURE__ */ jsx7("path", { d: "M5 11v1a7 7 0 0 0 14 0v-1" }),
-  /* @__PURE__ */ jsx7("path", { d: "M12 19v2M9 21h6" })
+  /* @__PURE__ */ jsx8("path", { d: "M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3z" }),
+  /* @__PURE__ */ jsx8("path", { d: "M5 11v1a7 7 0 0 0 14 0v-1" }),
+  /* @__PURE__ */ jsx8("path", { d: "M12 19v2M9 21h6" })
+] });
+var MoreIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx8("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx8("path", { d: "M5 11a1 1 0 1 0 0 2 1 1 0 1 0 0-2zM12 11a1 1 0 1 0 0 2 1 1 0 1 0 0-2zM19 11a1 1 0 1 0 0 2 1 1 0 1 0 0-2z" }) });
+var PencilIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx8("path", { d: "M5 16 16 5l3 3L8 19l-4 1z" }),
+  /* @__PURE__ */ jsx8("path", { d: "m13.5 7.5 3 3" })
 ] });
 
 // src/primitives/iconActions.tsx
-import { jsx as jsx8 } from "react/jsx-runtime";
-var DownloadButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(DownloadIcon, {}), ...props }));
+import { jsx as jsx9 } from "react/jsx-runtime";
+var DownloadButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(DownloadIcon, {}), ...props }));
 DownloadButton.displayName = "DownloadButton";
-var DownloadLink = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconLink, { ref, icon: /* @__PURE__ */ jsx8(DownloadIcon, {}), download: true, ...props }));
+var DownloadLink = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconLink, { ref, icon: /* @__PURE__ */ jsx9(DownloadIcon, {}), download: true, ...props }));
 DownloadLink.displayName = "DownloadLink";
-var NewButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(PlusIcon, {}), ...props }));
+var NewButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(PlusIcon, {}), ...props }));
 NewButton.displayName = "NewButton";
-var RemoveButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(XIcon, {}), tone: "danger", ...props }));
+var RemoveButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(XIcon, {}), tone: "danger", ...props }));
 RemoveButton.displayName = "RemoveButton";
-var DeleteButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(TrashIcon, {}), tone: "danger", ...props }));
+var DeleteButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(TrashIcon, {}), tone: "danger", ...props }));
 DeleteButton.displayName = "DeleteButton";
-var MoveUpButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(ChevronUpIcon, {}), ...props }));
+var MoveUpButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(ChevronUpIcon, {}), ...props }));
 MoveUpButton.displayName = "MoveUpButton";
-var MoveDownButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(ChevronDownIcon, {}), ...props }));
+var MoveDownButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(ChevronDownIcon, {}), ...props }));
 MoveDownButton.displayName = "MoveDownButton";
-var SendButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(SendIcon, {}), ...props }));
+var SendButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(SendIcon, {}), ...props }));
 SendButton.displayName = "SendButton";
-var AttachButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(PaperclipIcon, {}), ...props }));
+var AttachButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(PaperclipIcon, {}), ...props }));
 AttachButton.displayName = "AttachButton";
-var MicButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(MicIcon, {}), ...props }));
+var MicButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(MicIcon, {}), ...props }));
 MicButton.displayName = "MicButton";
-var SearchButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(SearchIcon, {}), ...props }));
+var SearchButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(SearchIcon, {}), ...props }));
 SearchButton.displayName = "SearchButton";
-var RefreshButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(RefreshIcon, {}), ...props }));
+var RefreshButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(RefreshIcon, {}), ...props }));
 RefreshButton.displayName = "RefreshButton";
-var PlayButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(PlayIcon, {}), ...props }));
+var PlayButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(PlayIcon, {}), ...props }));
 PlayButton.displayName = "PlayButton";
-var UndoButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(UndoIcon, {}), ...props }));
+var UndoButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(UndoIcon, {}), ...props }));
 UndoButton.displayName = "UndoButton";
-var StopButton = forwardRef5((props, ref) => /* @__PURE__ */ jsx8(IconButton, { ref, icon: /* @__PURE__ */ jsx8(StopIcon, {}), tone: "danger", ...props }));
+var StopButton = forwardRef6((props, ref) => /* @__PURE__ */ jsx9(IconButton, { ref, icon: /* @__PURE__ */ jsx9(StopIcon, {}), tone: "danger", ...props }));
 StopButton.displayName = "StopButton";
-var DisclosureButton = forwardRef5(
-  ({ expanded, controls, ...props }, ref) => /* @__PURE__ */ jsx8(
+var DisclosureButton = forwardRef6(
+  ({ expanded, controls, ...props }, ref) => /* @__PURE__ */ jsx9(
     IconButton,
     {
       ref,
       "aria-expanded": expanded,
       "aria-controls": controls,
-      icon: /* @__PURE__ */ jsx8(ChevronDownIcon, { className: cn("h-4 w-4 transition-transform", expanded && "rotate-180") }),
+      icon: /* @__PURE__ */ jsx9(ChevronDownIcon, { className: cn("h-4 w-4 transition-transform", expanded && "rotate-180") }),
       ...props
     }
   )
@@ -369,9 +396,9 @@ var DisclosureButton = forwardRef5(
 DisclosureButton.displayName = "DisclosureButton";
 
 // src/primitives/CopyButton.tsx
-import { forwardRef as forwardRef6, useEffect, useRef, useState } from "react";
-import { jsx as jsx9, jsxs as jsxs3 } from "react/jsx-runtime";
-var CopyButton = forwardRef6(
+import { forwardRef as forwardRef7, useEffect, useRef, useState } from "react";
+import { jsx as jsx10, jsxs as jsxs3 } from "react/jsx-runtime";
+var CopyButton = forwardRef7(
   ({
     text,
     label = "Copy",
@@ -401,7 +428,7 @@ var CopyButton = forwardRef6(
       }, resetDelayMs);
     }
     const currentLabel = copied ? copiedLabel : label;
-    return /* @__PURE__ */ jsx9(
+    return /* @__PURE__ */ jsx10(
       Button,
       {
         ref,
@@ -413,7 +440,7 @@ var CopyButton = forwardRef6(
         onClick: () => void copy(),
         className: cn("aspect-square px-0", className),
         ...props,
-        children: copied ? /* @__PURE__ */ jsx9(CheckIcon, {}) : /* @__PURE__ */ jsx9(CopyGlyph, {})
+        children: copied ? /* @__PURE__ */ jsx10(CheckIcon, {}) : /* @__PURE__ */ jsx10(CopyGlyph, {})
       }
     );
   }
@@ -433,15 +460,15 @@ function CopyGlyph() {
       className: "h-4 w-4",
       "aria-hidden": "true",
       children: [
-        /* @__PURE__ */ jsx9("rect", { x: "8", y: "8", width: "14", height: "14", rx: "2", ry: "2" }),
-        /* @__PURE__ */ jsx9("path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" })
+        /* @__PURE__ */ jsx10("rect", { x: "8", y: "8", width: "14", height: "14", rx: "2", ry: "2" }),
+        /* @__PURE__ */ jsx10("path", { d: "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" })
       ]
     }
   );
 }
 
 // src/primitives/SectionHeader.tsx
-import { jsx as jsx10, jsxs as jsxs4 } from "react/jsx-runtime";
+import { jsx as jsx11, jsxs as jsxs4 } from "react/jsx-runtime";
 var filled = (node) => node != null && node !== false && node !== "";
 function SectionHeader({
   title,
@@ -468,7 +495,7 @@ function SectionHeader({
       ...props,
       children: [
         hasText && /* @__PURE__ */ jsxs4("div", { className: "min-w-0 grow basis-40", children: [
-          filled(title) && /* @__PURE__ */ jsx10(
+          filled(title) && /* @__PURE__ */ jsx11(
             Heading,
             {
               id: titleId,
@@ -476,16 +503,16 @@ function SectionHeader({
               children: title
             }
           ),
-          filled(caption) && /* @__PURE__ */ jsx10("div", { className: cn("text-muted-foreground", level === 3 ? "text-xs" : "text-sm"), children: caption })
+          filled(caption) && /* @__PURE__ */ jsx11("div", { className: cn("text-muted-foreground", level === 3 ? "text-xs" : "text-sm"), children: caption })
         ] }),
-        filled(actions) && /* @__PURE__ */ jsx10("div", { className: cn("ml-auto flex shrink-0 items-center gap-1", pull), children: actions })
+        filled(actions) && /* @__PURE__ */ jsx11("div", { className: cn("ml-auto flex shrink-0 items-center gap-1", pull), children: actions })
       ]
     }
   );
 }
 
 // src/primitives/FileList.tsx
-import { Fragment, jsx as jsx11, jsxs as jsxs5 } from "react/jsx-runtime";
+import { Fragment, jsx as jsx12, jsxs as jsxs5 } from "react/jsx-runtime";
 function mergeFiles(existing, incoming) {
   const key = (file) => `${file.webkitRelativePath || file.name}:${file.size ?? ""}`;
   const seen = new Set(existing.map(key));
@@ -522,7 +549,7 @@ function FileList({ files, onRemove, onClear, labels, className }) {
   const removeLabel = labels?.remove ?? "Remove";
   const totalBytes = files.reduce((sum, file) => sum + (file.size ?? 0), 0);
   return /* @__PURE__ */ jsxs5("div", { className: cn("rounded-lg border border-border bg-muted/30", className), children: [
-    /* @__PURE__ */ jsx11(
+    /* @__PURE__ */ jsx12(
       SectionHeader,
       {
         className: "border-b border-border px-3 py-2",
@@ -533,21 +560,21 @@ function FileList({ files, onRemove, onClear, labels, className }) {
             formatBytes(totalBytes)
           ] })
         ] }),
-        actions: onClear && /* @__PURE__ */ jsx11(Button, { variant: "ghost", size: "sm", onClick: onClear, children: clearAllLabel })
+        actions: onClear && /* @__PURE__ */ jsx12(Button, { variant: "ghost", size: "sm", onClick: onClear, children: clearAllLabel })
       }
     ),
-    /* @__PURE__ */ jsx11("ul", { className: "max-h-64 divide-y divide-border overflow-y-auto", children: files.map((file, index) => /* @__PURE__ */ jsxs5(
+    /* @__PURE__ */ jsx12("ul", { className: "max-h-64 divide-y divide-border overflow-y-auto", children: files.map((file, index) => /* @__PURE__ */ jsxs5(
       "li",
       {
         className: "group flex items-center gap-3 px-3 py-1.5 text-sm",
         children: [
-          /* @__PURE__ */ jsx11("span", { className: "w-6 shrink-0 text-right tabular-nums text-muted-foreground", children: index + 1 }),
-          /* @__PURE__ */ jsx11("span", { className: "flex-1 truncate text-foreground", title: file.name, children: file.name }),
-          file.size !== void 0 && /* @__PURE__ */ jsx11("span", { className: "shrink-0 tabular-nums text-muted-foreground", children: formatBytes(file.size) }),
-          onRemove && /* @__PURE__ */ jsx11(
+          /* @__PURE__ */ jsx12("span", { className: "w-6 shrink-0 text-right tabular-nums text-muted-foreground", children: index + 1 }),
+          /* @__PURE__ */ jsx12("span", { className: "flex-1 truncate text-foreground", title: file.name, children: file.name }),
+          file.size !== void 0 && /* @__PURE__ */ jsx12("span", { className: "shrink-0 tabular-nums text-muted-foreground", children: formatBytes(file.size) }),
+          onRemove && /* @__PURE__ */ jsx12(
             HoverIconAction,
             {
-              icon: /* @__PURE__ */ jsx11(XIcon, {}),
+              icon: /* @__PURE__ */ jsx12(XIcon, {}),
               label: `${removeLabel} ${file.name}`,
               onClick: () => onRemove(index)
             }
@@ -561,9 +588,9 @@ function FileList({ files, onRemove, onClear, labels, className }) {
 FileList.displayName = "FileList";
 
 // src/primitives/Card.tsx
-import { forwardRef as forwardRef7 } from "react";
-import { jsx as jsx12, jsxs as jsxs6 } from "react/jsx-runtime";
-var Card = forwardRef7(
+import { forwardRef as forwardRef8 } from "react";
+import { jsx as jsx13, jsxs as jsxs6 } from "react/jsx-runtime";
+var Card = forwardRef8(
   ({ className, title, caption, actions, titleId, titleLevel, interactive, children, ...props }, ref) => /* @__PURE__ */ jsxs6(
     "div",
     {
@@ -575,7 +602,7 @@ var Card = forwardRef7(
       ),
       ...props,
       children: [
-        /* @__PURE__ */ jsx12(
+        /* @__PURE__ */ jsx13(
           SectionHeader,
           {
             className: "mb-4",
@@ -594,10 +621,10 @@ var Card = forwardRef7(
 Card.displayName = "Card";
 
 // src/primitives/Input.tsx
-import { forwardRef as forwardRef8 } from "react";
-import { jsx as jsx13 } from "react/jsx-runtime";
-var Input = forwardRef8(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx13(
+import { forwardRef as forwardRef9 } from "react";
+import { jsx as jsx14 } from "react/jsx-runtime";
+var Input = forwardRef9(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx14(
     "input",
     {
       ref,
@@ -612,10 +639,10 @@ var Input = forwardRef8(
 Input.displayName = "Input";
 
 // src/primitives/Select.tsx
-import { forwardRef as forwardRef9 } from "react";
-import { jsx as jsx14 } from "react/jsx-runtime";
-var Select = forwardRef9(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx14(
+import { forwardRef as forwardRef10 } from "react";
+import { jsx as jsx15 } from "react/jsx-runtime";
+var Select = forwardRef10(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx15(
     "select",
     {
       ref,
@@ -637,7 +664,14 @@ import {
   useRef as useRef2,
   useState as useState2
 } from "react";
-import { jsx as jsx15, jsxs as jsxs7 } from "react/jsx-runtime";
+
+// src/primitives/menuStyles.ts
+var MENU_PANEL = "rounded-2xl border border-border bg-muted p-1.5 text-sm shadow-xl outline-none [&_button:not([role=menuitem])]:rounded-full";
+var MENU_ROW = "flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm text-foreground";
+var MENU_ROW_ICON = "flex h-4 w-4 shrink-0 items-center justify-center [&>svg]:h-4 [&>svg]:w-4";
+
+// src/primitives/SelectMenu.tsx
+import { jsx as jsx16, jsxs as jsxs7 } from "react/jsx-runtime";
 var search = new Intl.Collator(void 0, { sensitivity: "base", usage: "search" });
 var TYPEAHEAD_RESET_MS = 500;
 function printable(e) {
@@ -808,15 +842,15 @@ function SelectMenu({
           if (!option.disabled && index !== activeIndex) setActiveIndex(index);
         },
         className: cn(
-          "flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-foreground",
+          MENU_ROW,
           // Two marks, two meanings: the tick is the current value, the
           // tinted row is the keyboard cursor. They are usually apart.
           index === activeIndex && "bg-accent",
           option.disabled ? "cursor-default text-muted-foreground opacity-50" : "cursor-pointer"
         ),
         children: [
-          /* @__PURE__ */ jsx15("span", { className: "min-w-0 flex-1 truncate", children: option.label }),
-          option.value === value && /* @__PURE__ */ jsx15(CheckIcon, { className: "h-3.5 w-3.5 shrink-0 text-primary" })
+          /* @__PURE__ */ jsx16("span", { className: "min-w-0 flex-1 truncate", children: option.label }),
+          option.value === value && /* @__PURE__ */ jsx16(CheckIcon, { className: "h-3.5 w-3.5 shrink-0 text-primary" })
         ]
       },
       option.value
@@ -860,8 +894,8 @@ function SelectMenu({
           triggerClassName
         ),
         children: [
-          /* @__PURE__ */ jsx15("span", { className: cn("min-w-0 truncate", variant === "field" && "flex-1"), children: triggerText }),
-          !isEmpty && /* @__PURE__ */ jsx15(
+          /* @__PURE__ */ jsx16("span", { className: cn("min-w-0 truncate", variant === "field" && "flex-1"), children: triggerText }),
+          !isEmpty && /* @__PURE__ */ jsx16(
             ChevronDownIcon,
             {
               className: cn(
@@ -881,7 +915,7 @@ function SelectMenu({
         ]
       }
     ),
-    open && /* @__PURE__ */ jsx15(
+    open && /* @__PURE__ */ jsx16(
       "div",
       {
         ref: listRef,
@@ -890,17 +924,16 @@ function SelectMenu({
         "aria-label": label,
         className: cn(
           "absolute top-full z-30 mt-1 max-h-80 min-w-48 max-w-[min(32rem,90vw)] overflow-y-auto",
-          // `text-sm` declared here, never inherited. A native <select>'s
-          // popup inheriting `text-2xl` from its trigger is the bug this
-          // replaces, so the size is restated on the panel *and* every row.
-          "rounded-lg border border-border bg-muted p-1 text-sm shadow-lg",
+          // The panel `Menu` draws too; `text-sm` is restated on it and on
+          // every row (menuStyles.ts says why).
+          MENU_PANEL,
           // A native popup is never narrower than the control it belongs to.
           variant === "field" && "min-w-full",
           align === "end" ? "right-0" : "left-0"
         ),
         children: segments.map(
-          (segment, position) => segment.group === null ? /* @__PURE__ */ jsx15(Fragment2, { children: segment.indices.map(renderOption) }, `s${position}`) : /* @__PURE__ */ jsxs7("div", { role: "group", "aria-labelledby": `${id}-h${position}`, children: [
-            /* @__PURE__ */ jsx15(
+          (segment, position) => segment.group === null ? /* @__PURE__ */ jsx16(Fragment2, { children: segment.indices.map(renderOption) }, `s${position}`) : /* @__PURE__ */ jsxs7("div", { role: "group", "aria-labelledby": `${id}-h${position}`, children: [
+            /* @__PURE__ */ jsx16(
               "div",
               {
                 id: `${id}-h${position}`,
@@ -928,12 +961,12 @@ import {
   useRef as useRef3,
   useState as useState3
 } from "react";
-import { jsx as jsx16, jsxs as jsxs8 } from "react/jsx-runtime";
+import { Fragment as Fragment3, jsx as jsx17, jsxs as jsxs8 } from "react/jsx-runtime";
 var MenuContext = createContext(null);
 function itemClasses(disabled, tone, className) {
   return cn(
-    "flex w-full items-center gap-2 whitespace-nowrap rounded-md px-3 py-1.5 text-left text-sm text-foreground",
-    "outline-none hover:bg-accent focus:bg-accent",
+    MENU_ROW,
+    "w-full whitespace-nowrap text-left outline-none hover:bg-accent focus:bg-accent",
     disabled ? "cursor-default text-muted-foreground opacity-50" : "cursor-pointer",
     tone === "danger" && !disabled && "text-danger",
     className
@@ -941,6 +974,7 @@ function itemClasses(disabled, tone, className) {
 }
 function MenuItem({
   children,
+  icon,
   disabled = false,
   tone = "default",
   hint,
@@ -972,10 +1006,14 @@ function MenuItem({
     },
     className: itemClasses(disabled, tone, className)
   };
+  const content = /* @__PURE__ */ jsxs8(Fragment3, { children: [
+    icon && /* @__PURE__ */ jsx17("span", { "aria-hidden": "true", className: MENU_ROW_ICON, children: icon }),
+    children
+  ] });
   if (href !== void 0) {
-    return /* @__PURE__ */ jsx16("a", { href, download, target, rel, ...shared, children });
+    return /* @__PURE__ */ jsx17("a", { href, download, target, rel, ...shared, children: content });
   }
-  return /* @__PURE__ */ jsx16("button", { type: "button", ...shared, children });
+  return /* @__PURE__ */ jsx17("button", { type: "button", ...shared, children: content });
 }
 MenuItem.displayName = "MenuItem";
 function Menu({
@@ -1024,7 +1062,7 @@ function Menu({
     if (want) {
       pendingFocus.current = null;
       const rows = enabledItems();
-      const target = want === "last" ? rows[rows.length - 1] : rows[0];
+      const target = want === "panel" ? panel : want === "last" ? rows[rows.length - 1] : rows[0];
       (target ?? panel).focus();
       return;
     }
@@ -1067,8 +1105,18 @@ function Menu({
     }
     const active = document.activeElement;
     const onRow = Boolean(active?.matches('[role="menuitem"]'));
+    const onPanel = active !== null && active === panelRef.current;
     if (event.key === "Tab") {
-      if (onRow) close(true);
+      if (onRow || onPanel) close(true);
+      return;
+    }
+    if (onPanel) {
+      const rows2 = enabledItems();
+      const target = event.key === "ArrowDown" || event.key === "Home" ? rows2[0] : event.key === "ArrowUp" || event.key === "End" ? rows2[rows2.length - 1] : void 0;
+      if (target) {
+        event.preventDefault();
+        target.focus();
+      }
       return;
     }
     if (!onRow) return;
@@ -1108,11 +1156,11 @@ function Menu({
       onClick: () => {
         triggerRef.current?.focus();
         if (openRef.current) close(true);
-        else openMenu("first");
+        else openMenu("panel");
       },
       onKeyDown: onTriggerKeyDown
     }),
-    open && /* @__PURE__ */ jsx16(
+    open && /* @__PURE__ */ jsx17(
       "div",
       {
         ref: panelRef,
@@ -1122,12 +1170,12 @@ function Menu({
         ...label ? { "aria-label": label } : { "aria-labelledby": triggerId },
         onKeyDown: onPanelKeyDown,
         className: cn(
-          "absolute top-full z-30 mt-1 min-w-40 max-w-[min(24rem,90vw)]",
-          "rounded-lg border border-border bg-muted p-1 text-sm shadow-lg",
+          "absolute top-full z-30 mt-1 min-w-44 max-w-[min(24rem,90vw)]",
+          MENU_PANEL,
           align === "end" ? "right-0" : "left-0",
           panelClassName
         ),
-        children: /* @__PURE__ */ jsx16(MenuContext.Provider, { value: { close }, children: typeof children === "function" ? children({ close: () => close(true) }) : children })
+        children: /* @__PURE__ */ jsx17(MenuContext.Provider, { value: { close }, children: typeof children === "function" ? children({ close: () => close(true) }) : children })
       }
     )
   ] });
@@ -1136,7 +1184,7 @@ Menu.displayName = "Menu";
 
 // src/primitives/Badge.tsx
 import { cva as cva2 } from "class-variance-authority";
-import { jsx as jsx17 } from "react/jsx-runtime";
+import { jsx as jsx18 } from "react/jsx-runtime";
 var badge = cva2("inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium", {
   variants: {
     variant: {
@@ -1148,11 +1196,11 @@ var badge = cva2("inline-flex items-center rounded-full px-2 py-0.5 text-xs font
   defaultVariants: { variant: "neutral" }
 });
 function Badge({ className, variant, ...props }) {
-  return /* @__PURE__ */ jsx17("span", { className: cn(badge({ variant }), className), ...props });
+  return /* @__PURE__ */ jsx18("span", { className: cn(badge({ variant }), className), ...props });
 }
 
 // src/primitives/StatusIcon.tsx
-import { jsx as jsx18 } from "react/jsx-runtime";
+import { jsx as jsx19 } from "react/jsx-runtime";
 var MARKERS = {
   idle: { Icon: StopwatchIcon, tint: "text-muted-foreground" },
   done: { Icon: CheckIcon, tint: "text-primary" },
@@ -1161,24 +1209,24 @@ var MARKERS = {
 };
 function StatusIcon({ status, label, className }) {
   if (status === "running") {
-    return /* @__PURE__ */ jsx18("span", { title: label, className: "inline-flex shrink-0", children: /* @__PURE__ */ jsx18(Spinner, { label, className: cn("h-4 w-4", className) }) });
+    return /* @__PURE__ */ jsx19("span", { title: label, className: "inline-flex shrink-0", children: /* @__PURE__ */ jsx19(Spinner, { label, className: cn("h-4 w-4", className) }) });
   }
   const { Icon, tint } = MARKERS[status];
-  return /* @__PURE__ */ jsx18(
+  return /* @__PURE__ */ jsx19(
     "span",
     {
       role: "img",
       "aria-label": label,
       title: label,
       className: "inline-flex shrink-0 items-center justify-center",
-      children: /* @__PURE__ */ jsx18(Icon, { className: cn("h-4 w-4", tint, className) })
+      children: /* @__PURE__ */ jsx19(Icon, { className: cn("h-4 w-4", tint, className) })
     }
   );
 }
 
 // src/primitives/Banner.tsx
 import { cva as cva3 } from "class-variance-authority";
-import { jsx as jsx19 } from "react/jsx-runtime";
+import { jsx as jsx20 } from "react/jsx-runtime";
 var banner = cva3("rounded-md border px-4 py-3 text-sm", {
   variants: {
     variant: {
@@ -1190,13 +1238,13 @@ var banner = cva3("rounded-md border px-4 py-3 text-sm", {
 });
 function Banner({ className, variant, ...props }) {
   const role = variant === "danger" ? "alert" : "status";
-  return /* @__PURE__ */ jsx19("div", { role, className: cn(banner({ variant }), className), ...props });
+  return /* @__PURE__ */ jsx20("div", { role, className: cn(banner({ variant }), className), ...props });
 }
 
 // src/primitives/ChatComposer.tsx
-import { forwardRef as forwardRef10 } from "react";
-import { jsx as jsx20, jsxs as jsxs9 } from "react/jsx-runtime";
-var ChatComposer = forwardRef10(
+import { forwardRef as forwardRef11 } from "react";
+import { jsx as jsx21, jsxs as jsxs9 } from "react/jsx-runtime";
+var ChatComposer = forwardRef11(
   ({ start, end, boxClassName, className, rows = 1, ...props }, ref) => /* @__PURE__ */ jsxs9(
     "div",
     {
@@ -1205,8 +1253,8 @@ var ChatComposer = forwardRef10(
         boxClassName
       ),
       children: [
-        start !== void 0 && /* @__PURE__ */ jsx20("div", { className: "flex shrink-0 items-center gap-1", children: start }),
-        /* @__PURE__ */ jsx20(
+        start !== void 0 && /* @__PURE__ */ jsx21("div", { className: "flex shrink-0 items-center gap-1", children: start }),
+        /* @__PURE__ */ jsx21(
           "textarea",
           {
             ref,
@@ -1218,7 +1266,7 @@ var ChatComposer = forwardRef10(
             ...props
           }
         ),
-        end !== void 0 && /* @__PURE__ */ jsx20("div", { className: "flex shrink-0 items-center gap-1", children: end })
+        end !== void 0 && /* @__PURE__ */ jsx21("div", { className: "flex shrink-0 items-center gap-1", children: end })
       ]
     }
   )
@@ -1226,9 +1274,9 @@ var ChatComposer = forwardRef10(
 ChatComposer.displayName = "ChatComposer";
 
 // src/primitives/UserBubble.tsx
-import { jsx as jsx21 } from "react/jsx-runtime";
+import { jsx as jsx22 } from "react/jsx-runtime";
 function UserBubble({ className, ...props }) {
-  return /* @__PURE__ */ jsx21(
+  return /* @__PURE__ */ jsx22(
     "div",
     {
       className: cn(
@@ -1241,22 +1289,22 @@ function UserBubble({ className, ...props }) {
 }
 
 // src/primitives/PageHeader.tsx
-import { jsx as jsx22, jsxs as jsxs10 } from "react/jsx-runtime";
+import { jsx as jsx23, jsxs as jsxs10 } from "react/jsx-runtime";
 function PageHeader({ title, caption, actions, className, ...props }) {
   return /* @__PURE__ */ jsxs10("div", { className: cn("mb-6", className), ...props, children: [
     /* @__PURE__ */ jsxs10("div", { className: "flex flex-wrap items-center gap-x-3 gap-y-2", children: [
-      /* @__PURE__ */ jsx22("h1", { className: "text-2xl font-semibold", children: title }),
-      actions && /* @__PURE__ */ jsx22("div", { className: "ml-auto flex items-center gap-2", children: actions })
+      /* @__PURE__ */ jsx23("h1", { className: "text-2xl font-semibold", children: title }),
+      actions && /* @__PURE__ */ jsx23("div", { className: "ml-auto flex items-center gap-2", children: actions })
     ] }),
-    caption && /* @__PURE__ */ jsx22("p", { "data-testid": "pageheader-caption", className: "mt-1 text-sm text-muted-foreground", children: caption })
+    caption && /* @__PURE__ */ jsx23("p", { "data-testid": "pageheader-caption", className: "mt-1 text-sm text-muted-foreground", children: caption })
   ] });
 }
 
 // src/primitives/ActionBar.tsx
-import { forwardRef as forwardRef11 } from "react";
-import { jsx as jsx23 } from "react/jsx-runtime";
-var ActionBar = forwardRef11(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx23(
+import { forwardRef as forwardRef12 } from "react";
+import { jsx as jsx24 } from "react/jsx-runtime";
+var ActionBar = forwardRef12(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx24(
     "div",
     {
       ref,
@@ -1268,7 +1316,7 @@ var ActionBar = forwardRef11(
 ActionBar.displayName = "ActionBar";
 
 // src/primitives/EmptyState.tsx
-import { jsx as jsx24, jsxs as jsxs11 } from "react/jsx-runtime";
+import { jsx as jsx25, jsxs as jsxs11 } from "react/jsx-runtime";
 function EmptyState({ action, className, children, ...props }) {
   return /* @__PURE__ */ jsxs11(
     "div",
@@ -1279,7 +1327,7 @@ function EmptyState({ action, className, children, ...props }) {
       ),
       ...props,
       children: [
-        /* @__PURE__ */ jsx24("div", { className: "text-sm text-muted-foreground", children }),
+        /* @__PURE__ */ jsx25("div", { className: "text-sm text-muted-foreground", children }),
         action
       ]
     }
@@ -1367,7 +1415,7 @@ function useTheme() {
 }
 
 // src/primitives/ThemeToggle.tsx
-import { jsx as jsx25, jsxs as jsxs12 } from "react/jsx-runtime";
+import { jsx as jsx26, jsxs as jsxs12 } from "react/jsx-runtime";
 var ICON_PROPS = {
   viewBox: "0 0 16 16",
   className: "h-4 w-4",
@@ -1375,12 +1423,12 @@ var ICON_PROPS = {
 };
 var MODE_ICON = {
   system: /* @__PURE__ */ jsxs12("svg", { ...ICON_PROPS, children: [
-    /* @__PURE__ */ jsx25("circle", { cx: "8", cy: "8", r: "6.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
-    /* @__PURE__ */ jsx25("path", { d: "M8 1.75a6.25 6.25 0 0 0 0 12.5Z", fill: "currentColor" })
+    /* @__PURE__ */ jsx26("circle", { cx: "8", cy: "8", r: "6.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
+    /* @__PURE__ */ jsx26("path", { d: "M8 1.75a6.25 6.25 0 0 0 0 12.5Z", fill: "currentColor" })
   ] }),
   light: /* @__PURE__ */ jsxs12("svg", { ...ICON_PROPS, children: [
-    /* @__PURE__ */ jsx25("circle", { cx: "8", cy: "8", r: "3.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
-    /* @__PURE__ */ jsx25(
+    /* @__PURE__ */ jsx26("circle", { cx: "8", cy: "8", r: "3.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
+    /* @__PURE__ */ jsx26(
       "path",
       {
         d: "M8 .75v2.5M8 12.75v2.5M.75 8h2.5M12.75 8h2.5M2.87 2.87l1.77 1.77M11.36 11.36l1.77 1.77M13.13 2.87l-1.77 1.77M4.64 11.36l-1.77 1.77",
@@ -1391,7 +1439,7 @@ var MODE_ICON = {
       }
     )
   ] }),
-  dark: /* @__PURE__ */ jsx25("svg", { ...ICON_PROPS, children: /* @__PURE__ */ jsx25(
+  dark: /* @__PURE__ */ jsx26("svg", { ...ICON_PROPS, children: /* @__PURE__ */ jsx26(
     "path",
     {
       d: "M13.54 9.83A6.25 6.25 0 1 1 6.17 2.46a5 5 0 0 0 7.37 7.37Z",
@@ -1403,7 +1451,7 @@ function ThemeToggle({
   labels = { system: "system", light: "light", dark: "dark" }
 }) {
   const { mode: mode2, cycle } = useTheme();
-  return /* @__PURE__ */ jsx25(
+  return /* @__PURE__ */ jsx26(
     "button",
     {
       type: "button",
@@ -1417,7 +1465,7 @@ function ThemeToggle({
 }
 
 // src/primitives/AppHeader.tsx
-import { jsx as jsx26, jsxs as jsxs13 } from "react/jsx-runtime";
+import { jsx as jsx27, jsxs as jsxs13 } from "react/jsx-runtime";
 function AppHeader({
   title,
   user,
@@ -1445,20 +1493,20 @@ function AppHeader({
               href: homeHref,
               className: "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
               children: [
-                /* @__PURE__ */ jsx26(ArrowLeftIcon, { className: "h-3.5 w-3.5" }),
+                /* @__PURE__ */ jsx27(ArrowLeftIcon, { className: "h-3.5 w-3.5" }),
                 homeLabel
               ]
             }
           ),
-          /* @__PURE__ */ jsx26("span", { className: "text-sm font-semibold", children: title }),
-          version && /* @__PURE__ */ jsx26("span", { "data-testid": "appheader-version", className: "text-xs text-muted-foreground", children: version })
+          /* @__PURE__ */ jsx27("span", { className: "text-sm font-semibold", children: title }),
+          version && /* @__PURE__ */ jsx27("span", { "data-testid": "appheader-version", className: "text-xs text-muted-foreground", children: version })
         ] }),
         actions ? (
           // In the spacer's place, as in AppShell: leftover room only.
-          /* @__PURE__ */ jsx26("div", { className: "flex min-w-8 flex-1 items-center justify-end gap-2 sm:min-w-0", children: actions })
-        ) : /* @__PURE__ */ jsx26("span", { className: "flex-1" }),
-        user && /* @__PURE__ */ jsx26("span", { "data-testid": "appheader-user", className: "text-sm text-muted-foreground", children: user }),
-        /* @__PURE__ */ jsx26(ThemeToggle, { labels: themeLabels })
+          /* @__PURE__ */ jsx27("div", { className: "flex min-w-8 flex-1 items-center justify-end gap-2 sm:min-w-0", children: actions })
+        ) : /* @__PURE__ */ jsx27("span", { className: "flex-1" }),
+        user && /* @__PURE__ */ jsx27("span", { "data-testid": "appheader-user", className: "text-sm text-muted-foreground", children: user }),
+        /* @__PURE__ */ jsx27(ThemeToggle, { labels: themeLabels })
       ]
     }
   );
@@ -1675,14 +1723,14 @@ function subscribePurposeRequest(scope, watcher) {
 }
 
 // src/primitives/UserMenu.tsx
-import { jsx as jsx27, jsxs as jsxs14 } from "react/jsx-runtime";
+import { jsx as jsx28, jsxs as jsxs14 } from "react/jsx-runtime";
 function UserMenu({
   user,
   signOutHref = "/auth/logout",
   signOutLabel = "Sign out",
   menuLabel = "Account"
 }) {
-  return /* @__PURE__ */ jsx27(
+  return /* @__PURE__ */ jsx28(
     Menu,
     {
       align: "end",
@@ -1699,18 +1747,18 @@ function UserMenu({
           ),
           children: [
             user,
-            /* @__PURE__ */ jsx27(ChevronDownIcon, { className: "h-3.5 w-3.5" })
+            /* @__PURE__ */ jsx28(ChevronDownIcon, { className: "h-3.5 w-3.5" })
           ]
         }
       ),
-      children: /* @__PURE__ */ jsx27(MenuItem, { href: signOutHref, onSelect: clearAllPurposes, children: signOutLabel })
+      children: /* @__PURE__ */ jsx28(MenuItem, { href: signOutHref, onSelect: clearAllPurposes, children: signOutLabel })
     }
   );
 }
 
 // src/layout/AppShell.tsx
 import { useState as useState4 } from "react";
-import { jsx as jsx28, jsxs as jsxs15 } from "react/jsx-runtime";
+import { jsx as jsx29, jsxs as jsxs15 } from "react/jsx-runtime";
 var SIDEBAR_STORAGE_KEY = "infra-ui-sidebar";
 function readCollapsed() {
   try {
@@ -1747,7 +1795,7 @@ function AppShell({
   };
   return /* @__PURE__ */ jsxs15("div", { className: "flex h-screen flex-col bg-chrome text-foreground", children: [
     /* @__PURE__ */ jsxs15("header", { className: "flex h-12 items-center gap-3 px-4", children: [
-      sidebar && /* @__PURE__ */ jsx28(
+      sidebar && /* @__PURE__ */ jsx29(
         "button",
         {
           type: "button",
@@ -1755,7 +1803,7 @@ function AppShell({
           "aria-expanded": !collapsed,
           onClick: toggleSidebar,
           className: "inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground",
-          children: /* @__PURE__ */ jsx28("span", { "aria-hidden": true, children: "\u2630" })
+          children: /* @__PURE__ */ jsx29("span", { "aria-hidden": true, children: "\u2630" })
         }
       ),
       /* @__PURE__ */ jsxs15(
@@ -1764,25 +1812,25 @@ function AppShell({
           href: homeHref,
           className: "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
           children: [
-            /* @__PURE__ */ jsx28(ArrowLeftIcon, { className: "h-3.5 w-3.5" }),
+            /* @__PURE__ */ jsx29(ArrowLeftIcon, { className: "h-3.5 w-3.5" }),
             homeLabel
           ]
         }
       ),
-      /* @__PURE__ */ jsx28("span", { className: "text-sm font-semibold", children: title }),
-      version && /* @__PURE__ */ jsx28("span", { className: "text-xs text-muted-foreground", children: version }),
+      /* @__PURE__ */ jsx29("span", { className: "text-sm font-semibold", children: title }),
+      version && /* @__PURE__ */ jsx29("span", { className: "text-xs text-muted-foreground", children: version }),
       headerActions ? (
         // In the spacer's place, with no width of its own: the actions get
         // only the room left over, and truncate into it rather than squeeze
         // the chrome beside them.
-        /* @__PURE__ */ jsx28("div", { className: "flex min-w-8 flex-1 items-center justify-end gap-2 sm:min-w-0", children: headerActions })
-      ) : /* @__PURE__ */ jsx28("span", { className: "flex-1" }),
-      /* @__PURE__ */ jsx28(ThemeToggle, { labels: themeLabels }),
-      user && /* @__PURE__ */ jsx28(UserMenu, { user, signOutHref, signOutLabel })
+        /* @__PURE__ */ jsx29("div", { className: "flex min-w-8 flex-1 items-center justify-end gap-2 sm:min-w-0", children: headerActions })
+      ) : /* @__PURE__ */ jsx29("span", { className: "flex-1" }),
+      /* @__PURE__ */ jsx29(ThemeToggle, { labels: themeLabels }),
+      user && /* @__PURE__ */ jsx29(UserMenu, { user, signOutHref, signOutLabel })
     ] }),
     /* @__PURE__ */ jsxs15("div", { className: "flex min-h-0 flex-1", children: [
-      sidebar && !collapsed && /* @__PURE__ */ jsx28("aside", { className: "flex w-72 shrink-0 flex-col gap-4 overflow-y-auto p-4", children: sidebar }),
-      /* @__PURE__ */ jsx28(
+      sidebar && !collapsed && /* @__PURE__ */ jsx29("aside", { className: "flex w-72 shrink-0 flex-col gap-4 overflow-y-auto p-4", children: sidebar }),
+      /* @__PURE__ */ jsx29(
         "main",
         {
           className: cn(
@@ -1797,7 +1845,7 @@ function AppShell({
 }
 function SidebarGroup({ label, children }) {
   return /* @__PURE__ */ jsxs15("div", { className: "flex flex-col gap-1", children: [
-    label && /* @__PURE__ */ jsx28("div", { className: "px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground", children: label }),
+    label && /* @__PURE__ */ jsx29("div", { className: "px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground", children: label }),
     children
   ] });
 }
@@ -2001,7 +2049,7 @@ function seedPositions(nodes, edges, previous, centerX, centerY) {
 }
 
 // src/graph/ForceGraph.tsx
-import { jsx as jsx29, jsxs as jsxs16 } from "react/jsx-runtime";
+import { jsx as jsx30, jsxs as jsxs16 } from "react/jsx-runtime";
 var WIDTH = 960;
 var HEIGHT = 620;
 var CENTER_X = WIDTH / 2;
@@ -2042,10 +2090,10 @@ function ExpandIcon() {
       strokeLinejoin: "round",
       "aria-hidden": "true",
       children: [
-        /* @__PURE__ */ jsx29("polyline", { points: "15 3 21 3 21 9" }),
-        /* @__PURE__ */ jsx29("polyline", { points: "9 21 3 21 3 15" }),
-        /* @__PURE__ */ jsx29("path", { d: "M 21 3 L 14 10" }),
-        /* @__PURE__ */ jsx29("path", { d: "M 3 21 L 10 14" })
+        /* @__PURE__ */ jsx30("polyline", { points: "15 3 21 3 21 9" }),
+        /* @__PURE__ */ jsx30("polyline", { points: "9 21 3 21 3 15" }),
+        /* @__PURE__ */ jsx30("path", { d: "M 21 3 L 14 10" }),
+        /* @__PURE__ */ jsx30("path", { d: "M 3 21 L 10 14" })
       ]
     }
   );
@@ -2064,10 +2112,10 @@ function CollapseIcon() {
       strokeLinejoin: "round",
       "aria-hidden": "true",
       children: [
-        /* @__PURE__ */ jsx29("polyline", { points: "4 14 10 14 10 20" }),
-        /* @__PURE__ */ jsx29("polyline", { points: "20 10 14 10 14 4" }),
-        /* @__PURE__ */ jsx29("path", { d: "M 14 10 L 21 3" }),
-        /* @__PURE__ */ jsx29("path", { d: "M 3 21 L 10 14" })
+        /* @__PURE__ */ jsx30("polyline", { points: "4 14 10 14 10 20" }),
+        /* @__PURE__ */ jsx30("polyline", { points: "20 10 14 10 14 4" }),
+        /* @__PURE__ */ jsx30("path", { d: "M 14 10 L 21 3" }),
+        /* @__PURE__ */ jsx30("path", { d: "M 3 21 L 10 14" })
       ]
     }
   );
@@ -2465,11 +2513,11 @@ function ForceGraph({
       ),
       children: [
         /* @__PURE__ */ jsxs16("div", { className: "space-y-2", children: [
-          statusText && /* @__PURE__ */ jsx29("p", { className: "text-sm text-muted-foreground", children: statusText }),
+          statusText && /* @__PURE__ */ jsx30("p", { className: "text-sm text-muted-foreground", children: statusText }),
           /* @__PURE__ */ jsxs16("div", { className: "flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-2", children: [
             /* @__PURE__ */ jsxs16("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Minimum edges per node", children: [
-              /* @__PURE__ */ jsx29("span", { className: "text-xs text-muted-foreground", children: L.minEdges }),
-              /* @__PURE__ */ jsx29(
+              /* @__PURE__ */ jsx30("span", { className: "text-xs text-muted-foreground", children: L.minEdges }),
+              /* @__PURE__ */ jsx30(
                 "button",
                 {
                   type: "button",
@@ -2480,8 +2528,8 @@ function ForceGraph({
                   children: "\u2212"
                 }
               ),
-              /* @__PURE__ */ jsx29("span", { "aria-live": "polite", className: "w-5 text-center text-xs tabular-nums", children: minDegree }),
-              /* @__PURE__ */ jsx29(
+              /* @__PURE__ */ jsx30("span", { "aria-live": "polite", className: "w-5 text-center text-xs tabular-nums", children: minDegree }),
+              /* @__PURE__ */ jsx30(
                 "button",
                 {
                   type: "button",
@@ -2493,10 +2541,10 @@ function ForceGraph({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx29("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
+            /* @__PURE__ */ jsx30("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
             /* @__PURE__ */ jsxs16("div", { className: "flex items-center gap-2", children: [
-              /* @__PURE__ */ jsx29("span", { className: "text-xs text-muted-foreground", children: L.edgeLength }),
-              /* @__PURE__ */ jsx29(
+              /* @__PURE__ */ jsx30("span", { className: "text-xs text-muted-foreground", children: L.edgeLength }),
+              /* @__PURE__ */ jsx30(
                 "input",
                 {
                   type: "range",
@@ -2511,10 +2559,10 @@ function ForceGraph({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx29("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
+            /* @__PURE__ */ jsx30("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
             /* @__PURE__ */ jsxs16("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Zoom", children: [
-              /* @__PURE__ */ jsx29("span", { className: "text-xs text-muted-foreground", children: L.zoom }),
-              /* @__PURE__ */ jsx29(
+              /* @__PURE__ */ jsx30("span", { className: "text-xs text-muted-foreground", children: L.zoom }),
+              /* @__PURE__ */ jsx30(
                 "button",
                 {
                   type: "button",
@@ -2524,7 +2572,7 @@ function ForceGraph({
                   children: "+"
                 }
               ),
-              /* @__PURE__ */ jsx29(
+              /* @__PURE__ */ jsx30(
                 "button",
                 {
                   type: "button",
@@ -2534,7 +2582,7 @@ function ForceGraph({
                   children: "\u2212"
                 }
               ),
-              /* @__PURE__ */ jsx29(
+              /* @__PURE__ */ jsx30(
                 "button",
                 {
                   type: "button",
@@ -2546,8 +2594,8 @@ function ForceGraph({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx29("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
-            /* @__PURE__ */ jsx29(
+            /* @__PURE__ */ jsx30("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
+            /* @__PURE__ */ jsx30(
               "button",
               {
                 type: "button",
@@ -2579,7 +2627,7 @@ function ForceGraph({
                   role: "application",
                   "aria-label": "Force-directed graph",
                   children: [
-                    /* @__PURE__ */ jsx29(
+                    /* @__PURE__ */ jsx30(
                       "rect",
                       {
                         x: 0,
@@ -2594,7 +2642,7 @@ function ForceGraph({
                       }
                     ),
                     /* @__PURE__ */ jsxs16("g", { transform, children: [
-                      /* @__PURE__ */ jsx29("defs", { children: /* @__PURE__ */ jsx29(
+                      /* @__PURE__ */ jsx30("defs", { children: /* @__PURE__ */ jsx30(
                         "marker",
                         {
                           id: "fg-arrow",
@@ -2605,7 +2653,7 @@ function ForceGraph({
                           markerHeight: "7",
                           orient: "auto-start-reverse",
                           className: "fill-muted-foreground",
-                          children: /* @__PURE__ */ jsx29("path", { d: "M 0 0 L 10 5 L 0 10 z" })
+                          children: /* @__PURE__ */ jsx30("path", { d: "M 0 0 L 10 5 L 0 10 z" })
                         }
                       ) }),
                       visibleEdges.map((e, i) => {
@@ -2620,7 +2668,7 @@ function ForceGraph({
                         const dist = Math.hypot(dx, dy) || 1;
                         const tx = e.directed ? b.x - dx / dist * (b.r + 2) : b.x;
                         const ty = e.directed ? b.y - dy / dist * (b.r + 2) : b.y;
-                        return /* @__PURE__ */ jsx29(
+                        return /* @__PURE__ */ jsx30(
                           "line",
                           {
                             x1: a.x,
@@ -2669,8 +2717,8 @@ function ForceGraph({
                               }
                             },
                             children: [
-                              /* @__PURE__ */ jsx29("title", { children: `${n.label} (${n.kind})` }),
-                              /* @__PURE__ */ jsx29(
+                              /* @__PURE__ */ jsx30("title", { children: `${n.label} (${n.kind})` }),
+                              /* @__PURE__ */ jsx30(
                                 "circle",
                                 {
                                   r,
@@ -2680,7 +2728,7 @@ function ForceGraph({
                                   strokeWidth: (isSelected ? 3 : 1.5) / view.k
                                 }
                               ),
-                              /* @__PURE__ */ jsx29(
+                              /* @__PURE__ */ jsx30(
                                 "text",
                                 {
                                   y: r + 11 / view.k,
@@ -2699,7 +2747,7 @@ function ForceGraph({
                           n.id
                         );
                       }),
-                      marqueeRect && /* @__PURE__ */ jsx29(
+                      marqueeRect && /* @__PURE__ */ jsx30(
                         "rect",
                         {
                           x: marqueeRect.x,
@@ -2716,7 +2764,7 @@ function ForceGraph({
                   ]
                 }
               ),
-              /* @__PURE__ */ jsx29(
+              /* @__PURE__ */ jsx30(
                 "button",
                 {
                   type: "button",
@@ -2725,11 +2773,11 @@ function ForceGraph({
                   title: isMaximized ? L.minimize : L.maximize,
                   onClick: () => setIsMaximized((m) => !m),
                   className: "absolute left-2 top-2 z-10 rounded-md border border-border bg-background/90 p-1.5 text-muted-foreground hover:text-foreground",
-                  children: isMaximized ? /* @__PURE__ */ jsx29(CollapseIcon, {}) : /* @__PURE__ */ jsx29(ExpandIcon, {})
+                  children: isMaximized ? /* @__PURE__ */ jsx30(CollapseIcon, {}) : /* @__PURE__ */ jsx30(ExpandIcon, {})
                 }
               ),
               selectedIdsArr.length > 0 && (onExpandNode || onExpandAction || onDeleteNodes) && /* @__PURE__ */ jsxs16("div", { className: "absolute bottom-2 left-2 z-10 flex items-center gap-1.5", children: [
-                actionsActive && selectedIdsArr.length === 1 ? expandActions.map((action) => /* @__PURE__ */ jsx29(
+                actionsActive && selectedIdsArr.length === 1 ? expandActions.map((action) => /* @__PURE__ */ jsx30(
                   "button",
                   {
                     type: "button",
@@ -2739,7 +2787,7 @@ function ForceGraph({
                     children: action.label
                   },
                   action.id
-                )) : onExpandNode && selectedIdsArr.length === 1 && /* @__PURE__ */ jsx29(
+                )) : onExpandNode && selectedIdsArr.length === 1 && /* @__PURE__ */ jsx30(
                   "button",
                   {
                     type: "button",
@@ -2749,7 +2797,7 @@ function ForceGraph({
                     children: L.expandSelected
                   }
                 ),
-                onDeleteNodes && /* @__PURE__ */ jsx29(
+                onDeleteNodes && /* @__PURE__ */ jsx30(
                   "button",
                   {
                     type: "button",
@@ -2760,8 +2808,8 @@ function ForceGraph({
                   }
                 )
               ] }),
-              legend && legend.length > 0 && /* @__PURE__ */ jsx29("div", { className: "absolute right-2 top-2 max-w-[12rem] rounded-md border border-border bg-background/90 p-2 text-xs space-y-1", children: /* @__PURE__ */ jsx29("ul", { className: "space-y-0.5", children: legend.map(({ kind, label }) => /* @__PURE__ */ jsxs16("li", { className: "flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx29(
+              legend && legend.length > 0 && /* @__PURE__ */ jsx30("div", { className: "absolute right-2 top-2 max-w-[12rem] rounded-md border border-border bg-background/90 p-2 text-xs space-y-1", children: /* @__PURE__ */ jsx30("ul", { className: "space-y-0.5", children: legend.map(({ kind, label }) => /* @__PURE__ */ jsxs16("li", { className: "flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx30(
                   "span",
                   {
                     "aria-hidden": "true",
@@ -2769,7 +2817,7 @@ function ForceGraph({
                     style: { backgroundColor: nodeStyles[kind]?.color ?? "currentColor" }
                   }
                 ),
-                /* @__PURE__ */ jsx29("span", { className: "truncate", children: label })
+                /* @__PURE__ */ jsx30("span", { className: "truncate", children: label })
               ] }, kind)) }) })
             ]
           }
@@ -3085,7 +3133,7 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { cva as cva4 } from "class-variance-authority";
-import { Fragment as Fragment3, jsx as jsx30, jsxs as jsxs17 } from "react/jsx-runtime";
+import { Fragment as Fragment4, jsx as jsx31, jsxs as jsxs17 } from "react/jsx-runtime";
 var DEFAULT_LABELS2 = {
   purpose: "Purpose",
   empty: "No purpose stated",
@@ -3137,8 +3185,8 @@ function PurposeField({
   const errorId = `${id}-error`;
   const describedBy = [error && errorId, formErrorId].filter(Boolean).join(" ");
   return /* @__PURE__ */ jsxs17("div", { className: "flex flex-col gap-1.5", children: [
-    /* @__PURE__ */ jsx30("label", { htmlFor: id, className: "text-sm font-medium text-foreground", children: label }),
-    /* @__PURE__ */ jsx30(
+    /* @__PURE__ */ jsx31("label", { htmlFor: id, className: "text-sm font-medium text-foreground", children: label }),
+    /* @__PURE__ */ jsx31(
       Input,
       {
         ref: inputRef,
@@ -3152,7 +3200,7 @@ function PurposeField({
         className: "aria-invalid:border-danger aria-invalid:focus-visible:ring-danger"
       }
     ),
-    error && /* @__PURE__ */ jsx30("p", { id: errorId, className: "text-sm text-danger", children: error })
+    error && /* @__PURE__ */ jsx31("p", { id: errorId, className: "text-sm text-danger", children: error })
   ] });
 }
 function PurposeBar({ scope, required = false, labels, className }) {
@@ -3256,7 +3304,7 @@ function PurposeBar({ scope, required = false, labels, className }) {
     purpose.caseRef && `${L.caseRef}: ${purpose.caseRef}`,
     purpose.reason && `${L.reason}: ${purpose.reason}`
   ].filter(Boolean).join("\n") : void 0;
-  return /* @__PURE__ */ jsxs17(Fragment3, { children: [
+  return /* @__PURE__ */ jsxs17(Fragment4, { children: [
     /* @__PURE__ */ jsxs17(
       "button",
       {
@@ -3269,25 +3317,25 @@ function PurposeBar({ scope, required = false, labels, className }) {
         onClick: show,
         className: cn(trigger({ state }), className),
         children: [
-          state === "required" ? /* @__PURE__ */ jsx30(WarningIcon, { className: "h-4 w-4 shrink-0 text-danger" }) : (
+          state === "required" ? /* @__PURE__ */ jsx31(WarningIcon, { className: "h-4 w-4 shrink-0 text-danger" }) : (
             // Lit with the accent once stated, so the icon alone still tells
             // the two quiet states apart where the words are hidden.
-            /* @__PURE__ */ jsx30(
+            /* @__PURE__ */ jsx31(
               TagIcon,
               {
                 className: cn("h-4 w-4 shrink-0", purpose ? "text-primary" : "text-muted-foreground")
               }
             )
           ),
-          purpose ? /* @__PURE__ */ jsxs17(Fragment3, { children: [
-            /* @__PURE__ */ jsx30("span", { className: "hidden shrink-0 text-muted-foreground sm:inline", children: L.purpose }),
-            /* @__PURE__ */ jsx30("span", { className: "hidden min-w-0 max-w-xs truncate sm:block", children: summary })
-          ] }) : /* @__PURE__ */ jsx30("span", { className: "hidden min-w-0 truncate sm:block", children: name })
+          purpose ? /* @__PURE__ */ jsxs17(Fragment4, { children: [
+            /* @__PURE__ */ jsx31("span", { className: "hidden shrink-0 text-muted-foreground sm:inline", children: L.purpose }),
+            /* @__PURE__ */ jsx31("span", { className: "hidden min-w-0 max-w-xs truncate sm:block", children: summary })
+          ] }) : /* @__PURE__ */ jsx31("span", { className: "hidden min-w-0 truncate sm:block", children: name })
         ]
       }
     ),
     open && createPortal(
-      /* @__PURE__ */ jsx30(
+      /* @__PURE__ */ jsx31(
         "dialog",
         {
           ref: dialogRef,
@@ -3301,14 +3349,14 @@ function PurposeBar({ scope, required = false, labels, className }) {
           className: "m-auto w-[calc(100%-2rem)] max-w-md rounded-lg border border-border bg-background p-0 text-foreground shadow-lg backdrop:bg-background/80",
           children: /* @__PURE__ */ jsxs17("form", { noValidate: true, onSubmit: save, className: "flex flex-col gap-4 p-5", children: [
             /* @__PURE__ */ jsxs17("div", { className: "flex flex-col gap-1.5", children: [
-              /* @__PURE__ */ jsx30("h2", { id: titleId, className: "text-base font-semibold", children: L.title }),
+              /* @__PURE__ */ jsx31("h2", { id: titleId, className: "text-base font-semibold", children: L.title }),
               requested && /* @__PURE__ */ jsxs17("p", { id: requestedId, className: "flex items-start gap-1.5 text-sm text-foreground", children: [
-                /* @__PURE__ */ jsx30(InfoIcon, { className: "mt-0.5 h-4 w-4 shrink-0 text-primary" }),
+                /* @__PURE__ */ jsx31(InfoIcon, { className: "mt-0.5 h-4 w-4 shrink-0 text-primary" }),
                 L.requested
               ] }),
-              /* @__PURE__ */ jsx30("p", { id: descriptionId, className: "text-sm text-muted-foreground", children: L.description })
+              /* @__PURE__ */ jsx31("p", { id: descriptionId, className: "text-sm text-muted-foreground", children: L.description })
             ] }),
-            /* @__PURE__ */ jsx30(
+            /* @__PURE__ */ jsx31(
               PurposeField,
               {
                 id: `${id}-case-ref`,
@@ -3321,7 +3369,7 @@ function PurposeBar({ scope, required = false, labels, className }) {
                 spellCheck: false
               }
             ),
-            /* @__PURE__ */ jsx30(
+            /* @__PURE__ */ jsx31(
               PurposeField,
               {
                 id: `${id}-reason`,
@@ -3333,11 +3381,11 @@ function PurposeBar({ scope, required = false, labels, className }) {
                 inputRef: reasonInput
               }
             ),
-            formError && /* @__PURE__ */ jsx30("p", { id: formErrorId, className: "text-sm text-danger", children: formError }),
+            formError && /* @__PURE__ */ jsx31("p", { id: formErrorId, className: "text-sm text-danger", children: formError }),
             /* @__PURE__ */ jsxs17(ActionBar, { className: "pt-1", children: [
-              purpose && /* @__PURE__ */ jsx30(Button, { type: "button", variant: "secondary", size: "sm", onClick: clear, children: L.clear }),
-              /* @__PURE__ */ jsx30(Button, { type: "button", variant: "secondary", size: "sm", onClick: cancel, children: L.cancel }),
-              /* @__PURE__ */ jsx30(Button, { type: "submit", size: "sm", children: L.save })
+              purpose && /* @__PURE__ */ jsx31(Button, { type: "button", variant: "secondary", size: "sm", onClick: clear, children: L.clear }),
+              /* @__PURE__ */ jsx31(Button, { type: "button", variant: "secondary", size: "sm", onClick: cancel, children: L.cancel }),
+              /* @__PURE__ */ jsx31(Button, { type: "submit", size: "sm", children: L.save })
             ] })
           ] })
         }
@@ -3368,6 +3416,7 @@ export {
   CycleButton,
   DeleteButton,
   DisclosureButton,
+  DisclosureText,
   DocumentsIcon,
   DownloadButton,
   DownloadIcon,
@@ -3389,6 +3438,7 @@ export {
   MenuItem,
   MicButton,
   MicIcon,
+  MoreIcon,
   MoveDownButton,
   MoveUpButton,
   NewButton,
@@ -3396,6 +3446,7 @@ export {
   PURPOSE_REQUIRED_STATUS,
   PageHeader,
   PaperclipIcon,
+  PencilIcon,
   PlayButton,
   PlayIcon,
   PlusIcon,
