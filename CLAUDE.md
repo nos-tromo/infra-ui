@@ -76,7 +76,7 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   `Menu`/`MenuItem`,
   `Badge`, `Spinner`, `Banner`, `ChatComposer`, `UserBubble`, `StatusIcon`, `FileList`, `ForceGraph`,
   `IconButton`/`IconLink`,
-  `HoverIconAction` and the named icon actions, `PurposeBar` (with its
+  `HoverIconAction` and the named icon actions, `DisclosureText`, `PurposeBar` (with its
   framework-agnostic store, `usePurpose` and `withPurpose`), plus the `cn` helper.
   Every primitive has a unit test — keep that invariant when adding one.
 - **Two dropdowns, and only two.** `SelectMenu` picks a *value*

@@ -7,6 +7,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from 'react'
 import { cn } from '../cn'
+import { MENU_PANEL, MENU_ROW } from './menuStyles'
 import { CheckIcon, ChevronDownIcon } from '../icons'
 
 /**
@@ -369,7 +370,7 @@ export function SelectMenu({
           if (!option.disabled && index !== activeIndex) setActiveIndex(index)
         }}
         className={cn(
-          'flex items-center gap-2 rounded-md px-3 py-1.5 text-sm text-foreground',
+          MENU_ROW,
           // Two marks, two meanings: the tick is the current value, the
           // tinted row is the keyboard cursor. They are usually apart.
           index === activeIndex && 'bg-accent',
@@ -465,10 +466,9 @@ export function SelectMenu({
           aria-label={label}
           className={cn(
             'absolute top-full z-30 mt-1 max-h-80 min-w-48 max-w-[min(32rem,90vw)] overflow-y-auto',
-            // `text-sm` declared here, never inherited. A native <select>'s
-            // popup inheriting `text-2xl` from its trigger is the bug this
-            // replaces, so the size is restated on the panel *and* every row.
-            'rounded-lg border border-border bg-muted p-1 text-sm shadow-lg',
+            // The panel `Menu` draws too; `text-sm` is restated on it and on
+            // every row (menuStyles.ts says why).
+            MENU_PANEL,
             // A native popup is never narrower than the control it belongs to.
             variant === 'field' && 'min-w-full',
             align === 'end' ? 'right-0' : 'left-0',

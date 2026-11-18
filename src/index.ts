@@ -7,6 +7,7 @@ export {
   type CycleButtonOption,
 } from './primitives/CycleButton'
 export { HoverIconAction, type HoverIconActionProps } from './primitives/HoverIconAction'
+export { DisclosureText, type DisclosureTextProps } from './primitives/DisclosureText'
 export {
   IconButton,
   IconLink,
@@ -62,6 +63,8 @@ export {
   StopIcon,
   PaperclipIcon,
   MicIcon,
+  MoreIcon,
+  PencilIcon,
   type IconProps,
 } from './icons'
 export { CopyButton, type CopyButtonProps } from './primitives/CopyButton'

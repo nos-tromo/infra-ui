@@ -94,6 +94,18 @@ an abort that sat under a job card moves into the card's own header row.
 closed pair; `StopIcon` is the filled square of every transport control, filled
 so it does not read as an empty checkbox.
 
+`v0.25.0` adds `MoreIcon`, three dots side by side, for a row's own action
+menu: a chat in a list offering rename and delete. That trigger had carried
+`ChevronDownIcon`, but a chevron alone says the row *unfolds*, which is
+`DisclosureButton`'s meaning, and a menu of actions does not unfold anything.
+So a `Menu` whose trigger is a bare icon on a row draws `MoreIcon` alone; the
+chevron adornment above stays for a trigger that names what it opens with a
+label of its own. The dots are circles of radius 1 under the 2px stroke, so
+they read as solid at 16px. The same release lets a `MenuItem` carry an icon
+before its text, and adds `PencilIcon` for it: a row menu reads `PencilIcon`
+rename, `TrashIcon` delete, so the destructive row is told apart by its drawing
+as well as by its red.
+
 An icon with more than one call site is exported **once** from `src/icons/` and
 imported everywhere, including by this package's own primitives: `CopyButton`
 and `FileList` each drew a private checkmark and cross of their own from before

@@ -14,7 +14,9 @@ import {
   InfoIcon,
   LayersIcon,
   MicIcon,
+  MoreIcon,
   PaperclipIcon,
+  PencilIcon,
   PlayIcon,
   PlusIcon,
   RefreshIcon,
@@ -61,6 +63,8 @@ const ICONS = {
   StopIcon,
   PaperclipIcon,
   MicIcon,
+  MoreIcon,
+  PencilIcon,
 }
 
 test('every icon is drawn geometry, not a text character', () => {

@@ -12,6 +12,7 @@ import {
   type Ref,
 } from 'react'
 import { cn } from '../cn'
+import { MENU_PANEL, MENU_ROW, MENU_ROW_ICON } from './menuStyles'
 
 /** What {@link MenuProps.trigger} must spread onto its button. */
 export interface MenuTriggerProps {
@@ -66,6 +67,12 @@ const MenuContext = createContext<MenuContextValue | null>(null)
 interface MenuItemBase {
   children: ReactNode
   /**
+   * A glyph before the text, from the shared set (`PencilIcon` for rename,
+   * `TrashIcon` for delete). It is `currentColor`, so a `danger` row's icon is
+   * tinted with it.
+   */
+  icon?: ReactNode
+  /**
    * Rendered and announced, but not choosable — `aria-disabled`, never the
    * `disabled` attribute, because a disabled button shows no tooltip and
    * {@link MenuItemBase.hint} is usually the reason it is unavailable.
@@ -100,15 +107,16 @@ export type MenuItemProps =
 /**
  * Shared row styling.
  *
- * `focus:` rather than `focus-visible:` on purpose: the menu focuses its first
- * item programmatically on open, and after a mouse-open the browser's
- * focus-visible heuristic would leave that row unmarked — the one row the
- * keyboard is about to act on.
+ * `focus:` rather than `focus-visible:` on purpose: the highlight follows real
+ * focus, which the pointer moves too (`onMouseMove`), and a row focused from a
+ * mouse movement never matches `focus-visible`. A pointer-open focuses the
+ * panel rather than a row, so no row is marked until the pointer or an arrow
+ * key picks one.
  */
 function itemClasses(disabled: boolean, tone: 'default' | 'danger', className?: string): string {
   return cn(
-    'flex w-full items-center gap-2 whitespace-nowrap rounded-md px-3 py-1.5 text-left text-sm text-foreground',
-    'outline-none hover:bg-accent focus:bg-accent',
+    MENU_ROW,
+    'w-full whitespace-nowrap text-left outline-none hover:bg-accent focus:bg-accent',
     disabled ? 'cursor-default text-muted-foreground opacity-50' : 'cursor-pointer',
     tone === 'danger' && !disabled && 'text-danger',
     className,
@@ -125,6 +133,7 @@ function itemClasses(disabled: boolean, tone: 'default' | 'danger', className?: 
  */
 export function MenuItem({
   children,
+  icon,
   disabled = false,
   tone = 'default',
   hint,
@@ -168,16 +177,26 @@ export function MenuItem({
     className: itemClasses(disabled, tone, className),
   }
 
+  const content = (
+    <>
+      {icon && (
+        <span aria-hidden="true" className={MENU_ROW_ICON}>
+          {icon}
+        </span>
+      )}
+      {children}
+    </>
+  )
   if (href !== undefined) {
     return (
       <a href={href} download={download} target={target} rel={rel} {...shared}>
-        {children}
+        {content}
       </a>
     )
   }
   return (
     <button type="button" {...shared}>
-      {children}
+      {content}
     </button>
   )
 }
@@ -202,6 +221,10 @@ MenuItem.displayName = 'MenuItem'
  * `Home`/`End` jump · `Enter`/`Space` choose · `Esc` closes and restores focus
  * · `Tab` closes and moves on.
  *
+ * A pointer-open focuses the panel itself and marks no row, as the menus of
+ * chat apps do; from there `↓`/`Home` go to the first row and `↑`/`End` to the
+ * last. A keyboard-open lands on a row straight away.
+ *
  * Escape is handled here rather than on `document`, so one press dismisses one
  * layer — this menu, not also the dialog holding it. An app that listens for
  * Escape on `document` itself will still see it.
@@ -225,7 +248,7 @@ export function Menu({
   const rootRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
-  const pendingFocus = useRef<'first' | 'last' | null>(null)
+  const pendingFocus = useRef<'first' | 'last' | 'panel' | null>(null)
   const id = useId()
   const triggerId = `${id}-trigger`
   const menuId = `${id}-menu`
@@ -252,7 +275,7 @@ export function Menu({
     onOpenChange?.(next)
   }
 
-  const openMenu = (fallback: 'first' | 'last') => {
+  const openMenu = (fallback: 'first' | 'last' | 'panel') => {
     pendingFocus.current = fallback
     setOpenState(true)
   }
@@ -270,7 +293,7 @@ export function Menu({
     if (want) {
       pendingFocus.current = null
       const rows = enabledItems()
-      const target = want === 'last' ? rows[rows.length - 1] : rows[0]
+      const target = want === 'panel' ? panel : want === 'last' ? rows[rows.length - 1] : rows[0]
       ;(target ?? panel).focus()
       return
     }
@@ -322,6 +345,7 @@ export function Menu({
 
     const active = document.activeElement as HTMLElement | null
     const onRow = Boolean(active?.matches('[role="menuitem"]'))
+    const onPanel = active !== null && active === panelRef.current
 
     if (event.key === 'Tab') {
       // No preventDefault — the browser moves focus on. Handing focus back to
@@ -329,7 +353,23 @@ export function Menu({
       // menu rather than nowhere, since the row it is leaving is about to
       // unmount. Content that is not a row (a confirmation's buttons) keeps
       // its own tab order.
-      if (onRow) close(true)
+      if (onRow || onPanel) close(true)
+      return
+    }
+
+    if (onPanel) {
+      // After a pointer-open: no row yet, so the arrows start at an end.
+      const rows = enabledItems()
+      const target =
+        event.key === 'ArrowDown' || event.key === 'Home'
+          ? rows[0]
+          : event.key === 'ArrowUp' || event.key === 'End'
+            ? rows[rows.length - 1]
+            : undefined
+      if (target) {
+        event.preventDefault()
+        target.focus()
+      }
       return
     }
 
@@ -377,10 +417,11 @@ export function Menu({
         'aria-controls': open ? menuId : undefined,
         onClick: () => {
           // Safari and Firefox on macOS do not focus a <button> on click, so
-          // without this the arrows are dead after a mouse-open.
+          // focus is placed by hand: here for the close path, and on the panel
+          // for the open one, where the arrows then pick a row.
           triggerRef.current?.focus()
           if (openRef.current) close(true)
-          else openMenu('first')
+          else openMenu('panel')
         },
         onKeyDown: onTriggerKeyDown,
       })}
@@ -394,8 +435,8 @@ export function Menu({
           {...(label ? { 'aria-label': label } : { 'aria-labelledby': triggerId })}
           onKeyDown={onPanelKeyDown}
           className={cn(
-            'absolute top-full z-30 mt-1 min-w-40 max-w-[min(24rem,90vw)]',
-            'rounded-lg border border-border bg-muted p-1 text-sm shadow-lg',
+            'absolute top-full z-30 mt-1 min-w-44 max-w-[min(24rem,90vw)]',
+            MENU_PANEL,
             align === 'end' ? 'right-0' : 'left-0',
             panelClassName,
           )}
