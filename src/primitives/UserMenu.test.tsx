@@ -62,6 +62,10 @@ test('closes on Escape and on outside click', () => {
 test('opening moves focus into the menu', () => {
   render(<UserMenu user="jane.doe" />)
   fireEvent.click(screen.getByRole('button', { name: /jane\.doe/ }))
+  // A pointer-open focuses the panel and marks no row; the arrow picks it.
+  const panel = screen.getByRole('menu')
+  expect(panel).toHaveFocus()
+  fireEvent.keyDown(panel, { key: 'ArrowDown' })
   expect(screen.getByRole('menuitem', { name: 'Sign out' })).toHaveFocus()
 })
 

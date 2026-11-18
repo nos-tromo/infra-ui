@@ -89,6 +89,7 @@ the text) · `UserBubble` (what the user wrote, in the accent) ·
 `IconButton`/`IconLink` · `HoverIconAction` (the same icon button, kept invisible
 until its `.group` row is hovered or focused) · the named icon actions
 (`PlayButton`, `DisclosureButton`, …) ·
+`DisclosureText` (a disclosure drawn as its own words, no chevron) ·
 `FileList` · `ForceGraph` ·
 `PurposeBar` (the purpose a user states once for an app — case reference and/or
 reason — shown in the header and sent with every request as `X-Audit-Purpose`,

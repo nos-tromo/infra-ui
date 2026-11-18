@@ -446,3 +446,33 @@ export const MicIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
     <path d="M12 19v2M9 21h6" />
   </svg>
 )
+
+/**
+ * More actions on the thing this sits on: rename, delete, share.
+ *
+ * Three dots side by side, the drawing every list row's action menu has agreed
+ * on. It says "there is more here", not "this opens": a section that unfolds is
+ * {@link ChevronDownIcon} under `DisclosureButton`, and a trigger that names
+ * what it opens carries the chevron beside its label. Each dot is a circle of
+ * radius 1 under the set's 2px stroke, so it reads as a solid dot at 16px
+ * rather than a speck, as `WarningIcon`'s point would.
+ */
+export const MoreIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M5 11a1 1 0 1 0 0 2 1 1 0 1 0 0-2zM12 11a1 1 0 1 0 0 2 1 1 0 1 0 0-2zM19 11a1 1 0 1 0 0 2 1 1 0 1 0 0-2z" />
+  </svg>
+)
+
+/**
+ * Change this thing in place: rename a chat, edit a title.
+ *
+ * A pencil laid on the diagonal, tip down-left, with the band that holds the
+ * eraser drawn across it. The band is what keeps the outline from reading as a
+ * bare slash or as {@link SendIcon}'s plane at 16px.
+ */
+export const PencilIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M5 16 16 5l3 3L8 19l-4 1z" />
+    <path d="m13.5 7.5 3 3" />
+  </svg>
+)

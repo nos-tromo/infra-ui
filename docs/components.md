@@ -153,6 +153,21 @@ button — and **spreads the props last**: they carry the ref and the
 `aria-*`/handler wiring, and a caller's own `id` or `onClick` placed after them
 would silently win.
 
+A row's own action menu (rename, delete) opens from a bare `MoreIcon`, often a
+`HoverIconAction` that shows on the row's hover; a chevron alone would say the
+row unfolds. Why: [icon-policy.md](icon-policy.md#icons-are-drawn-never-typed).
+
+```tsx
+<Menu align="end" trigger={(props) => <HoverIconAction icon={<MoreIcon />} label="Options" {...props} />}>
+  <MenuItem icon={<PencilIcon />} onSelect={rename}>
+    Rename
+  </MenuItem>
+  <MenuItem icon={<TrashIcon />} tone="danger" onSelect={remove}>
+    Delete
+  </MenuItem>
+</Menu>
+```
+
 An item is a `<button>` (`onSelect`) or an `<a>` (`href`), and a link stays a
 real link so the browser's own download and new-tab handling applies. `disabled`
 is `aria-disabled`, never the attribute, so `hint` still shows the reason.
@@ -177,6 +192,17 @@ step:
 </Menu>
 ```
 
+A row takes an `icon` before its text, from the shared set: `PencilIcon` for
+rename, `TrashIcon` for delete. It is `currentColor`, so `tone="danger"` tints
+it with the text.
+
+The panel and its rows are drawn from `src/primitives/menuStyles.ts`, which
+`SelectMenu` uses too: soft corners on the panel and on each row, a little air
+around each row, and a shadow rather than a heavy outline. One place, so the
+two lists cannot drift apart. A button in the panel that is not a row, such as
+a confirmation's Cancel and Delete, is drawn as a pill to match the panel's
+corners; the app passes no class for it.
+
 `children` as a function receives `close`, which is what lets a confirmation
 live inside the panel it was asked from. `onOpenChange` fires on every path in
 and out — it is where that second step resets, so a menu never reopens
@@ -189,7 +215,9 @@ browser's navigation, and a confirmation's buttons are not addressable by
 
 Keyboard: `↓`/`↑`/`Enter`/`Space` open (Down from the top, Up from the bottom) ·
 `↓`/`↑` move and clamp · `Home`/`End` jump · `Enter`/`Space` choose · `Esc`
-closes and restores focus · `Tab` closes and moves on. Escape is caught on the
+closes and restores focus · `Tab` closes and moves on. A pointer-open focuses
+the panel and marks no row, as chat apps' menus do; from there `↓`/`Home` go to
+the first row and `↑`/`End` to the last. A keyboard-open lands on a row at once. Escape is caught on the
 menu, never on `document`, so one press dismisses one layer rather than this
 menu plus the dialog holding it — an app that listens for Escape on `document`
 itself will still see the key.
@@ -233,6 +261,7 @@ breaks the line of a page that otherwise runs edge to edge.
 | Acts on the whole block (export, refresh, add, undo) | header row, right | `SectionHeader` / `Card` `actions` + icon actions |
 | Commits the block's work (submit, apply, discard, start) | foot, full width, primary last | `ActionBar` + `Button` |
 | Acts on one row or card (dismiss, delete, abort, expand) | row or card header, far right | `RemoveButton`, `DeleteButton`, `StopButton`, `DisclosureButton` |
+| Opens what a line of chat text names (steps, a step's code) | the words themselves | `DisclosureText` |
 | Creates the first item of an empty block | centred in the block | `EmptyState` `action` |
 
 Headings follow the same structure: one `PageHeader` (`h1`) per route, a card
@@ -327,6 +356,21 @@ writes `aria-expanded` and turns the caret over — one chevron rotated, never a
 swapped pair. Give the revealed element an `id` and pass it as `controls`, and
 swap `label` with the state so the name always says what the next click does.
 
+`DisclosureText` is the same disclosure drawn as its own words, with no
+chevron: the lines inside a chat answer whose words say what opens, such as the
+steps behind it and the code one step ran. The words are the button, so the
+pointer, the keyboard and a screen reader reach one control. It takes the
+surrounding colour, brightens to the foreground on hover, and draws the focus
+ring around the words. Its name is the words and does not swap with the state;
+`aria-expanded` says whether it is open. A row with a title of its own (a card,
+a report section, a search hit) keeps `DisclosureButton` at its far edge.
+
+```tsx
+<DisclosureText expanded={open} controls={listId} onClick={() => setOpen((v) => !v)}>
+  2 steps
+</DisclosureText>
+```
+
 `SendButton` is the one action here that is usually a page's _primary_ control
 rather than quiet chrome, so it is the common case for `variant="primary"`. It
 and `SearchButton` normally close a form: pass `type="submit"` — `IconButton`
@@ -342,7 +386,7 @@ The set lives in `src/icons/`, all exported: `DownloadIcon`, `PlusIcon`,
 `WarningIcon`, `InfoIcon`, `CheckIcon`, `StopwatchIcon`, `ExternalLinkIcon`,
 `ReportIcon`/`ReportCheckIcon`, `SendIcon`, `SearchIcon`, `RefreshIcon`,
 `ArrowLeftIcon`, `BrainIcon`/`BrainActiveIcon`, `PlayIcon`, `LayersIcon`,
-`DocumentsIcon`, `ImageIcon`, `TagIcon`, `UndoIcon`, `StopIcon`, `PaperclipIcon`, `MicIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
+`DocumentsIcon`, `ImageIcon`, `TagIcon`, `UndoIcon`, `StopIcon`, `PaperclipIcon`, `MicIcon`, `MoreIcon`, `PencilIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
 the caller. Adding one is covered by
 [icon-policy.md](icon-policy.md#icons-are-drawn-never-typed).
 

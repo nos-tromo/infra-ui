@@ -2,6 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { useState } from 'react'
 import { Menu, MenuItem } from './Menu'
+import { SelectMenu } from './SelectMenu'
 import { Button } from './Button'
 import { DownloadButton } from './iconActions'
 
@@ -30,17 +31,34 @@ test('a closed menu announces itself and mounts no panel', () => {
   expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 })
 
-test('clicking opens the panel, names it after the trigger, and focuses the first item', async () => {
+test('clicking opens the panel, names it after the trigger, and focuses the panel, no row', async () => {
   const { user, trigger } = setup()
   await user.click(trigger)
   const panel = screen.getByRole('menu', { name: 'Export' })
   expect(trigger).toHaveAttribute('aria-expanded', 'true')
   expect(trigger.getAttribute('aria-controls')).toBe(panel.id)
   expect(panel).toHaveAttribute('aria-labelledby', trigger.id)
-  // A mouse-open focuses the first item too: on macOS Safari and Firefox the
-  // trigger never takes focus from a click, so without this every arrow key
-  // below is dead after opening with the pointer.
+  // A pointer-open marks no row: the pointer has not chosen one yet, and a
+  // highlighted first row is what made the panel read heavy. Focus still goes
+  // into the panel, so the arrows work at once — on macOS Safari and Firefox
+  // the trigger never takes focus from a click.
+  expect(panel).toHaveFocus()
+  for (const item of items()) expect(item).not.toHaveFocus()
+  fireEvent.keyDown(panel, { key: 'ArrowDown' })
   expect(items()[0]).toHaveFocus()
+})
+
+test('from the panel itself, ArrowUp goes to the last row and Home to the first', async () => {
+  const { user, trigger } = setup()
+  await user.click(trigger)
+  fireEvent.keyDown(screen.getByRole('menu'), { key: 'ArrowUp' })
+  // The third item is disabled, so "last" means the last *choosable* one.
+  expect(screen.getByRole('menuitem', { name: 'Full batch ZIP' })).toHaveFocus()
+  await user.keyboard('{Escape}')
+
+  await user.click(trigger)
+  fireEvent.keyDown(screen.getByRole('menu'), { key: 'Home' })
+  expect(screen.getByRole('menuitem', { name: 'Combined JSONL' })).toHaveFocus()
 })
 
 test('ArrowDown opens at the first item and ArrowUp at the last', () => {
@@ -72,6 +90,8 @@ test('the arrows move focus and clamp at the ends', async () => {
   const { user, trigger } = setup()
   await user.click(trigger)
   const [first, second] = items()
+  fireEvent.keyDown(screen.getByRole('menu'), { key: 'ArrowDown' })
+  expect(first).toHaveFocus()
   fireEvent.keyDown(first, { key: 'ArrowDown' })
   expect(second).toHaveFocus()
   for (let i = 0; i < 4; i++) fireEvent.keyDown(document.activeElement!, { key: 'ArrowDown' })
@@ -115,10 +135,13 @@ test('choosing an item runs it once, closes, and puts focus back on the trigger'
   expect(trigger).toHaveFocus()
 })
 
-test('Enter on a focused item chooses it', async () => {
+test('Enter on a focused item chooses it, and on the bare panel chooses nothing', async () => {
   const { user, trigger, onSelect } = setup()
   await user.click(trigger)
   await user.keyboard('{Enter}')
+  expect(onSelect).not.toHaveBeenCalled()
+  expect(screen.getByRole('menu')).toBeInTheDocument()
+  await user.keyboard('{ArrowDown}{Enter}')
   expect(onSelect).toHaveBeenCalledTimes(1)
   expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 })
@@ -319,6 +342,23 @@ test('render-prop content can replace the items and close the menu itself', asyn
   expect(screen.getByRole('menuitem', { name: 'Clear all' })).toBeInTheDocument()
 })
 
+test('a confirmation’s buttons are drawn round, the rows are not', async () => {
+  const user = userEvent.setup()
+  render(
+    <Menu trigger={(p) => <DownloadButton {...p} label="Clear" />}>
+      <MenuItem onSelect={vi.fn()}>Clear all</MenuItem>
+      <Button size="sm" variant="secondary">
+        Cancel
+      </Button>
+    </Menu>,
+  )
+  await user.click(screen.getByRole('button', { name: 'Clear' }))
+  // The panel rounds what it holds, so every app's confirmation matches its
+  // corners without each one remembering a class. The rows keep their own.
+  expect(screen.getByRole('menu')).toHaveClass('[&_button:not([role=menuitem])]:rounded-full')
+  expect(screen.getByRole('menuitem', { name: 'Clear all' })).toHaveClass('rounded-lg')
+})
+
 test('a danger item is told apart before the pointer reaches it', async () => {
   const user = userEvent.setup()
   render(
@@ -360,6 +400,50 @@ test('the pointer moves the highlight, so there is only ever one', async () => {
   const zip = screen.getByRole('menuitem', { name: 'Full batch ZIP' })
   fireEvent.mouseMove(zip)
   expect(zip).toHaveFocus()
+})
+
+test('an icon is drawn before the row\u2019s text and takes its tone', async () => {
+  const user = userEvent.setup()
+  render(
+    <Menu trigger={(p) => <DownloadButton {...p} label="Chat" />}>
+      <MenuItem icon={<svg data-testid="pencil" />} onSelect={vi.fn()}>
+        Rename
+      </MenuItem>
+      <MenuItem tone="danger" icon={<svg data-testid="trash" />} onSelect={vi.fn()}>
+        Delete
+      </MenuItem>
+    </Menu>,
+  )
+  await user.click(screen.getByRole('button', { name: 'Chat' }))
+  const rename = screen.getByRole('menuitem', { name: 'Rename' })
+  expect(rename.firstElementChild).toContainElement(screen.getByTestId('pencil'))
+  expect(rename.firstElementChild).toHaveAttribute('aria-hidden', 'true')
+  const remove = screen.getByRole('menuitem', { name: 'Delete' })
+  // The icon is `currentColor`, so the row's danger tint reaches it.
+  expect(remove).toHaveClass('text-danger')
+  expect(remove).toContainElement(screen.getByTestId('trash'))
+})
+
+test('Menu and SelectMenu draw the same panel and the same rows', async () => {
+  const user = userEvent.setup()
+  render(
+    <>
+      <Menu trigger={(p) => <DownloadButton {...p} label="Export" />}>
+        <MenuItem onSelect={vi.fn()}>Combined JSONL</MenuItem>
+      </Menu>
+      <SelectMenu label="Format" value="csv" onChange={vi.fn()} options={[{ value: 'csv', label: 'CSV' }]} />
+    </>,
+  )
+  await user.click(screen.getByRole('button', { name: 'Export' }))
+  const menu = screen.getByRole('menu')
+  const row = screen.getByRole('menuitem')
+  const shared = ['rounded-2xl', 'border', 'border-border', 'bg-muted', 'p-1.5', 'text-sm', 'shadow-xl']
+  expect(menu).toHaveClass(...shared)
+  expect(row).toHaveClass('rounded-lg', 'px-2.5', 'py-2', 'gap-3')
+
+  await user.click(screen.getByRole('combobox', { name: 'Format' }))
+  expect(screen.getByRole('listbox')).toHaveClass(...shared)
+  expect(screen.getByRole('option', { name: 'CSV' })).toHaveClass('rounded-lg', 'px-2.5', 'py-2', 'gap-3')
 })
 
 test('a MenuItem outside a Menu says so', () => {

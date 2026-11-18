@@ -166,6 +166,33 @@ interface HoverIconActionProps extends Omit<ButtonHTMLAttributes<HTMLButtonEleme
  */
 declare const HoverIconAction: react.ForwardRefExoticComponent<HoverIconActionProps & react.RefAttributes<HTMLButtonElement>>;
 
+interface DisclosureTextProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'aria-expanded' | 'aria-controls'> {
+    /** Whether the section this opens is open. Drives `aria-expanded`. */
+    expanded: boolean;
+    /** `id` of the element this reveals, wired to `aria-controls`. */
+    controls?: string;
+    /** The words the user clicks. They are the control's accessible name, so they say what opens. */
+    children: ReactNode;
+}
+/**
+ * Show or hide what these words stand for: the steps behind a chat answer,
+ * the code one step ran.
+ *
+ * The words are the button, with no chevron beside them. A line of this kind
+ * sits inside running text, where a caret at the far edge would be a second
+ * control for one gesture and a second tab stop. It takes the surrounding
+ * colour (usually muted), brightens to the foreground on hover, and draws the
+ * focus ring around the words. `aria-expanded` carries the state; the name
+ * stays the words, which do not swap with it.
+ *
+ * Use {@link DisclosureButton} instead where the row has a title of its own
+ * and the control sits at its far edge: a card, a report section, a search hit.
+ *
+ * @param props - `expanded` is required; `controls` names the revealed element.
+ * @returns The disclosure, drawn as its text.
+ */
+declare const DisclosureText: react.ForwardRefExoticComponent<DisclosureTextProps & react.RefAttributes<HTMLButtonElement>>;
+
 /**
  * The named icon actions.
  *
@@ -590,6 +617,25 @@ declare const PaperclipIcon: ({ className, ...props }: IconProps) => react.JSX.E
  * this drawing never has to say "recording" or "stop".
  */
 declare const MicIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * More actions on the thing this sits on: rename, delete, share.
+ *
+ * Three dots side by side, the drawing every list row's action menu has agreed
+ * on. It says "there is more here", not "this opens": a section that unfolds is
+ * {@link ChevronDownIcon} under `DisclosureButton`, and a trigger that names
+ * what it opens carries the chevron beside its label. Each dot is a circle of
+ * radius 1 under the set's 2px stroke, so it reads as a solid dot at 16px
+ * rather than a speck, as `WarningIcon`'s point would.
+ */
+declare const MoreIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * Change this thing in place: rename a chat, edit a title.
+ *
+ * A pencil laid on the diagonal, tip down-left, with the band that holds the
+ * eraser drawn across it. The band is what keeps the outline from reading as a
+ * bare slash or as {@link SendIcon}'s plane at 16px.
+ */
+declare const PencilIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 
 interface CopyButtonProps extends Omit<ButtonProps, 'children' | 'onClick' | 'aria-label' | 'title'> {
     /** Text written to the clipboard on click. */
@@ -843,6 +889,12 @@ interface MenuProps {
 interface MenuItemBase {
     children: ReactNode;
     /**
+     * A glyph before the text, from the shared set (`PencilIcon` for rename,
+     * `TrashIcon` for delete). It is `currentColor`, so a `danger` row's icon is
+     * tinted with it.
+     */
+    icon?: ReactNode;
+    /**
      * Rendered and announced, but not choosable — `aria-disabled`, never the
      * `disabled` attribute, because a disabled button shows no tooltip and
      * {@link MenuItemBase.hint} is usually the reason it is unavailable.
@@ -878,7 +930,7 @@ type MenuItemProps = (MenuItemBase & {
  *   `closeOnSelect` adjust the row.
  * @returns The menu item.
  */
-declare function MenuItem({ children, disabled, tone, hint, closeOnSelect, className, ...rest }: MenuItemProps): react.JSX.Element;
+declare function MenuItem({ children, icon, disabled, tone, hint, closeOnSelect, className, ...rest }: MenuItemProps): react.JSX.Element;
 declare namespace MenuItem {
     var displayName: string;
 }
@@ -900,6 +952,10 @@ declare namespace MenuItem {
  * bottom) · `↓`/`↑` move and **clamp** at the ends, matching `SelectMenu` ·
  * `Home`/`End` jump · `Enter`/`Space` choose · `Esc` closes and restores focus
  * · `Tab` closes and moves on.
+ *
+ * A pointer-open focuses the panel itself and marks no row, as the menus of
+ * chat apps do; from there `↓`/`Home` go to the first row and `↑`/`End` to the
+ * last. A keyboard-open lands on a row straight away.
  *
  * Escape is handled here rather than on `document`, so one press dismisses one
  * layer — this menu, not also the dialog holding it. An app that listens for
@@ -1620,4 +1676,4 @@ declare namespace PurposeBar {
     var displayName: string;
 }
 
-export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };
+export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };
