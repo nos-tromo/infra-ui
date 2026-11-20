@@ -1381,8 +1381,16 @@ function AttachmentTile({
       ) : expired ? /* @__PURE__ */ jsxs10("span", { className: "flex max-w-full min-w-0 flex-col items-center gap-1 px-1", children: [
         stand,
         /* @__PURE__ */ jsx23("span", { id: markerId, className: "flex max-w-full min-w-0", children: badge2 })
-      ] }) : stand,
-      (busy || failed) && /* @__PURE__ */ jsxs10("span", { className: "absolute inset-0 flex items-center justify-center bg-background/50", children: [
+      ] }) : busy || failed ? (
+        // No picture: the marker takes the drawing's place, so the two never stack.
+        /* @__PURE__ */ jsxs10("span", { className: "flex items-center justify-center", title: name, children: [
+          busy ? spinner : warning(big ? "h-7 w-7" : "h-5 w-5"),
+          said,
+          !onOpen && /* @__PURE__ */ jsx23("span", { className: "sr-only", children: name })
+        ] })
+      ) : stand,
+      picture && (busy || failed) && // A picture is veiled, so the marker reads on any of them.
+      /* @__PURE__ */ jsxs10("span", { className: "absolute inset-0 flex items-center justify-center bg-background/50", children: [
         busy ? spinner : warning(big ? "h-7 w-7" : "h-5 w-5"),
         said
       ] })
@@ -1416,7 +1424,9 @@ function AttachmentTile({
   const faceClass = cn(
     face({ kind: isImage ? "image" : "other", size }),
     failed ? "border-danger" : "border-border",
-    onOpen && "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+    // The offset keeps the ring apart from the face: on `UserBubble` the accent is
+    // the primary colour, and a ring in it would vanish.
+    onOpen && "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
   );
   return /* @__PURE__ */ jsxs10(
     "div",

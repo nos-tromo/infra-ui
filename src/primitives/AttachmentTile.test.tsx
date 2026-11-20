@@ -108,6 +108,46 @@ test('uploading and processing veil the picture with a spinner named by the stat
   expect(screen.getByRole('status', { name: 'Processing' })).toBeInTheDocument()
 })
 
+test('an image with no picture shows the marker in place of its drawing, not on top of it', () => {
+  const { container, rerender } = render(
+    <AttachmentTile name="harbour-sketch.png" kind="image" status="uploading" onOpen={() => {}} />,
+  )
+  expect(screen.getByRole('status', { name: 'Uploading' })).toBeInTheDocument()
+  expect(face(container).querySelector('svg')).toBeNull() // the spinner is not a drawing
+  expect(container.querySelector('[class*="bg-background/50"]')).toBeNull() // nothing to veil
+  rerender(<AttachmentTile name="harbour-sketch.png" kind="image" status="failed" />)
+  expect(face(container).querySelectorAll('svg')).toHaveLength(1)
+  expect(face(container).querySelector('svg')!.innerHTML).toBe(drawing(<WarningIcon />))
+  expect(screen.getByRole('img', { name: 'Failed' })).toBeInTheDocument()
+  expect(screen.getByText('harbour-sketch.png')).toBeInTheDocument() // the tile keeps its name
+  expect(container.querySelector('[class*="bg-background/50"]')).toBeNull()
+})
+
+test('a picture that fails to load while uploading gives way to the spinner alone', () => {
+  const { container } = render(
+    <AttachmentTile
+      name="harbour-sketch.png"
+      kind="image"
+      status="uploading"
+      thumbnailUrl={PICTURE}
+    />,
+  )
+  fireEvent.error(container.querySelector('img')!)
+  expect(container.querySelector('img')).toBeNull()
+  expect(screen.getByRole('status', { name: 'Uploading' })).toBeInTheDocument()
+  expect(face(container).querySelector('svg')).toBeNull()
+})
+
+test('the focus ring is offset from the face so it shows on the accent bubble', () => {
+  render(<AttachmentTile name="harbour-sketch.png" kind="image" status="ready" onOpen={() => {}} />)
+  expect(screen.getByRole('button', { name: 'harbour-sketch.png' })).toHaveClass(
+    'focus-visible:ring-2',
+    'focus-visible:ring-primary',
+    'focus-visible:ring-offset-2',
+    'focus-visible:ring-offset-background',
+  )
+})
+
 test('a failed tile is marked in danger with the warning drawing, not a cross', () => {
   const { container } = render(
     <AttachmentTile

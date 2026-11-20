@@ -178,10 +178,18 @@ export function AttachmentTile({
               {badge}
             </span>
           </span>
+        ) : busy || failed ? (
+          // No picture: the marker takes the drawing's place, so the two never stack.
+          <span className="flex items-center justify-center" title={name}>
+            {busy ? spinner : warning(big ? 'h-7 w-7' : 'h-5 w-5')}
+            {said}
+            {!onOpen && <span className="sr-only">{name}</span>}
+          </span>
         ) : (
           stand
         )}
-        {(busy || failed) && (
+        {picture && (busy || failed) && (
+          // A picture is veiled, so the marker reads on any of them.
           <span className="absolute inset-0 flex items-center justify-center bg-background/50">
             {busy ? spinner : warning(big ? 'h-7 w-7' : 'h-5 w-5')}
             {said}
@@ -235,7 +243,10 @@ export function AttachmentTile({
   const faceClass = cn(
     face({ kind: isImage ? 'image' : 'other', size }),
     failed ? 'border-danger' : 'border-border',
-    onOpen && 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+    // The offset keeps the ring apart from the face: on `UserBubble` the accent is
+    // the primary colour, and a ring in it would vanish.
+    onOpen &&
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background',
   )
 
   return (
