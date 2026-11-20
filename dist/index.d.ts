@@ -1152,6 +1152,62 @@ declare namespace AttachmentTile {
     var displayName: string;
 }
 
+interface ImageLightboxProps {
+    /** Whether the picture is shown. While false the component renders nothing. */
+    open: boolean;
+    /** The picture: an object URL or a data URL. The caller makes, owns and revokes it. */
+    src: string;
+    /** What the picture is: the image's `alt` and the dialog's accessible name. */
+    alt: string;
+    /** Called for every request to close: Close, Escape, a click beside the picture. */
+    onClose: () => void;
+    /** The Close button's label, in the app's language. */
+    closeLabel: string;
+    /** Renders a download link to this address, in place of the download button. */
+    downloadHref?: string;
+    /**
+     * The link's `download` attribute. An object URL would save under a random
+     * name, so say the file's own. Without it the link still downloads.
+     */
+    downloadName?: string;
+    /** The download control's label. Defaults to `Download`. */
+    downloadLabel?: string;
+    /** Renders a download button, for a file the page builds itself. Ignored with `downloadHref`. */
+    onDownload?: () => void;
+}
+/**
+ * One picture at full view, in a modal dialog.
+ *
+ * A native modal `<dialog>` rather than a hand-rolled overlay: the browser makes
+ * the rest of the page inert and puts the dialog in the top layer, above any
+ * stacking context the page sits in. It fills the viewport on the page's own
+ * tokens, so the light and dark themes follow, and the picture is contained: it
+ * shrinks to fit and never crops or upscales past its size.
+ *
+ * Focus starts on Close and goes back to whatever held it, the tile that opened
+ * the picture, when the dialog closes or unmounts. Escape, focus and the Tab
+ * trap are handled here by hand and not left to the browser: happy-dom does not
+ * implement them, and a browser's Tab can leave a dialog for its own chrome.
+ * Escape and a click beside the picture close it; a click on the picture does not.
+ *
+ * Its events stop at the dialog. It is portalled to the body, but React still
+ * bubbles its events through the caller's ancestors, so without this an Escape
+ * or a click would also reach the menu, row or panel around the lightbox. One
+ * press closes one layer, as in `Menu` and `PurposeBar`.
+ *
+ * `src` is an object URL (or a data URL) the caller makes, owns and revokes; the
+ * lightbox fetches nothing. The caller owns `open`: it is false until a tile's
+ * `onOpen` sets it, and `onClose` should clear it.
+ *
+ * @param props - `open`, `src`, `alt`, `onClose` and `closeLabel` are required;
+ *   `downloadHref` with `downloadName` adds a download link, `onDownload` a button.
+ * @returns The dialog while `open`, otherwise nothing.
+ */
+declare function ImageLightbox({ open, ...props }: ImageLightboxProps): ReactElement | null;
+declare namespace ImageLightbox {
+    var displayName: string;
+}
+
 interface PageHeaderProps extends HTMLAttributes<HTMLElement> {
     /** Route title — exactly one PageHeader (one h1) per route. */
     title: string;
@@ -1762,4 +1818,4 @@ declare namespace PurposeBar {
     var displayName: string;
 }
 
-export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, type AttachmentKind, AttachmentTile, type AttachmentTileProps, type AttachmentTileStatus, AudioIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, FileIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, VideoIcon, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };
+export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, type AttachmentKind, AttachmentTile, type AttachmentTileProps, type AttachmentTileStatus, AudioIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, FileIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, ImageLightbox, type ImageLightboxProps, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, VideoIcon, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };

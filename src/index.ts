@@ -102,6 +102,7 @@ export {
   type AttachmentTileProps,
   type AttachmentTileStatus,
 } from './primitives/AttachmentTile'
+export { ImageLightbox, type ImageLightboxProps } from './primitives/ImageLightbox'
 export { PageHeader, type PageHeaderProps } from './primitives/PageHeader'
 export { SectionHeader, type SectionHeaderProps } from './primitives/SectionHeader'
 export { ActionBar } from './primitives/ActionBar'

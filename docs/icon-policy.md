@@ -115,7 +115,8 @@ the missing lines are what say "any file". `VideoIcon` is a film strip, a frame
 with its rails and perforations, kept apart from `PlayIcon`, which is the action
 of opening a recording rather than a kind of file. `AudioIcon` is a waveform of
 open bars, kept apart from `MicIcon`, which starts dictation rather than naming
-a recording already made.
+a recording already made. The lightbox's Close is `XIcon` on a plain
+`IconButton`, not `RemoveButton`, because closing a view removes nothing.
 
 An icon with more than one call site is exported **once** from `src/icons/` and
 imported everywhere, including by this package's own primitives: `CopyButton`

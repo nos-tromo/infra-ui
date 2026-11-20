@@ -19,6 +19,7 @@ import {
   EmptyState,
   ForceGraph,
   ImageIcon,
+  ImageLightbox,
   type AttachmentKind,
   type AttachmentTileStatus,
   type ForceGraphEdge,
@@ -196,6 +197,16 @@ function Sink() {
   const [chatDraft, setChatDraft] = useState('')
   const [tiles, setTiles] = useState(INITIAL_TILES)
   const [openedTile, setOpenedTile] = useState('')
+  // The picture at full view: a ready image tile's `onOpen` sets it and the
+  // lightbox's `onClose` clears it. `src` is what the app owns; here, a data URL.
+  const [lightbox, setLightbox] = useState<{ name: string; src: string } | null>(null)
+  const openTile = (tile: DemoTile) => {
+    if (tile.kind === 'image' && tile.thumbnailUrl) {
+      setLightbox({ name: tile.name, src: tile.thumbnailUrl })
+    } else {
+      setOpenedTile(tile.name) // nothing to see at full view: only the line below changes
+    }
+  }
   const [demoFiles, setDemoFiles] = useState([
     { name: 'interview_2021_part1.mp4', size: 412_000_000 },
     { name: 'witness_statement_final.pdf', size: 2_100_000 },
@@ -309,7 +320,7 @@ function Sink() {
                 status="ready"
                 thumbnailUrl={PICTURE_HARBOUR}
                 size="md"
-                onOpen={() => setOpenedTile('harbour-sketch.png')}
+                onOpen={() => setLightbox({ name: 'harbour-sketch.png', src: PICTURE_HARBOUR })}
               />
               <AttachmentTile
                 name="floor-plan.png"
@@ -317,7 +328,7 @@ function Sink() {
                 status="ready"
                 thumbnailUrl={PICTURE_FLOORPLAN}
                 size="md"
-                onOpen={() => setOpenedTile('floor-plan.png')}
+                onOpen={() => setLightbox({ name: 'floor-plan.png', src: PICTURE_FLOORPLAN })}
               />
               <AttachmentTile name="old-photo.png" kind="image" status="expired" size="md" />
             </div>
@@ -335,7 +346,7 @@ function Sink() {
                 thumbnailUrl={tile.thumbnailUrl}
                 detail={tile.detail}
                 statusLabel={tile.statusLabel}
-                onOpen={tile.status === 'ready' ? () => setOpenedTile(tile.name) : undefined}
+                onOpen={tile.status === 'ready' ? () => openTile(tile) : undefined}
                 onRemove={() => setTiles((list) => list.filter((t) => t.id !== tile.id))}
               />
             ))}
@@ -348,6 +359,17 @@ function Sink() {
           <p className="text-xs text-muted-foreground">
             {openedTile ? `Opened ${openedTile}` : 'Nothing opened'}
           </p>
+          {/* Portalled to the body: it sits here only for its state. The pictures
+              are drawn SVG, so the saved file is named for what it holds. */}
+          <ImageLightbox
+            open={lightbox !== null}
+            src={lightbox?.src ?? ''}
+            alt={lightbox?.name ?? ''}
+            closeLabel="Close"
+            downloadHref={lightbox?.src}
+            downloadName={lightbox?.name.replace(/\.[^.]+$/, '.svg')}
+            onClose={() => setLightbox(null)}
+          />
           <form
             onSubmit={(event) => {
               event.preventDefault()

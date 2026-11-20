@@ -550,8 +550,10 @@ a video or an audio file is a row (`w-56` / `w-64`): the kind's drawing, the
 name over a detail line such as "2.4 MB", "24 slides" or "01:12". A
 `thumbnailUrl` is for images only and is ignored on every other kind. With no
 URL, a URL that fails to load, or `status="expired"`, an image falls back to
-its drawing too. The face is opaque (`bg-background`), so the tile reads on the
-page and on `UserBubble`'s accent alike.
+its drawing too, except that while it is uploading, processing or failed the
+status marker takes the drawing's place (there is no picture to veil). The face
+is opaque (`bg-background`), so the tile reads on the page and on `UserBubble`'s
+accent alike.
 
 The composer's row: `sm` tiles above the pill.
 
@@ -610,13 +612,13 @@ A message's grid: `md` tiles inside the bubble.
 
 The status marker, by status:
 
-| `status`     | Marker                                                                                     | Visible text                     | Accessible text                                                  |
-| ------------ | ------------------------------------------------------------------------------------------ | -------------------------------- | ---------------------------------------------------------------- |
-| `uploading`  | A spinner, centred over the picture on a veil; on other kinds it takes the drawing's place | none                             | `statusLabel`, default "Uploading" (`role="status"`)             |
-| `processing` | The same spinner                                                                           | none                             | `statusLabel`, default "Processing" (`role="status"`)            |
-| `ready`      | none                                                                                       | none                             | none                                                             |
-| `failed`     | The warning drawing in `text-danger`, and the face's border goes `border-danger`           | none                             | `statusLabel`, default "Failed" (`role="img"`, also the tooltip) |
-| `expired`    | A `Badge`; the drawing's square goes muted                                                 | `statusLabel`, default "Expired" | The same text                                                    |
+| `status`     | Marker                                                                                                                                                                                        | Visible text                     | Accessible text                                                  |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ---------------------------------------------------------------- |
+| `uploading`  | A spinner, centred over the picture on a veil; on other kinds, and on an image with no picture, it takes the drawing's place                                                                  | none                             | `statusLabel`, default "Uploading" (`role="status"`)             |
+| `processing` | The same spinner                                                                                                                                                                              | none                             | `statusLabel`, default "Processing" (`role="status"`)            |
+| `ready`      | none                                                                                                                                                                                          | none                             | none                                                             |
+| `failed`     | The warning drawing in `text-danger`: over the picture on a veil, in the drawing's place on an image with no picture, at the row's end on other kinds; the face's border goes `border-danger` | none                             | `statusLabel`, default "Failed" (`role="img"`, also the tooltip) |
+| `expired`    | A `Badge`; the drawing's square goes muted                                                                                                                                                    | `statusLabel`, default "Expired" | The same text                                                    |
 
 A failure is drawn with the warning and not a cross. The cross in the tile's
 corner is the remove action, and two crosses on one tile would mean two things.
@@ -642,6 +644,64 @@ for the remove button, which reaches 8px past the tile's top edge (`pt-2`).
 Keyboard: `Tab` reaches the face (only when it opens) and then the remove
 button · `Enter`/`Space` on the face open · `Enter`/`Space` on the remove button
 remove, and never open. A tile without `onOpen` is not focusable.
+
+### ImageLightbox
+
+One picture at full view, in a native modal `<dialog>` portalled to the body. A
+ready image tile's `onOpen` sets state; the lightbox's `onClose` clears it.
+
+```tsx
+const [viewing, setViewing] = useState<Attachment | null>(null)
+
+<AttachmentTile
+  name={file.name}
+  kind="image"
+  status="ready"
+  thumbnailUrl={file.url}
+  onOpen={() => setViewing(file)}
+/>
+
+<ImageLightbox
+  open={viewing !== null}
+  src={viewing?.url ?? ''}
+  alt={viewing?.name ?? ''}
+  onClose={() => setViewing(null)}
+  closeLabel={t('lightbox.close')}
+  downloadHref={viewing?.url}
+  downloadName={viewing?.name}
+  downloadLabel={t('lightbox.download')}
+/>
+```
+
+| Prop            | Type         | Default      | What it does                                                                                           |
+| --------------- | ------------ | ------------ | ------------------------------------------------------------------------------------------------------ |
+| `open`          | `boolean`    | required     | Whether the picture is shown; while `false` nothing is rendered                                        |
+| `src`           | `string`     | required     | The picture: an object URL or a data URL                                                               |
+| `alt`           | `string`     | required     | The image's `alt` and the dialog's accessible name                                                     |
+| `onClose`       | `() => void` | required     | Called for every request to close: Close, `Esc`, a click beside the picture, the browser's own request |
+| `closeLabel`    | `string`     | required     | The Close button's label, in the app's language                                                        |
+| `downloadHref`  | `string`     | none         | Renders a download link to this address                                                                |
+| `downloadName`  | `string`     | none         | The link's `download` attribute: an object URL would save under a random name, so give the file's own  |
+| `downloadLabel` | `string`     | `'Download'` | The download control's label                                                                           |
+| `onDownload`    | `() => void` | none         | Renders a download button, for a file the page builds itself; ignored when `downloadHref` is set       |
+
+`src` is an object URL the app owns and revokes; the lightbox fetches nothing.
+Keep it alive while the lightbox is open, and revoke it only when the file goes.
+
+The dialog fills the viewport on `bg-background/95`, so the light and dark
+themes follow the token, and the picture is contained: it shrinks to fit and
+never crops. It is a native modal dialog, so the browser makes the page behind
+it inert and puts it in the top layer. Escape, focus and the Tab trap are handled
+by hand, since a browser's own Tab can leave a dialog for its chrome. The
+toolbar holds the download control first and Close last. Close is `XIcon` on a
+plain `IconButton`, not `RemoveButton`: closing a view takes nothing away, so it
+has no danger tint.
+
+Keyboard: focus starts on Close · `Tab`/`Shift+Tab` cycle Download and Close and
+never leave · `Enter`/`Space` run the focused control · `Esc` closes and returns
+focus to the control that opened it. A click beside the picture closes; a click
+on it does not. Escape and clicks stop at the dialog, so one press closes one
+layer, as in `Menu` and `PurposeBar`.
 
 ## ForceGraph
 

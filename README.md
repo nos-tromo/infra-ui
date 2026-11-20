@@ -86,6 +86,7 @@ options and type-ahead) · `Menu`/`MenuItem` (the action menu) ·
 `ChatComposer` (a chat's message box: one pill with actions before and after
 the text) · `UserBubble` (what the user wrote, in the accent) ·
 `AttachmentTile` (an attached file: its picture or drawn kind, its state, remove) ·
+`ImageLightbox` (one picture at full view, in a modal dialog) ·
 `StatusIcon` (one job's state, drawn) ·
 `IconButton`/`IconLink` · `HoverIconAction` (the same icon button, kept invisible
 until its `.group` row is hovered or focused) · the named icon actions
