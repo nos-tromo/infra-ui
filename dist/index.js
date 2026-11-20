@@ -322,6 +322,16 @@ var ImageIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("
   /* @__PURE__ */ jsx8("circle", { cx: "9", cy: "9.5", r: "1.5" }),
   /* @__PURE__ */ jsx8("path", { d: "m21 15-5-5-9 9" })
 ] });
+var FileIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx8("path", { d: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" }),
+  /* @__PURE__ */ jsx8("path", { d: "M14 3v5h5" })
+] });
+var VideoIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx8("path", { d: "M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" }),
+  /* @__PURE__ */ jsx8("path", { d: "M7 4v16M17 4v16" }),
+  /* @__PURE__ */ jsx8("path", { d: "M3 8h4M3 12h4M3 16h4M17 8h4M17 12h4M17 16h4" })
+] });
+var AudioIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx8("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx8("path", { d: "M4 10v4M8 6v12M12 3v18M16 8v8M20 11v2" }) });
 var TagIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
   /* @__PURE__ */ jsx8("path", { d: "M12.6 3.6A2 2 0 0 0 11.2 3H5a2 2 0 0 0-2 2v6.2a2 2 0 0 0 .6 1.4l7.8 7.8a2 2 0 0 0 2.8 0l6.2-6.2a2 2 0 0 0 0-2.8z" }),
   /* @__PURE__ */ jsx8("circle", { cx: "7.5", cy: "7.5", r: "1.5" })
@@ -3401,6 +3411,7 @@ export {
   AppShell,
   ArrowLeftIcon,
   AttachButton,
+  AudioIcon,
   Badge,
   Banner,
   BrainActiveIcon,
@@ -3423,6 +3434,7 @@ export {
   DownloadLink,
   EmptyState,
   ExternalLinkIcon,
+  FileIcon,
   FileList,
   ForceGraph,
   HoverIconAction,
@@ -3479,6 +3491,7 @@ export {
   UndoIcon,
   UserBubble,
   UserMenu,
+  VideoIcon,
   WarningIcon,
   XIcon,
   clearAllPurposes,

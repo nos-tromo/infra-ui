@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react'
 import {
   ArrowLeftIcon,
+  AudioIcon,
   BrainActiveIcon,
   BrainIcon,
   CheckIcon,
@@ -10,6 +11,7 @@ import {
   DocumentsIcon,
   DownloadIcon,
   ExternalLinkIcon,
+  FileIcon,
   ImageIcon,
   InfoIcon,
   LayersIcon,
@@ -29,6 +31,7 @@ import {
   TagIcon,
   TrashIcon,
   UndoIcon,
+  VideoIcon,
   WarningIcon,
   XIcon,
 } from './index'
@@ -58,6 +61,9 @@ const ICONS = {
   LayersIcon,
   DocumentsIcon,
   ImageIcon,
+  FileIcon,
+  VideoIcon,
+  AudioIcon,
   TagIcon,
   UndoIcon,
   StopIcon,
@@ -258,4 +264,36 @@ test('the attach and dictate drawings differ from each other and from the plane'
   const drawings = [<PaperclipIcon />, <MicIcon />, <SendIcon />].map(drawing)
   // All three sit in one composer toolbar, a few pixels apart.
   expect(new Set(drawings).size).toBe(3)
+})
+
+const ds = (c: HTMLElement) => [...c.querySelectorAll('path')].map((p) => p.getAttribute('d'))
+
+test('the file is the report’s sheet with nothing written on it', () => {
+  // A file of any content: the same page and fold, no lines. The lines make it a report.
+  expect(ds(render(<FileIcon />).container)).toEqual(
+    ds(render(<ReportIcon />).container).slice(0, 2),
+  )
+})
+
+test('the film strip keeps its rails, so a clip reads as neither a picture nor play', () => {
+  const { container } = render(<VideoIcon />)
+  expect(container.querySelectorAll('path').length).toBeGreaterThanOrEqual(3)
+  expect(container.querySelector('circle')).toBeNull() // ImageIcon's sun
+  expect(ds(container)).not.toContain(ds(render(<PlayIcon />).container)[0])
+})
+
+test('the waveform is open bars of different heights, not the microphone', () => {
+  const d = ds(render(<AudioIcon />).container).join(' ')
+  expect(d).not.toMatch(/[zZaA]/) // no capsule, no arc
+  const bars = [...d.matchAll(/v(\d+)/g)].map((m) => Number(m[1]))
+  expect(bars.length).toBeGreaterThanOrEqual(4)
+  expect(new Set(bars).size).toBeGreaterThanOrEqual(3)
+})
+
+test('the four attachment kinds are four different drawings', () => {
+  const drawing = (icon: React.ReactElement) =>
+    render(icon).container.querySelector('svg')!.innerHTML
+  expect(
+    new Set([<ImageIcon />, <FileIcon />, <VideoIcon />, <AudioIcon />].map(drawing)).size,
+  ).toBe(4)
 })

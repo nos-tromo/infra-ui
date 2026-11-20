@@ -457,8 +457,8 @@ declare const StopwatchIcon: ({ className, ...props }: IconProps) => react.JSX.E
  * Drawn as a sheet with a folded corner and two lines of text, because a report
  * in these apps is a *document being assembled*, not a chart or a clipboard: the
  * lines say it holds prose someone wrote, and the fold says it is one page of
- * it. It is the only page in the set, so nothing else in a row can be mistaken
- * for it.
+ * it. It is the only page *with lines*: {@link FileIcon} is the same sheet left
+ * blank, so a file of any content cannot be mistaken for a report.
  */
 declare const ReportIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 /**
@@ -573,6 +573,36 @@ declare const DocumentsIcon: ({ className, ...props }: IconProps) => react.JSX.E
  * source*.
  */
 declare const ImageIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * One file, whatever is in it.
+ *
+ * {@link ReportIcon}'s sheet and fold with nothing written on it, because this
+ * names a file by being a file: a spreadsheet, a PDF, a note, anything that is
+ * not a picture, a clip or a recording. The blank page is what keeps it apart
+ * from {@link ReportIcon}, whose lines say someone wrote the contents, and from
+ * {@link DocumentsIcon}, whose second sheet says the whole corpus.
+ */
+declare const FileIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * A clip — a strip of frames.
+ *
+ * {@link ImageIcon}'s frame with a rail down each side and perforations in the
+ * margins outside the rails, which is what film looks like at 16px and what a
+ * still does not have. Deliberately not {@link PlayIcon}: that triangle is the
+ * *action* of opening a recording, where this names a *kind of file*, and the
+ * two can sit in one row.
+ */
+declare const VideoIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * A recording — a waveform.
+ *
+ * Five open bars of different heights, the drawing every audio file and voice
+ * note wears, so it needs no label. Deliberately not {@link MicIcon}: the
+ * capsule on its stand *starts* dictation, where this names a *kind of file*
+ * already made. Open strokes with no capsule and no arc are what keep the two
+ * apart in the one composer.
+ */
+declare const AudioIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 /**
  * A stated purpose — the label every request goes out with.
  *
@@ -1676,4 +1706,4 @@ declare namespace PurposeBar {
     var displayName: string;
 }
 
-export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };
+export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, AudioIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, FileIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, VideoIcon, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };

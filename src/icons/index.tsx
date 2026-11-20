@@ -174,8 +174,8 @@ export const StopwatchIcon = ({ className = 'h-4 w-4', ...props }: IconProps) =>
  * Drawn as a sheet with a folded corner and two lines of text, because a report
  * in these apps is a *document being assembled*, not a chart or a clipboard: the
  * lines say it holds prose someone wrote, and the fold says it is one page of
- * it. It is the only page in the set, so nothing else in a row can be mistaken
- * for it.
+ * it. It is the only page *with lines*: {@link FileIcon} is the same sheet left
+ * blank, so a file of any content cannot be mistaken for a report.
  */
 export const ReportIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
   <svg {...base} className={className} {...props}>
@@ -368,6 +368,54 @@ export const ImageIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
     <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
     <circle cx="9" cy="9.5" r="1.5" />
     <path d="m21 15-5-5-9 9" />
+  </svg>
+)
+
+/**
+ * One file, whatever is in it.
+ *
+ * {@link ReportIcon}'s sheet and fold with nothing written on it, because this
+ * names a file by being a file: a spreadsheet, a PDF, a note, anything that is
+ * not a picture, a clip or a recording. The blank page is what keeps it apart
+ * from {@link ReportIcon}, whose lines say someone wrote the contents, and from
+ * {@link DocumentsIcon}, whose second sheet says the whole corpus.
+ */
+export const FileIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+    <path d="M14 3v5h5" />
+  </svg>
+)
+
+/**
+ * A clip — a strip of frames.
+ *
+ * {@link ImageIcon}'s frame with a rail down each side and perforations in the
+ * margins outside the rails, which is what film looks like at 16px and what a
+ * still does not have. Deliberately not {@link PlayIcon}: that triangle is the
+ * *action* of opening a recording, where this names a *kind of file*, and the
+ * two can sit in one row.
+ */
+export const VideoIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
+    <path d="M7 4v16M17 4v16" />
+    <path d="M3 8h4M3 12h4M3 16h4M17 8h4M17 12h4M17 16h4" />
+  </svg>
+)
+
+/**
+ * A recording — a waveform.
+ *
+ * Five open bars of different heights, the drawing every audio file and voice
+ * note wears, so it needs no label. Deliberately not {@link MicIcon}: the
+ * capsule on its stand *starts* dictation, where this names a *kind of file*
+ * already made. Open strokes with no capsule and no arc are what keep the two
+ * apart in the one composer.
+ */
+export const AudioIcon = ({ className = 'h-4 w-4', ...props }: IconProps) => (
+  <svg {...base} className={className} {...props}>
+    <path d="M4 10v4M8 6v12M12 3v18M16 8v8M20 11v2" />
   </svg>
 )
 
