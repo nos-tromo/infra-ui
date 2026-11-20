@@ -19,6 +19,7 @@ test('an image shows its picture as a square cover, named by the file', () => {
   expect(face(container)).toHaveClass('size-14')
   expect(container.firstElementChild).toHaveAttribute('data-kind', 'image')
   expect(container.firstElementChild).toHaveAttribute('data-status', 'ready')
+  expect(container.firstElementChild).toHaveAttribute('data-size', 'sm')
   expect(screen.queryByRole('button')).not.toBeInTheDocument()
   rerender(
     <AttachmentTile
@@ -30,6 +31,7 @@ test('an image shows its picture as a square cover, named by the file', () => {
     />,
   )
   expect(face(container)).toHaveClass('size-28')
+  expect(container.firstElementChild).toHaveAttribute('data-size', 'md')
 })
 
 test('with onOpen the face is one button named by the file; Enter, Space and a click open it', async () => {
@@ -174,8 +176,51 @@ test('an expired tile shows no picture, even when given one, and says so', () =>
     />,
   )
   expect(container.querySelector('img')).toBeNull()
+  expect(face(container)).toHaveClass('size-28') // md keeps the square: the badge fits there
   expect(face(container).querySelector('svg')!.innerHTML).toBe(drawing(<ImageIcon />))
   expect(screen.getByText('Expired')).toBeInTheDocument()
+})
+
+test('an expired sm image is a row, so the whole label has room, not "Ex…"', () => {
+  const { container } = render(
+    <AttachmentTile
+      name="old-photo.png"
+      kind="image"
+      status="expired"
+      thumbnailUrl={PICTURE}
+      onOpen={() => {}}
+    />,
+  )
+  const row = face(container)
+  expect(container.firstElementChild).toHaveAttribute('data-kind', 'image') // still an image
+  expect(row).toHaveClass('h-14', 'w-56') // the row's width, not the 56px square's
+  expect(row).not.toHaveClass('size-14')
+  expect(container.querySelector('img')).toBeNull()
+  expect(row.querySelector('svg')!.innerHTML).toBe(drawing(<ImageIcon />))
+  const name = screen.getByText('old-photo.png')
+  const badge = screen.getByText('Expired')
+  expect(name).toHaveClass('truncate')
+  expect(name.compareDocumentPosition(badge) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy() // the badge ends the row
+  expect(badge.parentElement).not.toHaveClass('flex-col')
+  expect(screen.getByRole('button', { name: 'old-photo.png' })).toHaveAccessibleDescription(
+    'Expired',
+  )
+})
+
+test('an expired sm image without onOpen is a row too, and a custom label is shown whole', () => {
+  const { container } = render(
+    <AttachmentTile name="old-photo.png" kind="image" status="expired" statusLabel="Abgelaufen" />,
+  )
+  expect(face(container)).toHaveClass('w-56')
+  expect(screen.getByText('Abgelaufen')).toBeInTheDocument()
+  expect(screen.getByText('old-photo.png')).toBeInTheDocument()
+})
+
+test('only an expired sm image becomes a row: a failed one stays the square', () => {
+  const { container } = render(
+    <AttachmentTile name="old-photo.png" kind="image" status="failed" thumbnailUrl={PICTURE} />,
+  )
+  expect(face(container)).toHaveClass('size-14')
 })
 
 test.each([

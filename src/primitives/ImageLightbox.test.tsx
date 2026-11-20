@@ -130,6 +130,27 @@ test('the browser’s own close request is a close', () => {
   expect(onClose).toHaveBeenCalledTimes(1)
 })
 
+test('the browser’s own close request stops at the dialog, like every other event', () => {
+  // `cancel` is a dialog event, so the page behind it is an outer dialog (not shown, no name).
+  const outerCancel = vi.fn()
+  render(
+    <dialog onCancel={outerCancel}>
+      <ImageLightbox
+        open
+        src={PICTURE}
+        alt="harbour-sketch.png"
+        closeLabel="Close"
+        onClose={() => {}}
+      />
+    </dialog>,
+  )
+  fireEvent(
+    screen.getByRole('dialog', { name: 'harbour-sketch.png' }),
+    new Event('cancel', { cancelable: true }),
+  )
+  expect(outerCancel).not.toHaveBeenCalled()
+})
+
 test('Tab and Shift+Tab stay inside', async () => {
   const user = userEvent.setup()
   render(<Harness downloadHref={PICTURE} downloadName="harbour-sketch.png" />)

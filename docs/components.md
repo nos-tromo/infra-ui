@@ -551,8 +551,11 @@ name over a detail line such as "2.4 MB", "24 slides" or "01:12". A
 `thumbnailUrl` is for images only and is ignored on every other kind. With no
 URL, a URL that fails to load, or `status="expired"`, an image falls back to
 its drawing too, except that while it is uploading, processing or failed the
-status marker takes the drawing's place (there is no picture to veil). The face
-is opaque (`bg-background`), so the tile reads on the page and on `UserBubble`'s
+status marker takes the drawing's place (there is no picture to veil). An
+expired image at `sm` is drawn as a row, like every other kind: a 56px square
+leaves the badge 46px, too narrow for "Expired" (it would read "Ex..."), and
+there is no picture left to show. At `md` it keeps the square. The face is
+opaque (`bg-background`), so the tile reads on the page and on `UserBubble`'s
 accent alike.
 
 The composer's row: `sm` tiles above the pill.
@@ -618,7 +621,7 @@ The status marker, by status:
 | `processing` | The same spinner                                                                                                                                                                              | none                             | `statusLabel`, default "Processing" (`role="status"`)            |
 | `ready`      | none                                                                                                                                                                                          | none                             | none                                                             |
 | `failed`     | The warning drawing in `text-danger`: over the picture on a veil, in the drawing's place on an image with no picture, at the row's end on other kinds; the face's border goes `border-danger` | none                             | `statusLabel`, default "Failed" (`role="img"`, also the tooltip) |
-| `expired`    | A `Badge`; the drawing's square goes muted                                                                                                                                                    | `statusLabel`, default "Expired" | The same text                                                    |
+| `expired`    | A `Badge`; the drawing's square goes muted. At `sm` an image is a row (square, name, then the badge at the row's end); at `md` the badge sits under the drawing in the square                 | `statusLabel`, default "Expired" | The same text                                                    |
 
 A failure is drawn with the warning and not a cross. The cross in the tile's
 corner is the remove action, and two crosses on one tile would mean two things.
@@ -643,7 +646,8 @@ for the remove button, which reaches 8px past the tile's top edge (`pt-2`).
 
 Keyboard: `Tab` reaches the face (only when it opens) and then the remove
 button · `Enter`/`Space` on the face open · `Enter`/`Space` on the remove button
-remove, and never open. A tile without `onOpen` is not focusable.
+remove, and never open. The face of a tile without `onOpen` is not focusable
+(the remove button still is).
 
 ### ImageLightbox
 
@@ -698,10 +702,11 @@ plain `IconButton`, not `RemoveButton`: closing a view takes nothing away, so it
 has no danger tint.
 
 Keyboard: focus starts on Close · `Tab`/`Shift+Tab` cycle Download and Close and
-never leave · `Enter`/`Space` run the focused control · `Esc` closes and returns
-focus to the control that opened it. A click beside the picture closes; a click
-on it does not. Escape and clicks stop at the dialog, so one press closes one
-layer, as in `Menu` and `PurposeBar`.
+never leave · `Enter` runs the focused control (`Space` too on a button) · `Esc`
+closes and returns focus to the control that opened it. A click beside the
+picture closes; a click on it does not. Escape, clicks and the browser's own
+close request stop at the dialog, so one press closes one layer, as in `Menu`
+and `PurposeBar`.
 
 ## ForceGraph
 

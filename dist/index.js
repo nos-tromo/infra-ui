@@ -1356,6 +1356,7 @@ function AttachmentTile({
   const expired = status === "expired";
   const hasMarker = busy || failed || expired;
   const label = status === "ready" ? "" : statusLabel ?? DEFAULT_STATUS_LABELS[status];
+  const row = !isImage || expired && size === "sm";
   const hasDetail = !isImage && Boolean(detail);
   const describedBy = [hasDetail && detailId, hasMarker && markerId].filter(Boolean).join(" ") || void 0;
   const big = size === "md";
@@ -1365,7 +1366,7 @@ function AttachmentTile({
   const said = onOpen ? /* @__PURE__ */ jsx23("span", { id: markerId, className: "sr-only", children: label }) : null;
   const Icon = KIND_ICONS[kind];
   let content;
-  if (isImage) {
+  if (!row) {
     const drawing = /* @__PURE__ */ jsx23(ImageIcon, { className: "h-6 w-6 text-muted-foreground" });
     const stand = onOpen ? drawing : /* @__PURE__ */ jsx23("span", { role: "img", "aria-label": name, title: name, className: "inline-flex", children: drawing });
     content = /* @__PURE__ */ jsxs10(Fragment4, { children: [
@@ -1422,7 +1423,7 @@ function AttachmentTile({
     ] });
   }
   const faceClass = cn(
-    face({ kind: isImage ? "image" : "other", size }),
+    face({ kind: row ? "other" : "image", size }),
     failed ? "border-danger" : "border-border",
     // The offset keeps the ring apart from the face: on `UserBubble` the accent is
     // the primary colour, and a ring in it would vanish.
@@ -1520,6 +1521,7 @@ function OpenImageLightbox({
     if (event.target === event.currentTarget || event.target === stageRef.current) onClose();
   };
   const onCancel = (event) => {
+    event.stopPropagation();
     event.preventDefault();
     onClose();
   };

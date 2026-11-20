@@ -1130,12 +1130,15 @@ interface AttachmentTileProps {
  * is `uploading` or `processing` a spinner marks it; `failed` is drawn with the
  * warning and a red border, and `expired` shows the drawing with a badge in
  * place of the picture, which is gone by then. Without a URL, or when the
- * picture does not load, an image falls back to its drawing.
+ * picture does not load, an image falls back to its drawing. At `sm` an expired
+ * image is drawn as a row, like every other kind, so its badge reads whole; at
+ * `md` it keeps the square.
  *
  * The face and the remove button are siblings, never nested: a button inside a
  * button is invalid, and the remove action must be its own stop in the tab
  * order that never opens the file. The face is a `<button>` only when `onOpen`
- * is set, so a tile that opens nothing is not focusable.
+ * is set, so the face of a tile that opens nothing is not focusable (its remove
+ * button still is).
  *
  * A failure is drawn with the warning, not the cross. The cross in the corner is
  * the remove action, and two crosses on one tile would mean two things.

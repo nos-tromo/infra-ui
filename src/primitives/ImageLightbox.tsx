@@ -114,8 +114,9 @@ function OpenImageLightbox({
   }
 
   // The browser's own close request — a back gesture, or an Escape that
-  // reached it — is a close too.
+  // reached it — is a close too, and stops here like every other event.
   const onCancel = (event: SyntheticEvent<HTMLDialogElement>) => {
+    event.stopPropagation()
     event.preventDefault()
     onClose()
   }
