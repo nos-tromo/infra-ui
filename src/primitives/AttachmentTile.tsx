@@ -1,0 +1,274 @@
+import { useId, useState, type ReactElement } from 'react'
+import { cva } from 'class-variance-authority'
+import { cn } from '../cn'
+import { AudioIcon, FileIcon, ImageIcon, VideoIcon, WarningIcon, type IconProps } from '../icons'
+import { Badge } from './Badge'
+import { RemoveButton } from './iconActions'
+import { Spinner } from './Spinner'
+
+export type AttachmentKind = 'image' | 'document' | 'video' | 'audio'
+export type AttachmentTileStatus = 'uploading' | 'processing' | 'ready' | 'failed' | 'expired'
+
+export interface AttachmentTileProps {
+  /** The file's name: the tile's accessible name, and its tooltip. */
+  name: string
+  /** What the file is. Decides the tile's shape and its drawing. */
+  kind: AttachmentKind
+  /** Where the file is in its life. `ready` shows no marker. */
+  status: AttachmentTileStatus
+  /** A picture of the file, drawn only when `kind` is `image` and `status` is not `expired`. */
+  thumbnailUrl?: string
+  /** What to say under the name on a non-image tile: "2.4 MB", "24 slides", "01:12". */
+  detail?: string
+  /** The status marker's text. Defaults to Uploading, Processing, Failed or Expired. */
+  statusLabel?: string
+  /** Opens the file. The face is a `<button>` only when this is set. */
+  onOpen?: () => void
+  /** Takes the file out. Renders the remove button. */
+  onRemove?: () => void
+  /** The remove button's label. Defaults to `Remove ${name}`. */
+  removeLabel?: string
+  /** `sm` for a composer's row, `md` for a message's grid. Defaults to `sm`. */
+  size?: 'sm' | 'md'
+  /** Merged onto the root, last. */
+  className?: string
+}
+
+const KIND_ICONS: Record<AttachmentKind, (props: IconProps) => ReactElement> = {
+  image: ImageIcon,
+  document: FileIcon,
+  video: VideoIcon,
+  audio: AudioIcon,
+}
+
+const DEFAULT_STATUS_LABELS: Record<Exclude<AttachmentTileStatus, 'ready'>, string> = {
+  uploading: 'Uploading',
+  processing: 'Processing',
+  failed: 'Failed',
+  expired: 'Expired',
+}
+
+/**
+ * The tile's face. An image is a square cover; every other kind is a row with
+ * its drawn kind, the name and the detail. The surface is opaque, so the tile
+ * reads on the page and on `UserBubble`'s accent alike.
+ */
+const face = cva(
+  'relative flex items-center border bg-background text-left text-sm text-foreground',
+  {
+    variants: {
+      kind: {
+        image: 'justify-center overflow-hidden rounded-xl',
+        other: 'gap-3 rounded-xl px-2',
+      },
+      size: { sm: '', md: '' },
+    },
+    compoundVariants: [
+      { kind: 'image', size: 'sm', class: 'size-14' },
+      { kind: 'image', size: 'md', class: 'size-28' },
+      { kind: 'other', size: 'sm', class: 'h-14 w-56' },
+      { kind: 'other', size: 'md', class: 'h-16 w-64' },
+    ],
+  },
+)
+
+/**
+ * An attached file in a chat: its picture, or its drawn kind, and where it is.
+ *
+ * An image shows its `thumbnailUrl` as a square cover. Every other kind is a
+ * row of its drawing, the name and a `detail`, and ignores the URL. While a file
+ * is `uploading` or `processing` a spinner marks it; `failed` is drawn with the
+ * warning and a red border, and `expired` shows the drawing with a badge in
+ * place of the picture, which is gone by then. Without a URL, or when the
+ * picture does not load, an image falls back to its drawing.
+ *
+ * The face and the remove button are siblings, never nested: a button inside a
+ * button is invalid, and the remove action must be its own stop in the tab
+ * order that never opens the file. The face is a `<button>` only when `onOpen`
+ * is set, so a tile that opens nothing is not focusable.
+ *
+ * A failure is drawn with the warning, not the cross. The cross in the corner is
+ * the remove action, and two crosses on one tile would mean two things.
+ *
+ * The caller makes, owns and revokes the thumbnail's object URL; the tile
+ * fetches nothing. Put tiles above `ChatComposer`'s pill, not inside it: its
+ * `[&_button]:rounded-full` would round the face.
+ *
+ * @param props - `name`, `kind` and `status` are required.
+ * @returns The tile.
+ */
+export function AttachmentTile({
+  name,
+  kind,
+  status,
+  thumbnailUrl,
+  detail,
+  statusLabel,
+  onOpen,
+  onRemove,
+  removeLabel,
+  size = 'sm',
+  className,
+}: AttachmentTileProps): ReactElement {
+  const id = useId()
+  const markerId = `${id}-status`
+  const detailId = `${id}-detail`
+  // The URL that failed, not a flag: a new URL is tried with no effect to reset it.
+  const [failedUrl, setFailedUrl] = useState<string>()
+
+  const isImage = kind === 'image'
+  const picture =
+    isImage && status !== 'expired' && thumbnailUrl && failedUrl !== thumbnailUrl
+      ? thumbnailUrl
+      : undefined
+  const busy = status === 'uploading' || status === 'processing'
+  const failed = status === 'failed'
+  const expired = status === 'expired'
+  const hasMarker = busy || failed || expired
+  const label = status === 'ready' ? '' : (statusLabel ?? DEFAULT_STATUS_LABELS[status])
+  const hasDetail = !isImage && Boolean(detail)
+  const describedBy =
+    [hasDetail && detailId, hasMarker && markerId].filter(Boolean).join(' ') || undefined
+
+  const big = size === 'md'
+  const spinner = <Spinner label={label} className={big ? 'h-7 w-7' : 'h-5 w-5'} />
+  const warning = (iconClass: string) => (
+    <span role="img" aria-label={label} title={label} className="inline-flex text-danger">
+      <WarningIcon className={iconClass} />
+    </span>
+  )
+  // `block`: an ellipsis needs a block container, which `Badge`'s inline-flex is not.
+  const badge = <Badge className="block max-w-full truncate">{label}</Badge>
+  // The button's contents are presentational, so what describes it is this text,
+  // not the labelled spinner or warning beside it. A div face has no description
+  // to give, and there the spinner or warning already names the state.
+  const said = onOpen ? (
+    <span id={markerId} className="sr-only">
+      {label}
+    </span>
+  ) : null
+
+  const Icon = KIND_ICONS[kind]
+  let content: ReactElement
+  if (isImage) {
+    // Inside the button the button carries the name; otherwise the picture, or
+    // the drawing that stands in for it, must.
+    const drawing = <ImageIcon className="h-6 w-6 text-muted-foreground" />
+    const stand = onOpen ? (
+      drawing
+    ) : (
+      <span role="img" aria-label={name} title={name} className="inline-flex">
+        {drawing}
+      </span>
+    )
+    content = (
+      <>
+        {picture ? (
+          <img
+            src={picture}
+            alt={onOpen ? '' : name}
+            title={name}
+            onError={() => setFailedUrl(picture)}
+            className="h-full w-full object-cover"
+          />
+        ) : expired ? (
+          <span className="flex max-w-full min-w-0 flex-col items-center gap-1 px-1">
+            {stand}
+            <span id={markerId} className="flex max-w-full min-w-0">
+              {badge}
+            </span>
+          </span>
+        ) : (
+          stand
+        )}
+        {(busy || failed) && (
+          <span className="absolute inset-0 flex items-center justify-center bg-background/50">
+            {busy ? spinner : warning(big ? 'h-7 w-7' : 'h-5 w-5')}
+            {said}
+          </span>
+        )}
+      </>
+    )
+  } else {
+    content = (
+      <>
+        <span
+          className={cn(
+            'flex size-10 shrink-0 items-center justify-center rounded-lg',
+            expired ? 'bg-muted text-muted-foreground' : 'bg-primary/15 text-primary',
+          )}
+        >
+          {busy ? (
+            <>
+              <Spinner label={label} className="h-5 w-5" />
+              {said}
+            </>
+          ) : (
+            <Icon className="h-5 w-5" />
+          )}
+        </span>
+        <span className="flex min-w-0 flex-1 flex-col">
+          <span className="truncate font-medium" title={name}>
+            {name}
+          </span>
+          {hasDetail && (
+            <span id={detailId} className="truncate text-xs text-muted-foreground">
+              {detail}
+            </span>
+          )}
+        </span>
+        {failed && (
+          <span className="flex shrink-0">
+            {warning('h-5 w-5')}
+            {said}
+          </span>
+        )}
+        {expired && (
+          <span id={markerId} className="flex max-w-[40%] min-w-0">
+            {badge}
+          </span>
+        )}
+      </>
+    )
+  }
+
+  const faceClass = cn(
+    face({ kind: isImage ? 'image' : 'other', size }),
+    failed ? 'border-danger' : 'border-border',
+    onOpen && 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+  )
+
+  return (
+    <div
+      data-kind={kind}
+      data-status={status}
+      data-size={size}
+      className={cn('relative w-fit', className)}
+    >
+      {onOpen ? (
+        <button
+          type="button"
+          data-part="face"
+          aria-label={name}
+          aria-describedby={describedBy}
+          onClick={() => onOpen()}
+          className={faceClass}
+        >
+          {content}
+        </button>
+      ) : (
+        <div data-part="face" className={faceClass}>
+          {content}
+        </div>
+      )}
+      {onRemove && (
+        <RemoveButton
+          label={removeLabel ?? `Remove ${name}`}
+          onClick={() => onRemove()}
+          className="absolute -right-2 -top-2 h-6 w-6 rounded-full border border-border bg-background shadow-sm"
+        />
+      )}
+    </div>
+  )
+}
+AttachmentTile.displayName = 'AttachmentTile'

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import {
   ActionBar,
   AppShell,
+  AttachmentTile,
   Badge,
   Banner,
   AttachButton,
@@ -18,6 +19,8 @@ import {
   EmptyState,
   ForceGraph,
   ImageIcon,
+  type AttachmentKind,
+  type AttachmentTileStatus,
   type ForceGraphEdge,
   type ForceGraphNode,
   Input,
@@ -97,6 +100,91 @@ const INITIAL_GRAPH_EDGES: ForceGraphEdge[] = [
   { source: 'n2', target: 'n4', kind: 'related' },
 ]
 
+/* Pictures for the attachment tiles, drawn inline: the demo fetches nothing, as
+   the library never does. In an app these are object URLs the app makes. */
+const drawn = (svg: string) => `data:image/svg+xml,${encodeURIComponent(svg)}`
+
+const PICTURE_HARBOUR = drawn(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
+    '<rect width="120" height="120" fill="#bcd6ee"/>' +
+    '<circle cx="86" cy="34" r="14" fill="#f6c453"/>' +
+    '<path d="M0 78 L28 50 L52 74 L78 44 L120 80 V120 H0Z" fill="#6b8caf"/>' +
+    '<rect y="82" width="120" height="38" fill="#2f5f8a"/>' +
+    '<path d="M10 96 H46 M60 104 H104 M20 112 H70" stroke="#9fc3e3" stroke-width="3"/>' +
+    '</svg>',
+)
+const PICTURE_FLOORPLAN = drawn(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
+    '<rect width="120" height="120" fill="#f1ecdf"/>' +
+    '<path d="M14 14 H106 V106 H14Z M14 56 H60 M60 14 V80 M60 80 H106 M84 80 V106" ' +
+    'fill="none" stroke="#5a5348" stroke-width="4"/>' +
+    '</svg>',
+)
+const PICTURE_CHART = drawn(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
+    '<rect width="120" height="120" fill="#e9f0e4"/>' +
+    '<rect x="16" y="70" width="18" height="34" fill="#5f8f5a"/>' +
+    '<rect x="42" y="46" width="18" height="58" fill="#5f8f5a"/>' +
+    '<rect x="68" y="58" width="18" height="46" fill="#5f8f5a"/>' +
+    '<rect x="94" y="24" width="14" height="80" fill="#3d6b39"/>' +
+    '</svg>',
+)
+
+interface DemoTile {
+  id: string
+  name: string
+  kind: AttachmentKind
+  status: AttachmentTileStatus
+  thumbnailUrl?: string
+  detail?: string
+  statusLabel?: string
+}
+
+/* One of each status and each kind. A tile is openable only once it is ready. */
+const INITIAL_TILES: DemoTile[] = [
+  {
+    id: 't1',
+    name: 'harbour-sketch.png',
+    kind: 'image',
+    status: 'ready',
+    thumbnailUrl: PICTURE_HARBOUR,
+  },
+  {
+    id: 't2',
+    name: 'floor-plan.png',
+    kind: 'image',
+    status: 'uploading',
+    thumbnailUrl: PICTURE_FLOORPLAN,
+  },
+  {
+    id: 't3',
+    name: 'sales-chart.png',
+    kind: 'image',
+    status: 'processing',
+    thumbnailUrl: PICTURE_CHART,
+  },
+  {
+    id: 't4',
+    name: 'scan-0042.png',
+    kind: 'image',
+    status: 'failed',
+    thumbnailUrl: PICTURE_FLOORPLAN,
+    statusLabel: 'Could not be read',
+  },
+  { id: 't5', name: 'old-photo.png', kind: 'image', status: 'expired' },
+  { id: 't6', name: 'quarterly-plan.pdf', kind: 'document', status: 'ready', detail: '24 slides' },
+  { id: 't7', name: 'site-walk.mp4', kind: 'video', status: 'ready', detail: '01:12' },
+  { id: 't8', name: 'standup-notes.m4a', kind: 'audio', status: 'processing', detail: '04:30' },
+  {
+    id: 't9',
+    name: 'minutes-of-the-planning-meeting-final-v2.docx',
+    kind: 'document',
+    status: 'failed',
+    detail: '2.4 MB',
+  },
+  { id: 't10', name: 'budget-draft.xlsx', kind: 'document', status: 'expired', detail: '88 KB' },
+]
+
 function Sink() {
   const [picked, setPicked] = useState<string | null>('a')
   const [collection, setCollection] = useState<string | null>(null)
@@ -106,6 +194,8 @@ function Sink() {
   const [purposeRequired, setPurposeRequired] = useState(true)
   const [auditedOutcome, setAuditedOutcome] = useState('')
   const [chatDraft, setChatDraft] = useState('')
+  const [tiles, setTiles] = useState(INITIAL_TILES)
+  const [openedTile, setOpenedTile] = useState('')
   const [demoFiles, setDemoFiles] = useState([
     { name: 'interview_2021_part1.mp4', size: 412_000_000 },
     { name: 'witness_statement_final.pdf', size: 2_100_000 },
@@ -209,8 +299,55 @@ function Sink() {
             as plain text, and the message box as one pill below them. */}
         <section className="flex max-w-3xl flex-col gap-3">
           <h2 className="text-sm font-medium text-muted-foreground">Chat</h2>
-          <UserBubble>Summarise the minutes of the planning meeting.</UserBubble>
+          <UserBubble>
+            Summarise the minutes of the planning meeting.
+            {/* md tiles in a message: pictures first, openable and not. */}
+            <div className="flex flex-wrap gap-2">
+              <AttachmentTile
+                name="harbour-sketch.png"
+                kind="image"
+                status="ready"
+                thumbnailUrl={PICTURE_HARBOUR}
+                size="md"
+                onOpen={() => setOpenedTile('harbour-sketch.png')}
+              />
+              <AttachmentTile
+                name="floor-plan.png"
+                kind="image"
+                status="ready"
+                thumbnailUrl={PICTURE_FLOORPLAN}
+                size="md"
+                onOpen={() => setOpenedTile('floor-plan.png')}
+              />
+              <AttachmentTile name="old-photo.png" kind="image" status="expired" size="md" />
+            </div>
+          </UserBubble>
           <p className="text-sm">The meeting agreed on three dates and left the budget open.</p>
+          {/* sm tiles above the pill, never inside it: the pill rounds every
+              button in it. Remove takes a tile out of this demo list. */}
+          <div className="flex flex-wrap gap-3 pt-2">
+            {tiles.map((tile) => (
+              <AttachmentTile
+                key={tile.id}
+                name={tile.name}
+                kind={tile.kind}
+                status={tile.status}
+                thumbnailUrl={tile.thumbnailUrl}
+                detail={tile.detail}
+                statusLabel={tile.statusLabel}
+                onOpen={tile.status === 'ready' ? () => setOpenedTile(tile.name) : undefined}
+                onRemove={() => setTiles((list) => list.filter((t) => t.id !== tile.id))}
+              />
+            ))}
+            {tiles.length === 0 && (
+              <Button variant="secondary" onClick={() => setTiles(INITIAL_TILES)}>
+                Restore the tiles
+              </Button>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {openedTile ? `Opened ${openedTile}` : 'Nothing opened'}
+          </p>
           <form
             onSubmit={(event) => {
               event.preventDefault()

@@ -96,6 +96,12 @@ export { StatusIcon, type StatusIconProps, type StatusIconStatus } from './primi
 export { Banner, type BannerProps } from './primitives/Banner'
 export { ChatComposer, type ChatComposerProps } from './primitives/ChatComposer'
 export { UserBubble, type UserBubbleProps } from './primitives/UserBubble'
+export {
+  AttachmentTile,
+  type AttachmentKind,
+  type AttachmentTileProps,
+  type AttachmentTileStatus,
+} from './primitives/AttachmentTile'
 export { PageHeader, type PageHeaderProps } from './primitives/PageHeader'
 export { SectionHeader, type SectionHeaderProps } from './primitives/SectionHeader'
 export { ActionBar } from './primitives/ActionBar'

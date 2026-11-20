@@ -3,7 +3,8 @@
 Props, keyboard maps and worked examples for the things that need more than a
 one-line description: `AppShell`, `SelectMenu`, `Menu`, where actions go
 (`SectionHeader`, `ActionBar`, `EmptyState`), the icon actions, the chat
-composer and user bubble, `ForceGraph` and `PurposeBar`. The other primitives take a prop or two and are listed, with what
+composer and user bubble, the attachment tiles and the image lightbox,
+`ForceGraph` and `PurposeBar`. The other primitives take a prop or two and are listed, with what
 each is for, in the top-level [README](../README.md#primitives), which also
 carries the install and the Tailwind wiring; this file is the detail behind it.
 Why the icons are drawn rather than typed, and what each named action means, is
@@ -535,6 +536,112 @@ holds in both themes (often the light theme's accent).
   --app-bubble: hsl(217 91% 45%); /* white is ~6:1 here, ~3.6:1 on the dark accent (60%) */
 }
 ```
+
+## Attachment tiles and the image lightbox
+
+A file attached to a chat is shown as itself: its picture when it is an image,
+its drawn kind when it is not, with where it stands (uploading, processing,
+failed, expired) and a way to take it out.
+
+### AttachmentTile
+
+An image is a square cover (`size-14` at `sm`, `size-28` at `md`). A document,
+a video or an audio file is a row (`w-56` / `w-64`): the kind's drawing, the
+name over a detail line such as "2.4 MB", "24 slides" or "01:12". A
+`thumbnailUrl` is for images only and is ignored on every other kind. With no
+URL, a URL that fails to load, or `status="expired"`, an image falls back to
+its drawing too. The face is opaque (`bg-background`), so the tile reads on the
+page and on `UserBubble`'s accent alike.
+
+The composer's row: `sm` tiles above the pill.
+
+```tsx
+<div className="flex flex-wrap gap-3 pt-2">
+  {attachments.map((file) => (
+    <AttachmentTile
+      key={file.id}
+      name={file.name}
+      kind={file.kind}
+      status={file.status}
+      thumbnailUrl={file.previewUrl}
+      detail={file.detail}
+      onOpen={file.status === 'ready' ? () => open(file) : undefined}
+      onRemove={() => remove(file)}
+      removeLabel={t('composer.removeFile', { name: file.name })}
+    />
+  ))}
+</div>
+```
+
+A message's grid: `md` tiles inside the bubble.
+
+```tsx
+<UserBubble>
+  <p className="whitespace-pre-wrap">{message.content}</p>
+  <div className="flex flex-wrap gap-2">
+    {message.images.map((image) => (
+      <AttachmentTile
+        key={image.id}
+        name={image.name}
+        kind="image"
+        status={image.status}
+        thumbnailUrl={image.url}
+        size="md"
+        onOpen={() => open(image)}
+      />
+    ))}
+  </div>
+</UserBubble>
+```
+
+| Prop           | Type                                                              | Default           | What it does                                                                 |
+| -------------- | ----------------------------------------------------------------- | ----------------- | ---------------------------------------------------------------------------- |
+| `name`         | `string`                                                          | required          | The file's name: the tile's accessible name and its tooltip                  |
+| `kind`         | `'image' \| 'document' \| 'video' \| 'audio'`                     | required          | The shape and the drawing                                                    |
+| `status`       | `'uploading' \| 'processing' \| 'ready' \| 'failed' \| 'expired'` | required          | Where the file stands; `ready` shows no marker                               |
+| `thumbnailUrl` | `string`                                                          | none              | The picture, drawn only when `kind` is `image` and `status` is not `expired` |
+| `detail`       | `string`                                                          | none              | Under the name on a non-image tile                                           |
+| `statusLabel`  | `string`                                                          | per status, below | The marker's text, in the app's language                                     |
+| `onOpen`       | `() => void`                                                      | none              | Makes the face a `<button>`; without it the face is a `<div>`                |
+| `onRemove`     | `() => void`                                                      | none              | Renders the remove button                                                    |
+| `removeLabel`  | `string`                                                          | `Remove ${name}`  | The remove button's label                                                    |
+| `size`         | `'sm' \| 'md'`                                                    | `'sm'`            | `sm` for a composer's row, `md` for a message's grid                         |
+| `className`    | `string`                                                          | none              | Merged onto the root, last                                                   |
+
+The status marker, by status:
+
+| `status`     | Marker                                                                                     | Visible text                     | Accessible text                                                  |
+| ------------ | ------------------------------------------------------------------------------------------ | -------------------------------- | ---------------------------------------------------------------- |
+| `uploading`  | A spinner, centred over the picture on a veil; on other kinds it takes the drawing's place | none                             | `statusLabel`, default "Uploading" (`role="status"`)             |
+| `processing` | The same spinner                                                                           | none                             | `statusLabel`, default "Processing" (`role="status"`)            |
+| `ready`      | none                                                                                       | none                             | none                                                             |
+| `failed`     | The warning drawing in `text-danger`, and the face's border goes `border-danger`           | none                             | `statusLabel`, default "Failed" (`role="img"`, also the tooltip) |
+| `expired`    | A `Badge`; the drawing's square goes muted                                                 | `statusLabel`, default "Expired" | The same text                                                    |
+
+A failure is drawn with the warning and not a cross. The cross in the tile's
+corner is the remove action, and two crosses on one tile would mean two things.
+
+Where the face is a button, it is named by the file (`aria-label`) and
+described by the detail and the marker (`aria-describedby`); its picture then
+has an empty `alt`, because the button carries the name. Where it is a `div`,
+the picture's `alt` is the name.
+
+The face and the remove button are siblings, never nested: a button inside a
+button is invalid, and removing must be its own stop in the tab order that
+never opens the file. The remove button sits on the tile's top-right corner
+and is always visible.
+
+The app makes, owns and revokes the thumbnail object URLs; the tile fetches
+nothing, and a data URL or an object URL is all it needs. When `thumbnailUrl`
+changes, a load failure of the old one is forgotten and the new one is tried.
+
+Put tiles _above_ `ChatComposer`'s pill, not inside it. The pill's
+`[&_button]:rounded-full` would round the face. Leave room above a row of tiles
+for the remove button, which reaches 8px past the tile's top edge (`pt-2`).
+
+Keyboard: `Tab` reaches the face (only when it opens) and then the remove
+button · `Enter`/`Space` on the face open · `Enter`/`Space` on the remove button
+remove, and never open. A tile without `onOpen` is not focusable.
 
 ## ForceGraph
 

@@ -1,6 +1,6 @@
 import { ClassValue } from 'clsx';
 import * as react from 'react';
-import { ButtonHTMLAttributes, ReactNode, AnchorHTMLAttributes, SVGProps, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes, Ref, KeyboardEvent, TextareaHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, ReactNode, AnchorHTMLAttributes, SVGProps, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes, Ref, KeyboardEvent, TextareaHTMLAttributes, ReactElement } from 'react';
 import * as class_variance_authority_types from 'class-variance-authority/types';
 import { VariantProps } from 'class-variance-authority';
 
@@ -1096,6 +1096,62 @@ type UserBubbleProps = HTMLAttributes<HTMLDivElement>;
  */
 declare function UserBubble({ className, ...props }: UserBubbleProps): react.JSX.Element;
 
+type AttachmentKind = 'image' | 'document' | 'video' | 'audio';
+type AttachmentTileStatus = 'uploading' | 'processing' | 'ready' | 'failed' | 'expired';
+interface AttachmentTileProps {
+    /** The file's name: the tile's accessible name, and its tooltip. */
+    name: string;
+    /** What the file is. Decides the tile's shape and its drawing. */
+    kind: AttachmentKind;
+    /** Where the file is in its life. `ready` shows no marker. */
+    status: AttachmentTileStatus;
+    /** A picture of the file, drawn only when `kind` is `image` and `status` is not `expired`. */
+    thumbnailUrl?: string;
+    /** What to say under the name on a non-image tile: "2.4 MB", "24 slides", "01:12". */
+    detail?: string;
+    /** The status marker's text. Defaults to Uploading, Processing, Failed or Expired. */
+    statusLabel?: string;
+    /** Opens the file. The face is a `<button>` only when this is set. */
+    onOpen?: () => void;
+    /** Takes the file out. Renders the remove button. */
+    onRemove?: () => void;
+    /** The remove button's label. Defaults to `Remove ${name}`. */
+    removeLabel?: string;
+    /** `sm` for a composer's row, `md` for a message's grid. Defaults to `sm`. */
+    size?: 'sm' | 'md';
+    /** Merged onto the root, last. */
+    className?: string;
+}
+/**
+ * An attached file in a chat: its picture, or its drawn kind, and where it is.
+ *
+ * An image shows its `thumbnailUrl` as a square cover. Every other kind is a
+ * row of its drawing, the name and a `detail`, and ignores the URL. While a file
+ * is `uploading` or `processing` a spinner marks it; `failed` is drawn with the
+ * warning and a red border, and `expired` shows the drawing with a badge in
+ * place of the picture, which is gone by then. Without a URL, or when the
+ * picture does not load, an image falls back to its drawing.
+ *
+ * The face and the remove button are siblings, never nested: a button inside a
+ * button is invalid, and the remove action must be its own stop in the tab
+ * order that never opens the file. The face is a `<button>` only when `onOpen`
+ * is set, so a tile that opens nothing is not focusable.
+ *
+ * A failure is drawn with the warning, not the cross. The cross in the corner is
+ * the remove action, and two crosses on one tile would mean two things.
+ *
+ * The caller makes, owns and revokes the thumbnail's object URL; the tile
+ * fetches nothing. Put tiles above `ChatComposer`'s pill, not inside it: its
+ * `[&_button]:rounded-full` would round the face.
+ *
+ * @param props - `name`, `kind` and `status` are required.
+ * @returns The tile.
+ */
+declare function AttachmentTile({ name, kind, status, thumbnailUrl, detail, statusLabel, onOpen, onRemove, removeLabel, size, className, }: AttachmentTileProps): ReactElement;
+declare namespace AttachmentTile {
+    var displayName: string;
+}
+
 interface PageHeaderProps extends HTMLAttributes<HTMLElement> {
     /** Route title — exactly one PageHeader (one h1) per route. */
     title: string;
@@ -1706,4 +1762,4 @@ declare namespace PurposeBar {
     var displayName: string;
 }
 
-export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, AudioIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, FileIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, VideoIcon, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };
+export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, type AttachmentKind, AttachmentTile, type AttachmentTileProps, type AttachmentTileStatus, AudioIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, FileIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, VideoIcon, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };

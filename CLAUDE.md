@@ -74,7 +74,7 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
 - Primitive set: `AppShell`, `SidebarGroup`, `PageHeader`, `SectionHeader`, `UserMenu`, `AppHeader`,
   `Button`, `ToggleButton`, `CycleButton`, `CopyButton`, `Card`, `ActionBar`, `EmptyState`, `Input`, `Select`, `SelectMenu`,
   `Menu`/`MenuItem`,
-  `Badge`, `Spinner`, `Banner`, `ChatComposer`, `UserBubble`, `StatusIcon`, `FileList`, `ForceGraph`,
+  `Badge`, `Spinner`, `Banner`, `ChatComposer`, `UserBubble`, `AttachmentTile`, `StatusIcon`, `FileList`, `ForceGraph`,
   `IconButton`/`IconLink`,
   `HoverIconAction` and the named icon actions, `DisclosureText`, `PurposeBar` (with its
   framework-agnostic store, `usePurpose` and `withPurpose`), plus the `cn` helper.
