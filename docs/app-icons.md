@@ -10,7 +10,7 @@ family.
 
 | Surface | Repository | Files |
 |---|---|---|
-| Portal, with the login, information and code pages | `edge-plane` | `landing/` (Authelia's copy of `favicon.ico`: `authelia/assets/`) |
+| Portal, with the login, information and code pages | `edge-plane` | `landing/` (Authelia's login page mounts its `favicon.ico`) |
 | docint | `docint` | `frontend/public/` |
 | Nextext | `Nextext` | `frontend/public/` |
 | translator | `translator` | `frontend/public/` |
@@ -39,6 +39,8 @@ names the whole app and is never part of a control
 - **A white glyph:** strokes 2.5–3 units wide, about 1.5 px at 16 px, with
   round caps and joins. Where an outline would blur at 16 px, the shape is
   filled instead (the portal's grid, docint's nodes, Ghostwriter's bubble).
+  Lines that only connect filled shapes may be thinner, so the shapes stay
+  apart: docint's links are 2 units.
 - **One idea, readable at 16 px:** judge an icon at 16 px on a screen at 100 %
   scale, where it is at its worst. Simple and concise beats detailed and
   playful: a detail that disappears at 16 px is noise.
@@ -121,9 +123,7 @@ Path("favicon.ico").write_bytes(head + entries + b"".join(pngs))
 ## Changing an icon
 
 Redraw the SVG and render the PNGs again in the app's repository, and release
-it with the app's next version. One file has a second copy: the portal's
-`favicon.ico` sits in edge-plane's `authelia/assets/` too, for Authelia's
-login page, and edge-plane's smoke test compares the two. A changed accent
-changes the tile with
-it, and the app's favicon test fails until both agree. A browser may show the
-old icon from its cache for a while.
+it with the app's next version. There is no second copy: Authelia's login
+page mounts the portal's `favicon.ico` itself. A changed accent changes the
+tile with it, and the app's favicon test fails until both agree. A browser
+may show the old icon from its cache for a while.
