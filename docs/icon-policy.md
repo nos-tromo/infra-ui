@@ -16,6 +16,14 @@ every machine — and in a label-less control the drawing _is_ the affordance.
 Adding an action means one icon in `src/icons/` plus a wrapper the size of the
 ones in `src/primitives/iconActions.tsx`, never a hand-rolled SVG in an app.
 
+### App icons are not UI icons
+
+An app's favicon is not part of this set and not covered by the sentence
+above. It is a coloured tile that names the whole app in a browser tab, never
+a glyph inside a control, and it belongs to the app it names: an SVG file in
+that app's repository, not a component here. The family's rules, the colours
+and where each file lives are in [app-icons.md](app-icons.md).
+
 The rule covers status markers as much as controls, which is what the four added
 in `v0.12.0` are for: `CheckIcon` pairs with the control set's existing `XIcon`
 as pass/fail and `InfoIcon` with `WarningIcon` as
