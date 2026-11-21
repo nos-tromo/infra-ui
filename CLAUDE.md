@@ -94,6 +94,8 @@ pnpm build        # tsup -> dist/, then scripts/build-tokens.mjs -> dist/tokens.
   back to, so weight and size differ on every machine, and in a control with no
   text of its own that drawing *is* the affordance. `ThemeToggle` carries the
   same rule in its own comment; the icon set is where new ones go.
+  App favicons are not UI icons: each lives in its app's repository
+  (`docs/app-icons.md`).
 - **Icon actions are imported, not composed.** `IconButton` (always visible,
   `ghost` by default so it has no background until hovered), `HoverIconAction`
   (the same control, `opacity-0` until its `.group` row is hovered or focused)
@@ -180,8 +182,9 @@ it and this file in sync when behavior changes.
 - `docs/README.md` — index over the in-repo reference: `docs/components.md`
   (props, keyboard maps, worked examples), `docs/icon-policy.md` (the
   drawn-never-typed rule and what each named action may mean — the human-facing
-  canonical copy of the icon constraints above), `docs/pinning.md` (why a SHA
-  and not a tag, why `dist/` is committed).
+  canonical copy of the icon constraints above), `docs/app-icons.md` (the
+  federation's favicons: rules, colours, where each lives), `docs/pinning.md`
+  (why a SHA and not a tag, why `dist/` is committed).
 - `docs/design.md` + `docs/implementation-plan.md` — the superseded v0.1.0
   spec, kept as design history only; dated design/plan files sit alongside.
 - Federation context (how the three apps consume this, workspace layout):
