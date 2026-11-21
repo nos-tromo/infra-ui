@@ -106,6 +106,18 @@ before its text, and adds `PencilIcon` for it: a row menu reads `PencilIcon`
 rename, `TrashIcon` delete, so the destructive row is told apart by its drawing
 as well as by its red.
 
+`v0.26.0` adds `FileIcon`, `VideoIcon` and `AudioIcon`, which with `ImageIcon`
+are the four kinds of attachment: a _value set_, like the three sources of
+`v0.20.0`, drawn one at a time by `AttachmentTile`. `ImageIcon` is reused as it
+is, since it already names a kind of source. `FileIcon` is `ReportIcon`'s sheet
+left blank: a report holds lines someone wrote and a file may hold anything, so
+the missing lines are what say "any file". `VideoIcon` is a film strip, a frame
+with its rails and perforations, kept apart from `PlayIcon`, which is the action
+of opening a recording rather than a kind of file. `AudioIcon` is a waveform of
+open bars, kept apart from `MicIcon`, which starts dictation rather than naming
+a recording already made. The lightbox's Close is `XIcon` on a plain
+`IconButton`, not `RemoveButton`, because closing a view removes nothing.
+
 An icon with more than one call site is exported **once** from `src/icons/` and
 imported everywhere, including by this package's own primitives: `CopyButton`
 and `FileList` each drew a private checkmark and cross of their own from before

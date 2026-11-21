@@ -1,6 +1,6 @@
 import { ClassValue } from 'clsx';
 import * as react from 'react';
-import { ButtonHTMLAttributes, ReactNode, AnchorHTMLAttributes, SVGProps, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes, Ref, KeyboardEvent, TextareaHTMLAttributes } from 'react';
+import { ButtonHTMLAttributes, ReactNode, AnchorHTMLAttributes, SVGProps, HTMLAttributes, InputHTMLAttributes, SelectHTMLAttributes, Ref, KeyboardEvent, TextareaHTMLAttributes, ReactElement } from 'react';
 import * as class_variance_authority_types from 'class-variance-authority/types';
 import { VariantProps } from 'class-variance-authority';
 
@@ -457,8 +457,8 @@ declare const StopwatchIcon: ({ className, ...props }: IconProps) => react.JSX.E
  * Drawn as a sheet with a folded corner and two lines of text, because a report
  * in these apps is a *document being assembled*, not a chart or a clipboard: the
  * lines say it holds prose someone wrote, and the fold says it is one page of
- * it. It is the only page in the set, so nothing else in a row can be mistaken
- * for it.
+ * it. It is the only page *with lines*: {@link FileIcon} is the same sheet left
+ * blank, so a file of any content cannot be mistaken for a report.
  */
 declare const ReportIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 /**
@@ -573,6 +573,36 @@ declare const DocumentsIcon: ({ className, ...props }: IconProps) => react.JSX.E
  * source*.
  */
 declare const ImageIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * One file, whatever is in it.
+ *
+ * {@link ReportIcon}'s sheet and fold with nothing written on it, because this
+ * names a file by being a file: a spreadsheet, a PDF, a note, anything that is
+ * not a picture, a clip or a recording. The blank page is what keeps it apart
+ * from {@link ReportIcon}, whose lines say someone wrote the contents, and from
+ * {@link DocumentsIcon}, whose second sheet says the whole corpus.
+ */
+declare const FileIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * A clip — a strip of frames.
+ *
+ * {@link ImageIcon}'s frame with a rail down each side and perforations in the
+ * margins outside the rails, which is what film looks like at 16px and what a
+ * still does not have. Deliberately not {@link PlayIcon}: that triangle is the
+ * *action* of opening a recording, where this names a *kind of file*, and the
+ * two can sit in one row.
+ */
+declare const VideoIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
+/**
+ * A recording — a waveform.
+ *
+ * Five open bars of different heights, the drawing every audio file and voice
+ * note wears, so it needs no label. Deliberately not {@link MicIcon}: the
+ * capsule on its stand *starts* dictation, where this names a *kind of file*
+ * already made. Open strokes with no capsule and no arc are what keep the two
+ * apart in the one composer.
+ */
+declare const AudioIcon: ({ className, ...props }: IconProps) => react.JSX.Element;
 /**
  * A stated purpose — the label every request goes out with.
  *
@@ -1065,6 +1095,121 @@ type UserBubbleProps = HTMLAttributes<HTMLDivElement>;
  * opacity, e.g. `border-bubble-foreground/30 bg-bubble-foreground/15`.
  */
 declare function UserBubble({ className, ...props }: UserBubbleProps): react.JSX.Element;
+
+type AttachmentKind = 'image' | 'document' | 'video' | 'audio';
+type AttachmentTileStatus = 'uploading' | 'processing' | 'ready' | 'failed' | 'expired';
+interface AttachmentTileProps {
+    /** The file's name: the tile's accessible name, and its tooltip. */
+    name: string;
+    /** What the file is. Decides the tile's shape and its drawing. */
+    kind: AttachmentKind;
+    /** Where the file is in its life. `ready` shows no marker. */
+    status: AttachmentTileStatus;
+    /** A picture of the file, drawn only when `kind` is `image` and `status` is not `expired`. */
+    thumbnailUrl?: string;
+    /** What to say under the name on a non-image tile: "2.4 MB", "24 slides", "01:12". */
+    detail?: string;
+    /** The status marker's text. Defaults to Uploading, Processing, Failed or Expired. */
+    statusLabel?: string;
+    /** Opens the file. The face is a `<button>` only when this is set. */
+    onOpen?: () => void;
+    /** Takes the file out. Renders the remove button. */
+    onRemove?: () => void;
+    /** The remove button's label. Defaults to `Remove ${name}`. */
+    removeLabel?: string;
+    /** `sm` for a composer's row, `md` for a message's grid. Defaults to `sm`. */
+    size?: 'sm' | 'md';
+    /** Merged onto the root, last. */
+    className?: string;
+}
+/**
+ * An attached file in a chat: its picture, or its drawn kind, and where it is.
+ *
+ * An image shows its `thumbnailUrl` as a square cover. Every other kind is a
+ * row of its drawing, the name and a `detail`, and ignores the URL. While a file
+ * is `uploading` or `processing` a spinner marks it; `failed` is drawn with the
+ * warning and a red border, and `expired` shows the drawing with a badge in
+ * place of the picture, which is gone by then. Without a URL, or when the
+ * picture does not load, an image falls back to its drawing. At `sm` an expired
+ * image is drawn as a row, like every other kind, so its badge reads whole; at
+ * `md` it keeps the square.
+ *
+ * The face and the remove button are siblings, never nested: a button inside a
+ * button is invalid, and the remove action must be its own stop in the tab
+ * order that never opens the file. The face is a `<button>` only when `onOpen`
+ * is set, so the face of a tile that opens nothing is not focusable (its remove
+ * button still is).
+ *
+ * A failure is drawn with the warning, not the cross. The cross in the corner is
+ * the remove action, and two crosses on one tile would mean two things.
+ *
+ * The caller makes, owns and revokes the thumbnail's object URL; the tile
+ * fetches nothing. Put tiles above `ChatComposer`'s pill, not inside it: its
+ * `[&_button]:rounded-full` would round the face.
+ *
+ * @param props - `name`, `kind` and `status` are required.
+ * @returns The tile.
+ */
+declare function AttachmentTile({ name, kind, status, thumbnailUrl, detail, statusLabel, onOpen, onRemove, removeLabel, size, className, }: AttachmentTileProps): ReactElement;
+declare namespace AttachmentTile {
+    var displayName: string;
+}
+
+interface ImageLightboxProps {
+    /** Whether the picture is shown. While false the component renders nothing. */
+    open: boolean;
+    /** The picture: an object URL or a data URL. The caller makes, owns and revokes it. */
+    src: string;
+    /** What the picture is: the image's `alt` and the dialog's accessible name. */
+    alt: string;
+    /** Called for every request to close: Close, Escape, a click beside the picture. */
+    onClose: () => void;
+    /** The Close button's label, in the app's language. */
+    closeLabel: string;
+    /** Renders a download link to this address, in place of the download button. */
+    downloadHref?: string;
+    /**
+     * The link's `download` attribute. An object URL would save under a random
+     * name, so say the file's own. Without it the link still downloads.
+     */
+    downloadName?: string;
+    /** The download control's label. Defaults to `Download`. */
+    downloadLabel?: string;
+    /** Renders a download button, for a file the page builds itself. Ignored with `downloadHref`. */
+    onDownload?: () => void;
+}
+/**
+ * One picture at full view, in a modal dialog.
+ *
+ * A native modal `<dialog>` rather than a hand-rolled overlay: the browser makes
+ * the rest of the page inert and puts the dialog in the top layer, above any
+ * stacking context the page sits in. It fills the viewport on the page's own
+ * tokens, so the light and dark themes follow, and the picture is contained: it
+ * shrinks to fit and never crops or upscales past its size.
+ *
+ * Focus starts on Close and goes back to whatever held it, the tile that opened
+ * the picture, when the dialog closes or unmounts. Escape, focus and the Tab
+ * trap are handled here by hand and not left to the browser: happy-dom does not
+ * implement them, and a browser's Tab can leave a dialog for its own chrome.
+ * Escape and a click beside the picture close it; a click on the picture does not.
+ *
+ * Its events stop at the dialog. It is portalled to the body, but React still
+ * bubbles its events through the caller's ancestors, so without this an Escape
+ * or a click would also reach the menu, row or panel around the lightbox. One
+ * press closes one layer, as in `Menu` and `PurposeBar`.
+ *
+ * `src` is an object URL (or a data URL) the caller makes, owns and revokes; the
+ * lightbox fetches nothing. The caller owns `open`: it is false until a tile's
+ * `onOpen` sets it, and `onClose` should clear it.
+ *
+ * @param props - `open`, `src`, `alt`, `onClose` and `closeLabel` are required;
+ *   `downloadHref` with `downloadName` adds a download link, `onDownload` a button.
+ * @returns The dialog while `open`, otherwise nothing.
+ */
+declare function ImageLightbox({ open, ...props }: ImageLightboxProps): ReactElement | null;
+declare namespace ImageLightbox {
+    var displayName: string;
+}
 
 interface PageHeaderProps extends HTMLAttributes<HTMLElement> {
     /** Route title — exactly one PageHeader (one h1) per route. */
@@ -1676,4 +1821,4 @@ declare namespace PurposeBar {
     var displayName: string;
 }
 
-export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };
+export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, type AttachmentKind, AttachmentTile, type AttachmentTileProps, type AttachmentTileStatus, AudioIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, FileIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, ImageLightbox, type ImageLightboxProps, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, VideoIcon, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };

@@ -3,7 +3,8 @@
 Props, keyboard maps and worked examples for the things that need more than a
 one-line description: `AppShell`, `SelectMenu`, `Menu`, where actions go
 (`SectionHeader`, `ActionBar`, `EmptyState`), the icon actions, the chat
-composer and user bubble, `ForceGraph` and `PurposeBar`. The other primitives take a prop or two and are listed, with what
+composer and user bubble, the attachment tiles and the image lightbox,
+`ForceGraph` and `PurposeBar`. The other primitives take a prop or two and are listed, with what
 each is for, in the top-level [README](../README.md#primitives), which also
 carries the install and the Tailwind wiring; this file is the detail behind it.
 Why the icons are drawn rather than typed, and what each named action means, is
@@ -386,7 +387,7 @@ The set lives in `src/icons/`, all exported: `DownloadIcon`, `PlusIcon`,
 `WarningIcon`, `InfoIcon`, `CheckIcon`, `StopwatchIcon`, `ExternalLinkIcon`,
 `ReportIcon`/`ReportCheckIcon`, `SendIcon`, `SearchIcon`, `RefreshIcon`,
 `ArrowLeftIcon`, `BrainIcon`/`BrainActiveIcon`, `PlayIcon`, `LayersIcon`,
-`DocumentsIcon`, `ImageIcon`, `TagIcon`, `UndoIcon`, `StopIcon`, `PaperclipIcon`, `MicIcon`, `MoreIcon`, `PencilIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
+`DocumentsIcon`, `ImageIcon`, `FileIcon`, `VideoIcon`, `AudioIcon`, `TagIcon`, `UndoIcon`, `StopIcon`, `PaperclipIcon`, `MicIcon`, `MoreIcon`, `PencilIcon`. They are inline SVG, `currentColor`, `aria-hidden`, sized by
 the caller. Adding one is covered by
 [icon-policy.md](icon-policy.md#icons-are-drawn-never-typed).
 
@@ -535,6 +536,177 @@ holds in both themes (often the light theme's accent).
   --app-bubble: hsl(217 91% 45%); /* white is ~6:1 here, ~3.6:1 on the dark accent (60%) */
 }
 ```
+
+## Attachment tiles and the image lightbox
+
+A file attached to a chat is shown as itself: its picture when it is an image,
+its drawn kind when it is not, with where it stands (uploading, processing,
+failed, expired) and a way to take it out.
+
+### AttachmentTile
+
+An image is a square cover (`size-14` at `sm`, `size-28` at `md`). A document,
+a video or an audio file is a row (`w-56` / `w-64`): the kind's drawing, the
+name over a detail line such as "2.4 MB", "24 slides" or "01:12". A
+`thumbnailUrl` is for images only and is ignored on every other kind. With no
+URL, a URL that fails to load, or `status="expired"`, an image falls back to
+its drawing too, except that while it is uploading, processing or failed the
+status marker takes the drawing's place (there is no picture to veil). An
+expired image at `sm` is drawn as a row, like every other kind: a 56px square
+leaves the badge 46px, too narrow for "Expired" (it would read "Ex..."), and
+there is no picture left to show. At `md` it keeps the square. The face is
+opaque (`bg-background`), so the tile reads on the page and on `UserBubble`'s
+accent alike.
+
+The composer's row: `sm` tiles above the pill.
+
+```tsx
+<div className="flex flex-wrap gap-3 pt-2">
+  {attachments.map((file) => (
+    <AttachmentTile
+      key={file.id}
+      name={file.name}
+      kind={file.kind}
+      status={file.status}
+      thumbnailUrl={file.previewUrl}
+      detail={file.detail}
+      onOpen={file.status === 'ready' ? () => open(file) : undefined}
+      onRemove={() => remove(file)}
+      removeLabel={t('composer.removeFile', { name: file.name })}
+    />
+  ))}
+</div>
+```
+
+A message's grid: `md` tiles inside the bubble.
+
+```tsx
+<UserBubble>
+  <p className="whitespace-pre-wrap">{message.content}</p>
+  <div className="flex flex-wrap gap-2">
+    {message.images.map((image) => (
+      <AttachmentTile
+        key={image.id}
+        name={image.name}
+        kind="image"
+        status={image.status}
+        thumbnailUrl={image.url}
+        size="md"
+        onOpen={() => open(image)}
+      />
+    ))}
+  </div>
+</UserBubble>
+```
+
+| Prop           | Type                                                              | Default           | What it does                                                                 |
+| -------------- | ----------------------------------------------------------------- | ----------------- | ---------------------------------------------------------------------------- |
+| `name`         | `string`                                                          | required          | The file's name: the tile's accessible name and its tooltip                  |
+| `kind`         | `'image' \| 'document' \| 'video' \| 'audio'`                     | required          | The shape and the drawing                                                    |
+| `status`       | `'uploading' \| 'processing' \| 'ready' \| 'failed' \| 'expired'` | required          | Where the file stands; `ready` shows no marker                               |
+| `thumbnailUrl` | `string`                                                          | none              | The picture, drawn only when `kind` is `image` and `status` is not `expired` |
+| `detail`       | `string`                                                          | none              | Under the name on a non-image tile                                           |
+| `statusLabel`  | `string`                                                          | per status, below | The marker's text, in the app's language                                     |
+| `onOpen`       | `() => void`                                                      | none              | Makes the face a `<button>`; without it the face is a `<div>`                |
+| `onRemove`     | `() => void`                                                      | none              | Renders the remove button                                                    |
+| `removeLabel`  | `string`                                                          | `Remove ${name}`  | The remove button's label                                                    |
+| `size`         | `'sm' \| 'md'`                                                    | `'sm'`            | `sm` for a composer's row, `md` for a message's grid                         |
+| `className`    | `string`                                                          | none              | Merged onto the root, last                                                   |
+
+The status marker, by status:
+
+| `status`     | Marker                                                                                                                                                                                        | Visible text                     | Accessible text                                                  |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ---------------------------------------------------------------- |
+| `uploading`  | A spinner, centred over the picture on a veil; on other kinds, and on an image with no picture, it takes the drawing's place                                                                  | none                             | `statusLabel`, default "Uploading" (`role="status"`)             |
+| `processing` | The same spinner                                                                                                                                                                              | none                             | `statusLabel`, default "Processing" (`role="status"`)            |
+| `ready`      | none                                                                                                                                                                                          | none                             | none                                                             |
+| `failed`     | The warning drawing in `text-danger`: over the picture on a veil, in the drawing's place on an image with no picture, at the row's end on other kinds; the face's border goes `border-danger` | none                             | `statusLabel`, default "Failed" (`role="img"`, also the tooltip) |
+| `expired`    | A `Badge`; the drawing's square goes muted. At `sm` an image is a row (square, name, then the badge at the row's end); at `md` the badge sits under the drawing in the square                 | `statusLabel`, default "Expired" | The same text                                                    |
+
+A failure is drawn with the warning and not a cross. The cross in the tile's
+corner is the remove action, and two crosses on one tile would mean two things.
+
+Where the face is a button, it is named by the file (`aria-label`) and
+described by the detail and the marker (`aria-describedby`); its picture then
+has an empty `alt`, because the button carries the name. Where it is a `div`,
+the picture's `alt` is the name.
+
+The face and the remove button are siblings, never nested: a button inside a
+button is invalid, and removing must be its own stop in the tab order that
+never opens the file. The remove button sits on the tile's top-right corner
+and is always visible.
+
+The app makes, owns and revokes the thumbnail object URLs; the tile fetches
+nothing, and a data URL or an object URL is all it needs. When `thumbnailUrl`
+changes, a load failure of the old one is forgotten and the new one is tried.
+
+Put tiles _above_ `ChatComposer`'s pill, not inside it. The pill's
+`[&_button]:rounded-full` would round the face. Leave room above a row of tiles
+for the remove button, which reaches 8px past the tile's top edge (`pt-2`).
+
+Keyboard: `Tab` reaches the face (only when it opens) and then the remove
+button · `Enter`/`Space` on the face open · `Enter`/`Space` on the remove button
+remove, and never open. The face of a tile without `onOpen` is not focusable
+(the remove button still is).
+
+### ImageLightbox
+
+One picture at full view, in a native modal `<dialog>` portalled to the body. A
+ready image tile's `onOpen` sets state; the lightbox's `onClose` clears it.
+
+```tsx
+const [viewing, setViewing] = useState<Attachment | null>(null)
+
+<AttachmentTile
+  name={file.name}
+  kind="image"
+  status="ready"
+  thumbnailUrl={file.url}
+  onOpen={() => setViewing(file)}
+/>
+
+<ImageLightbox
+  open={viewing !== null}
+  src={viewing?.url ?? ''}
+  alt={viewing?.name ?? ''}
+  onClose={() => setViewing(null)}
+  closeLabel={t('lightbox.close')}
+  downloadHref={viewing?.url}
+  downloadName={viewing?.name}
+  downloadLabel={t('lightbox.download')}
+/>
+```
+
+| Prop            | Type         | Default      | What it does                                                                                           |
+| --------------- | ------------ | ------------ | ------------------------------------------------------------------------------------------------------ |
+| `open`          | `boolean`    | required     | Whether the picture is shown; while `false` nothing is rendered                                        |
+| `src`           | `string`     | required     | The picture: an object URL or a data URL                                                               |
+| `alt`           | `string`     | required     | The image's `alt` and the dialog's accessible name                                                     |
+| `onClose`       | `() => void` | required     | Called for every request to close: Close, `Esc`, a click beside the picture, the browser's own request |
+| `closeLabel`    | `string`     | required     | The Close button's label, in the app's language                                                        |
+| `downloadHref`  | `string`     | none         | Renders a download link to this address                                                                |
+| `downloadName`  | `string`     | none         | The link's `download` attribute: an object URL would save under a random name, so give the file's own  |
+| `downloadLabel` | `string`     | `'Download'` | The download control's label                                                                           |
+| `onDownload`    | `() => void` | none         | Renders a download button, for a file the page builds itself; ignored when `downloadHref` is set       |
+
+`src` is an object URL the app owns and revokes; the lightbox fetches nothing.
+Keep it alive while the lightbox is open, and revoke it only when the file goes.
+
+The dialog fills the viewport on `bg-background/95`, so the light and dark
+themes follow the token, and the picture is contained: it shrinks to fit and
+never crops. It is a native modal dialog, so the browser makes the page behind
+it inert and puts it in the top layer. Escape, focus and the Tab trap are handled
+by hand, since a browser's own Tab can leave a dialog for its chrome. The
+toolbar holds the download control first and Close last. Close is `XIcon` on a
+plain `IconButton`, not `RemoveButton`: closing a view takes nothing away, so it
+has no danger tint.
+
+Keyboard: focus starts on Close · `Tab`/`Shift+Tab` cycle Download and Close and
+never leave · `Enter` runs the focused control (`Space` too on a button) · `Esc`
+closes and returns focus to the control that opened it. A click beside the
+picture closes; a click on it does not. Escape, clicks and the browser's own
+close request stop at the dialog, so one press closes one layer, as in `Menu`
+and `PurposeBar`.
 
 ## ForceGraph
 

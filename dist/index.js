@@ -322,6 +322,16 @@ var ImageIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("
   /* @__PURE__ */ jsx8("circle", { cx: "9", cy: "9.5", r: "1.5" }),
   /* @__PURE__ */ jsx8("path", { d: "m21 15-5-5-9 9" })
 ] });
+var FileIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx8("path", { d: "M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" }),
+  /* @__PURE__ */ jsx8("path", { d: "M14 3v5h5" })
+] });
+var VideoIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
+  /* @__PURE__ */ jsx8("path", { d: "M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" }),
+  /* @__PURE__ */ jsx8("path", { d: "M7 4v16M17 4v16" }),
+  /* @__PURE__ */ jsx8("path", { d: "M3 8h4M3 12h4M3 16h4M17 8h4M17 12h4M17 16h4" })
+] });
+var AudioIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsx8("svg", { ...base, className, ...props, children: /* @__PURE__ */ jsx8("path", { d: "M4 10v4M8 6v12M12 3v18M16 8v8M20 11v2" }) });
 var TagIcon = ({ className = "h-4 w-4", ...props }) => /* @__PURE__ */ jsxs2("svg", { ...base, className, ...props, children: [
   /* @__PURE__ */ jsx8("path", { d: "M12.6 3.6A2 2 0 0 0 11.2 3H5a2 2 0 0 0-2 2v6.2a2 2 0 0 0 .6 1.4l7.8 7.8a2 2 0 0 0 2.8 0l6.2-6.2a2 2 0 0 0 0-2.8z" }),
   /* @__PURE__ */ jsx8("circle", { cx: "7.5", cy: "7.5", r: "1.5" })
@@ -1288,23 +1298,321 @@ function UserBubble({ className, ...props }) {
   );
 }
 
+// src/primitives/AttachmentTile.tsx
+import { useId as useId3, useState as useState4 } from "react";
+import { cva as cva4 } from "class-variance-authority";
+import { Fragment as Fragment4, jsx as jsx23, jsxs as jsxs10 } from "react/jsx-runtime";
+var KIND_ICONS = {
+  image: ImageIcon,
+  document: FileIcon,
+  video: VideoIcon,
+  audio: AudioIcon
+};
+var DEFAULT_STATUS_LABELS = {
+  uploading: "Uploading",
+  processing: "Processing",
+  failed: "Failed",
+  expired: "Expired"
+};
+var face = cva4(
+  "relative flex items-center border bg-background text-left text-sm text-foreground",
+  {
+    variants: {
+      kind: {
+        image: "justify-center overflow-hidden rounded-xl",
+        other: "gap-3 rounded-xl px-2"
+      },
+      size: { sm: "", md: "" }
+    },
+    compoundVariants: [
+      { kind: "image", size: "sm", class: "size-14" },
+      { kind: "image", size: "md", class: "size-28" },
+      { kind: "other", size: "sm", class: "h-14 w-56" },
+      { kind: "other", size: "md", class: "h-16 w-64" }
+    ]
+  }
+);
+function AttachmentTile({
+  name,
+  kind,
+  status,
+  thumbnailUrl,
+  detail,
+  statusLabel,
+  onOpen,
+  onRemove,
+  removeLabel,
+  size = "sm",
+  className
+}) {
+  const id = useId3();
+  const markerId = `${id}-status`;
+  const detailId = `${id}-detail`;
+  const [failedUrl, setFailedUrl] = useState4();
+  const isImage = kind === "image";
+  const picture = isImage && status !== "expired" && thumbnailUrl && failedUrl !== thumbnailUrl ? thumbnailUrl : void 0;
+  const busy = status === "uploading" || status === "processing";
+  const failed = status === "failed";
+  const expired = status === "expired";
+  const hasMarker = busy || failed || expired;
+  const label = status === "ready" ? "" : statusLabel ?? DEFAULT_STATUS_LABELS[status];
+  const row = !isImage || expired && size === "sm";
+  const hasDetail = !isImage && Boolean(detail);
+  const describedBy = [hasDetail && detailId, hasMarker && markerId].filter(Boolean).join(" ") || void 0;
+  const big = size === "md";
+  const spinner = /* @__PURE__ */ jsx23(Spinner, { label, className: big ? "h-7 w-7" : "h-5 w-5" });
+  const warning = (iconClass) => /* @__PURE__ */ jsx23("span", { role: "img", "aria-label": label, title: label, className: "inline-flex text-danger", children: /* @__PURE__ */ jsx23(WarningIcon, { className: iconClass }) });
+  const badge2 = /* @__PURE__ */ jsx23(Badge, { className: "block max-w-full truncate", children: label });
+  const said = onOpen ? /* @__PURE__ */ jsx23("span", { id: markerId, className: "sr-only", children: label }) : null;
+  const Icon = KIND_ICONS[kind];
+  let content;
+  if (!row) {
+    const drawing = /* @__PURE__ */ jsx23(ImageIcon, { className: "h-6 w-6 text-muted-foreground" });
+    const stand = onOpen ? drawing : /* @__PURE__ */ jsx23("span", { role: "img", "aria-label": name, title: name, className: "inline-flex", children: drawing });
+    content = /* @__PURE__ */ jsxs10(Fragment4, { children: [
+      picture ? /* @__PURE__ */ jsx23(
+        "img",
+        {
+          src: picture,
+          alt: onOpen ? "" : name,
+          title: name,
+          onError: () => setFailedUrl(picture),
+          className: "h-full w-full object-cover"
+        }
+      ) : expired ? /* @__PURE__ */ jsxs10("span", { className: "flex max-w-full min-w-0 flex-col items-center gap-1 px-1", children: [
+        stand,
+        /* @__PURE__ */ jsx23("span", { id: markerId, className: "flex max-w-full min-w-0", children: badge2 })
+      ] }) : busy || failed ? (
+        // No picture: the marker takes the drawing's place, so the two never stack.
+        /* @__PURE__ */ jsxs10("span", { className: "flex items-center justify-center", title: name, children: [
+          busy ? spinner : warning(big ? "h-7 w-7" : "h-5 w-5"),
+          said,
+          !onOpen && /* @__PURE__ */ jsx23("span", { className: "sr-only", children: name })
+        ] })
+      ) : stand,
+      picture && (busy || failed) && // A picture is veiled, so the marker reads on any of them.
+      /* @__PURE__ */ jsxs10("span", { className: "absolute inset-0 flex items-center justify-center bg-background/50", children: [
+        busy ? spinner : warning(big ? "h-7 w-7" : "h-5 w-5"),
+        said
+      ] })
+    ] });
+  } else {
+    content = /* @__PURE__ */ jsxs10(Fragment4, { children: [
+      /* @__PURE__ */ jsx23(
+        "span",
+        {
+          className: cn(
+            "flex size-10 shrink-0 items-center justify-center rounded-lg",
+            expired ? "bg-muted text-muted-foreground" : "bg-primary/15 text-primary"
+          ),
+          children: busy ? /* @__PURE__ */ jsxs10(Fragment4, { children: [
+            /* @__PURE__ */ jsx23(Spinner, { label, className: "h-5 w-5" }),
+            said
+          ] }) : /* @__PURE__ */ jsx23(Icon, { className: "h-5 w-5" })
+        }
+      ),
+      /* @__PURE__ */ jsxs10("span", { className: "flex min-w-0 flex-1 flex-col", children: [
+        /* @__PURE__ */ jsx23("span", { className: "truncate font-medium", title: name, children: name }),
+        hasDetail && /* @__PURE__ */ jsx23("span", { id: detailId, className: "truncate text-xs text-muted-foreground", children: detail })
+      ] }),
+      failed && /* @__PURE__ */ jsxs10("span", { className: "flex shrink-0", children: [
+        warning("h-5 w-5"),
+        said
+      ] }),
+      expired && /* @__PURE__ */ jsx23("span", { id: markerId, className: "flex max-w-[40%] min-w-0", children: badge2 })
+    ] });
+  }
+  const faceClass = cn(
+    face({ kind: row ? "other" : "image", size }),
+    failed ? "border-danger" : "border-border",
+    // The offset keeps the ring apart from the face: on `UserBubble` the accent is
+    // the primary colour, and a ring in it would vanish.
+    onOpen && "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+  );
+  return /* @__PURE__ */ jsxs10(
+    "div",
+    {
+      "data-kind": kind,
+      "data-status": status,
+      "data-size": size,
+      className: cn("relative w-fit", className),
+      children: [
+        onOpen ? /* @__PURE__ */ jsx23(
+          "button",
+          {
+            type: "button",
+            "data-part": "face",
+            "aria-label": name,
+            "aria-describedby": describedBy,
+            onClick: () => onOpen(),
+            className: faceClass,
+            children: content
+          }
+        ) : /* @__PURE__ */ jsx23("div", { "data-part": "face", className: faceClass, children: content }),
+        onRemove && /* @__PURE__ */ jsx23(
+          RemoveButton,
+          {
+            label: removeLabel ?? `Remove ${name}`,
+            onClick: () => onRemove(),
+            className: "absolute -right-2 -top-2 h-6 w-6 rounded-full border border-border bg-background shadow-sm"
+          }
+        )
+      ]
+    }
+  );
+}
+AttachmentTile.displayName = "AttachmentTile";
+
+// src/primitives/ImageLightbox.tsx
+import {
+  useLayoutEffect,
+  useRef as useRef4
+} from "react";
+import { createPortal } from "react-dom";
+import { jsx as jsx24, jsxs as jsxs11 } from "react/jsx-runtime";
+function OpenImageLightbox({
+  src,
+  alt,
+  onClose,
+  closeLabel,
+  downloadHref,
+  downloadName,
+  downloadLabel = "Download",
+  onDownload
+}) {
+  const dialogRef = useRef4(null);
+  const stageRef = useRef4(null);
+  const closeRef = useRef4(null);
+  useLayoutEffect(() => {
+    const active = document.activeElement;
+    const returnFocus = active instanceof HTMLElement && active !== document.body ? active : null;
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) {
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else dialog.setAttribute("open", "");
+    }
+    closeRef.current?.focus();
+    return () => {
+      if (dialog?.open) dialog.close();
+      if (returnFocus?.isConnected) returnFocus.focus();
+    };
+  }, []);
+  const onKeyDown = (event) => {
+    event.stopPropagation();
+    if (event.key === "Escape") {
+      if (event.nativeEvent.isComposing) return;
+      event.preventDefault();
+      onClose();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const controls = event.currentTarget.querySelectorAll(
+      "a[href], button:not([disabled])"
+    );
+    const first = controls[0];
+    const last = controls[controls.length - 1];
+    const [from, to] = event.shiftKey ? [first, last] : [last, first];
+    if (!from || document.activeElement !== from) return;
+    event.preventDefault();
+    to.focus();
+  };
+  const onClick = (event) => {
+    event.stopPropagation();
+    if (event.target === event.currentTarget || event.target === stageRef.current) onClose();
+  };
+  const onCancel = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    onClose();
+  };
+  const buttonClass = "rounded-full bg-muted/80";
+  return createPortal(
+    /* @__PURE__ */ jsxs11(
+      "dialog",
+      {
+        ref: dialogRef,
+        "aria-modal": "true",
+        "aria-label": alt,
+        onKeyDown,
+        onClick,
+        onCancel,
+        className: "fixed inset-0 m-0 h-dvh max-h-none w-dvw max-w-none border-0 bg-background/95 p-0 text-foreground",
+        children: [
+          /* @__PURE__ */ jsx24(
+            "div",
+            {
+              ref: stageRef,
+              "data-part": "stage",
+              className: "flex h-full w-full items-center justify-center p-4 pt-14",
+              children: /* @__PURE__ */ jsx24(
+                "img",
+                {
+                  src,
+                  alt,
+                  className: "max-h-full max-w-full rounded-lg object-contain shadow-lg"
+                }
+              )
+            }
+          ),
+          /* @__PURE__ */ jsxs11("div", { className: "absolute right-3 top-3 flex gap-1", children: [
+            downloadHref ? (
+              // `download={undefined}` would cancel the attribute the link sets itself.
+              /* @__PURE__ */ jsx24(
+                DownloadLink,
+                {
+                  label: downloadLabel,
+                  href: downloadHref,
+                  ...downloadName ? { download: downloadName } : {},
+                  className: buttonClass
+                }
+              )
+            ) : onDownload ? /* @__PURE__ */ jsx24(
+              DownloadButton,
+              {
+                label: downloadLabel,
+                onClick: () => onDownload(),
+                className: buttonClass
+              }
+            ) : null,
+            /* @__PURE__ */ jsx24(
+              IconButton,
+              {
+                ref: closeRef,
+                icon: /* @__PURE__ */ jsx24(XIcon, {}),
+                label: closeLabel,
+                onClick: () => onClose(),
+                className: buttonClass
+              }
+            )
+          ] })
+        ]
+      }
+    ),
+    document.body
+  );
+}
+function ImageLightbox({ open, ...props }) {
+  return open ? /* @__PURE__ */ jsx24(OpenImageLightbox, { ...props }) : null;
+}
+ImageLightbox.displayName = "ImageLightbox";
+
 // src/primitives/PageHeader.tsx
-import { jsx as jsx23, jsxs as jsxs10 } from "react/jsx-runtime";
+import { jsx as jsx25, jsxs as jsxs12 } from "react/jsx-runtime";
 function PageHeader({ title, caption, actions, className, ...props }) {
-  return /* @__PURE__ */ jsxs10("div", { className: cn("mb-6", className), ...props, children: [
-    /* @__PURE__ */ jsxs10("div", { className: "flex flex-wrap items-center gap-x-3 gap-y-2", children: [
-      /* @__PURE__ */ jsx23("h1", { className: "text-2xl font-semibold", children: title }),
-      actions && /* @__PURE__ */ jsx23("div", { className: "ml-auto flex items-center gap-2", children: actions })
+  return /* @__PURE__ */ jsxs12("div", { className: cn("mb-6", className), ...props, children: [
+    /* @__PURE__ */ jsxs12("div", { className: "flex flex-wrap items-center gap-x-3 gap-y-2", children: [
+      /* @__PURE__ */ jsx25("h1", { className: "text-2xl font-semibold", children: title }),
+      actions && /* @__PURE__ */ jsx25("div", { className: "ml-auto flex items-center gap-2", children: actions })
     ] }),
-    caption && /* @__PURE__ */ jsx23("p", { "data-testid": "pageheader-caption", className: "mt-1 text-sm text-muted-foreground", children: caption })
+    caption && /* @__PURE__ */ jsx25("p", { "data-testid": "pageheader-caption", className: "mt-1 text-sm text-muted-foreground", children: caption })
   ] });
 }
 
 // src/primitives/ActionBar.tsx
 import { forwardRef as forwardRef12 } from "react";
-import { jsx as jsx24 } from "react/jsx-runtime";
+import { jsx as jsx26 } from "react/jsx-runtime";
 var ActionBar = forwardRef12(
-  ({ className, ...props }, ref) => /* @__PURE__ */ jsx24(
+  ({ className, ...props }, ref) => /* @__PURE__ */ jsx26(
     "div",
     {
       ref,
@@ -1316,9 +1624,9 @@ var ActionBar = forwardRef12(
 ActionBar.displayName = "ActionBar";
 
 // src/primitives/EmptyState.tsx
-import { jsx as jsx25, jsxs as jsxs11 } from "react/jsx-runtime";
+import { jsx as jsx27, jsxs as jsxs13 } from "react/jsx-runtime";
 function EmptyState({ action, className, children, ...props }) {
-  return /* @__PURE__ */ jsxs11(
+  return /* @__PURE__ */ jsxs13(
     "div",
     {
       className: cn(
@@ -1327,7 +1635,7 @@ function EmptyState({ action, className, children, ...props }) {
       ),
       ...props,
       children: [
-        /* @__PURE__ */ jsx25("div", { className: "text-sm text-muted-foreground", children }),
+        /* @__PURE__ */ jsx27("div", { className: "text-sm text-muted-foreground", children }),
         action
       ]
     }
@@ -1415,20 +1723,20 @@ function useTheme() {
 }
 
 // src/primitives/ThemeToggle.tsx
-import { jsx as jsx26, jsxs as jsxs12 } from "react/jsx-runtime";
+import { jsx as jsx28, jsxs as jsxs14 } from "react/jsx-runtime";
 var ICON_PROPS = {
   viewBox: "0 0 16 16",
   className: "h-4 w-4",
   "aria-hidden": true
 };
 var MODE_ICON = {
-  system: /* @__PURE__ */ jsxs12("svg", { ...ICON_PROPS, children: [
-    /* @__PURE__ */ jsx26("circle", { cx: "8", cy: "8", r: "6.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
-    /* @__PURE__ */ jsx26("path", { d: "M8 1.75a6.25 6.25 0 0 0 0 12.5Z", fill: "currentColor" })
+  system: /* @__PURE__ */ jsxs14("svg", { ...ICON_PROPS, children: [
+    /* @__PURE__ */ jsx28("circle", { cx: "8", cy: "8", r: "6.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
+    /* @__PURE__ */ jsx28("path", { d: "M8 1.75a6.25 6.25 0 0 0 0 12.5Z", fill: "currentColor" })
   ] }),
-  light: /* @__PURE__ */ jsxs12("svg", { ...ICON_PROPS, children: [
-    /* @__PURE__ */ jsx26("circle", { cx: "8", cy: "8", r: "3.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
-    /* @__PURE__ */ jsx26(
+  light: /* @__PURE__ */ jsxs14("svg", { ...ICON_PROPS, children: [
+    /* @__PURE__ */ jsx28("circle", { cx: "8", cy: "8", r: "3.25", fill: "none", stroke: "currentColor", strokeWidth: "1.5" }),
+    /* @__PURE__ */ jsx28(
       "path",
       {
         d: "M8 .75v2.5M8 12.75v2.5M.75 8h2.5M12.75 8h2.5M2.87 2.87l1.77 1.77M11.36 11.36l1.77 1.77M13.13 2.87l-1.77 1.77M4.64 11.36l-1.77 1.77",
@@ -1439,7 +1747,7 @@ var MODE_ICON = {
       }
     )
   ] }),
-  dark: /* @__PURE__ */ jsx26("svg", { ...ICON_PROPS, children: /* @__PURE__ */ jsx26(
+  dark: /* @__PURE__ */ jsx28("svg", { ...ICON_PROPS, children: /* @__PURE__ */ jsx28(
     "path",
     {
       d: "M13.54 9.83A6.25 6.25 0 1 1 6.17 2.46a5 5 0 0 0 7.37 7.37Z",
@@ -1451,7 +1759,7 @@ function ThemeToggle({
   labels = { system: "system", light: "light", dark: "dark" }
 }) {
   const { mode: mode2, cycle } = useTheme();
-  return /* @__PURE__ */ jsx26(
+  return /* @__PURE__ */ jsx28(
     "button",
     {
       type: "button",
@@ -1465,7 +1773,7 @@ function ThemeToggle({
 }
 
 // src/primitives/AppHeader.tsx
-import { jsx as jsx27, jsxs as jsxs13 } from "react/jsx-runtime";
+import { jsx as jsx29, jsxs as jsxs15 } from "react/jsx-runtime";
 function AppHeader({
   title,
   user,
@@ -1477,7 +1785,7 @@ function AppHeader({
   className,
   ...props
 }) {
-  return /* @__PURE__ */ jsxs13(
+  return /* @__PURE__ */ jsxs15(
     "header",
     {
       className: cn(
@@ -1486,27 +1794,27 @@ function AppHeader({
       ),
       ...props,
       children: [
-        /* @__PURE__ */ jsxs13("div", { className: "flex items-baseline gap-3", children: [
-          /* @__PURE__ */ jsxs13(
+        /* @__PURE__ */ jsxs15("div", { className: "flex items-baseline gap-3", children: [
+          /* @__PURE__ */ jsxs15(
             "a",
             {
               href: homeHref,
               className: "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
               children: [
-                /* @__PURE__ */ jsx27(ArrowLeftIcon, { className: "h-3.5 w-3.5" }),
+                /* @__PURE__ */ jsx29(ArrowLeftIcon, { className: "h-3.5 w-3.5" }),
                 homeLabel
               ]
             }
           ),
-          /* @__PURE__ */ jsx27("span", { className: "text-sm font-semibold", children: title }),
-          version && /* @__PURE__ */ jsx27("span", { "data-testid": "appheader-version", className: "text-xs text-muted-foreground", children: version })
+          /* @__PURE__ */ jsx29("span", { className: "text-sm font-semibold", children: title }),
+          version && /* @__PURE__ */ jsx29("span", { "data-testid": "appheader-version", className: "text-xs text-muted-foreground", children: version })
         ] }),
         actions ? (
           // In the spacer's place, as in AppShell: leftover room only.
-          /* @__PURE__ */ jsx27("div", { className: "flex min-w-8 flex-1 items-center justify-end gap-2 sm:min-w-0", children: actions })
-        ) : /* @__PURE__ */ jsx27("span", { className: "flex-1" }),
-        user && /* @__PURE__ */ jsx27("span", { "data-testid": "appheader-user", className: "text-sm text-muted-foreground", children: user }),
-        /* @__PURE__ */ jsx27(ThemeToggle, { labels: themeLabels })
+          /* @__PURE__ */ jsx29("div", { className: "flex min-w-8 flex-1 items-center justify-end gap-2 sm:min-w-0", children: actions })
+        ) : /* @__PURE__ */ jsx29("span", { className: "flex-1" }),
+        user && /* @__PURE__ */ jsx29("span", { "data-testid": "appheader-user", className: "text-sm text-muted-foreground", children: user }),
+        /* @__PURE__ */ jsx29(ThemeToggle, { labels: themeLabels })
       ]
     }
   );
@@ -1723,18 +2031,18 @@ function subscribePurposeRequest(scope, watcher) {
 }
 
 // src/primitives/UserMenu.tsx
-import { jsx as jsx28, jsxs as jsxs14 } from "react/jsx-runtime";
+import { jsx as jsx30, jsxs as jsxs16 } from "react/jsx-runtime";
 function UserMenu({
   user,
   signOutHref = "/auth/logout",
   signOutLabel = "Sign out",
   menuLabel = "Account"
 }) {
-  return /* @__PURE__ */ jsx28(
+  return /* @__PURE__ */ jsx30(
     Menu,
     {
       align: "end",
-      trigger: (props) => /* @__PURE__ */ jsxs14(
+      trigger: (props) => /* @__PURE__ */ jsxs16(
         "button",
         {
           type: "button",
@@ -1747,18 +2055,18 @@ function UserMenu({
           ),
           children: [
             user,
-            /* @__PURE__ */ jsx28(ChevronDownIcon, { className: "h-3.5 w-3.5" })
+            /* @__PURE__ */ jsx30(ChevronDownIcon, { className: "h-3.5 w-3.5" })
           ]
         }
       ),
-      children: /* @__PURE__ */ jsx28(MenuItem, { href: signOutHref, onSelect: clearAllPurposes, children: signOutLabel })
+      children: /* @__PURE__ */ jsx30(MenuItem, { href: signOutHref, onSelect: clearAllPurposes, children: signOutLabel })
     }
   );
 }
 
 // src/layout/AppShell.tsx
-import { useState as useState4 } from "react";
-import { jsx as jsx29, jsxs as jsxs15 } from "react/jsx-runtime";
+import { useState as useState5 } from "react";
+import { jsx as jsx31, jsxs as jsxs17 } from "react/jsx-runtime";
 var SIDEBAR_STORAGE_KEY = "infra-ui-sidebar";
 function readCollapsed() {
   try {
@@ -1781,7 +2089,7 @@ function AppShell({
   sidebarToggleLabel = "Toggle sidebar",
   children
 }) {
-  const [collapsed, setCollapsed] = useState4(readCollapsed);
+  const [collapsed, setCollapsed] = useState5(readCollapsed);
   const toggleSidebar = () => {
     setCollapsed((v) => {
       const next = !v;
@@ -1793,9 +2101,9 @@ function AppShell({
       return next;
     });
   };
-  return /* @__PURE__ */ jsxs15("div", { className: "flex h-screen flex-col bg-chrome text-foreground", children: [
-    /* @__PURE__ */ jsxs15("header", { className: "flex h-12 items-center gap-3 px-4", children: [
-      sidebar && /* @__PURE__ */ jsx29(
+  return /* @__PURE__ */ jsxs17("div", { className: "flex h-screen flex-col bg-chrome text-foreground", children: [
+    /* @__PURE__ */ jsxs17("header", { className: "flex h-12 items-center gap-3 px-4", children: [
+      sidebar && /* @__PURE__ */ jsx31(
         "button",
         {
           type: "button",
@@ -1803,34 +2111,34 @@ function AppShell({
           "aria-expanded": !collapsed,
           onClick: toggleSidebar,
           className: "inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground",
-          children: /* @__PURE__ */ jsx29("span", { "aria-hidden": true, children: "\u2630" })
+          children: /* @__PURE__ */ jsx31("span", { "aria-hidden": true, children: "\u2630" })
         }
       ),
-      /* @__PURE__ */ jsxs15(
+      /* @__PURE__ */ jsxs17(
         "a",
         {
           href: homeHref,
           className: "inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted hover:text-foreground",
           children: [
-            /* @__PURE__ */ jsx29(ArrowLeftIcon, { className: "h-3.5 w-3.5" }),
+            /* @__PURE__ */ jsx31(ArrowLeftIcon, { className: "h-3.5 w-3.5" }),
             homeLabel
           ]
         }
       ),
-      /* @__PURE__ */ jsx29("span", { className: "text-sm font-semibold", children: title }),
-      version && /* @__PURE__ */ jsx29("span", { className: "text-xs text-muted-foreground", children: version }),
+      /* @__PURE__ */ jsx31("span", { className: "text-sm font-semibold", children: title }),
+      version && /* @__PURE__ */ jsx31("span", { className: "text-xs text-muted-foreground", children: version }),
       headerActions ? (
         // In the spacer's place, with no width of its own: the actions get
         // only the room left over, and truncate into it rather than squeeze
         // the chrome beside them.
-        /* @__PURE__ */ jsx29("div", { className: "flex min-w-8 flex-1 items-center justify-end gap-2 sm:min-w-0", children: headerActions })
-      ) : /* @__PURE__ */ jsx29("span", { className: "flex-1" }),
-      /* @__PURE__ */ jsx29(ThemeToggle, { labels: themeLabels }),
-      user && /* @__PURE__ */ jsx29(UserMenu, { user, signOutHref, signOutLabel })
+        /* @__PURE__ */ jsx31("div", { className: "flex min-w-8 flex-1 items-center justify-end gap-2 sm:min-w-0", children: headerActions })
+      ) : /* @__PURE__ */ jsx31("span", { className: "flex-1" }),
+      /* @__PURE__ */ jsx31(ThemeToggle, { labels: themeLabels }),
+      user && /* @__PURE__ */ jsx31(UserMenu, { user, signOutHref, signOutLabel })
     ] }),
-    /* @__PURE__ */ jsxs15("div", { className: "flex min-h-0 flex-1", children: [
-      sidebar && !collapsed && /* @__PURE__ */ jsx29("aside", { className: "flex w-72 shrink-0 flex-col gap-4 overflow-y-auto p-4", children: sidebar }),
-      /* @__PURE__ */ jsx29(
+    /* @__PURE__ */ jsxs17("div", { className: "flex min-h-0 flex-1", children: [
+      sidebar && !collapsed && /* @__PURE__ */ jsx31("aside", { className: "flex w-72 shrink-0 flex-col gap-4 overflow-y-auto p-4", children: sidebar }),
+      /* @__PURE__ */ jsx31(
         "main",
         {
           className: cn(
@@ -1844,14 +2152,14 @@ function AppShell({
   ] });
 }
 function SidebarGroup({ label, children }) {
-  return /* @__PURE__ */ jsxs15("div", { className: "flex flex-col gap-1", children: [
-    label && /* @__PURE__ */ jsx29("div", { className: "px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground", children: label }),
+  return /* @__PURE__ */ jsxs17("div", { className: "flex flex-col gap-1", children: [
+    label && /* @__PURE__ */ jsx31("div", { className: "px-3 text-xs font-medium uppercase tracking-wider text-muted-foreground", children: label }),
     children
   ] });
 }
 
 // src/graph/ForceGraph.tsx
-import { useCallback as useCallback2, useEffect as useEffect4, useImperativeHandle, useMemo, useRef as useRef4, useState as useState5 } from "react";
+import { useCallback as useCallback2, useEffect as useEffect4, useImperativeHandle, useMemo, useRef as useRef5, useState as useState6 } from "react";
 
 // src/graph/forceSimulation.ts
 var DEFAULTS = {
@@ -2049,7 +2357,7 @@ function seedPositions(nodes, edges, previous, centerX, centerY) {
 }
 
 // src/graph/ForceGraph.tsx
-import { jsx as jsx30, jsxs as jsxs16 } from "react/jsx-runtime";
+import { jsx as jsx32, jsxs as jsxs18 } from "react/jsx-runtime";
 var WIDTH = 960;
 var HEIGHT = 620;
 var CENTER_X = WIDTH / 2;
@@ -2077,7 +2385,7 @@ function radiusForSize(size) {
   return Math.min(34, 7 + Math.sqrt(Math.max(1, size ?? 1)) * 2.4);
 }
 function ExpandIcon() {
-  return /* @__PURE__ */ jsxs16(
+  return /* @__PURE__ */ jsxs18(
     "svg",
     {
       width: "16",
@@ -2090,16 +2398,16 @@ function ExpandIcon() {
       strokeLinejoin: "round",
       "aria-hidden": "true",
       children: [
-        /* @__PURE__ */ jsx30("polyline", { points: "15 3 21 3 21 9" }),
-        /* @__PURE__ */ jsx30("polyline", { points: "9 21 3 21 3 15" }),
-        /* @__PURE__ */ jsx30("path", { d: "M 21 3 L 14 10" }),
-        /* @__PURE__ */ jsx30("path", { d: "M 3 21 L 10 14" })
+        /* @__PURE__ */ jsx32("polyline", { points: "15 3 21 3 21 9" }),
+        /* @__PURE__ */ jsx32("polyline", { points: "9 21 3 21 3 15" }),
+        /* @__PURE__ */ jsx32("path", { d: "M 21 3 L 14 10" }),
+        /* @__PURE__ */ jsx32("path", { d: "M 3 21 L 10 14" })
       ]
     }
   );
 }
 function CollapseIcon() {
-  return /* @__PURE__ */ jsxs16(
+  return /* @__PURE__ */ jsxs18(
     "svg",
     {
       width: "16",
@@ -2112,10 +2420,10 @@ function CollapseIcon() {
       strokeLinejoin: "round",
       "aria-hidden": "true",
       children: [
-        /* @__PURE__ */ jsx30("polyline", { points: "4 14 10 14 10 20" }),
-        /* @__PURE__ */ jsx30("polyline", { points: "20 10 14 10 14 4" }),
-        /* @__PURE__ */ jsx30("path", { d: "M 14 10 L 21 3" }),
-        /* @__PURE__ */ jsx30("path", { d: "M 3 21 L 10 14" })
+        /* @__PURE__ */ jsx32("polyline", { points: "4 14 10 14 10 20" }),
+        /* @__PURE__ */ jsx32("polyline", { points: "20 10 14 10 14 4" }),
+        /* @__PURE__ */ jsx32("path", { d: "M 14 10 L 21 3" }),
+        /* @__PURE__ */ jsx32("path", { d: "M 3 21 L 10 14" })
       ]
     }
   );
@@ -2143,10 +2451,10 @@ function ForceGraph({
   const selectedIdsArr = selectedIds ?? [];
   const selectedSet = useMemo(() => new Set(selectedIdsArr), [selectedIdsArr]);
   const actionsActive = !!(expandActions && expandActions.length > 0 && onExpandAction);
-  const svgRef = useRef4(null);
-  const [minDegree, setMinDegree] = useState5(0);
-  const [spread, setSpread] = useState5(1);
-  const [isMaximized, setIsMaximized] = useState5(false);
+  const svgRef = useRef5(null);
+  const [minDegree, setMinDegree] = useState6(0);
+  const [spread, setSpread] = useState6(1);
+  const [isMaximized, setIsMaximized] = useState6(false);
   const degreeById = useMemo(() => {
     const deg = /* @__PURE__ */ new Map();
     for (const e of edges) {
@@ -2172,7 +2480,7 @@ function ForceGraph({
     const ids = new Set(visibleNodes.map((n) => n.id));
     return edges.filter((e) => ids.has(e.source) && ids.has(e.target));
   }, [edges, visibleNodes, minDegree]);
-  const positionsRef = useRef4(/* @__PURE__ */ new Map());
+  const positionsRef = useRef5(/* @__PURE__ */ new Map());
   const sim = useMemo(() => {
     const seeds = seedPositions(visibleNodes, visibleEdges, positionsRef.current, CENTER_X, CENTER_Y);
     const simNodes = visibleNodes.map((n) => {
@@ -2186,17 +2494,17 @@ function ForceGraph({
     }));
     return createForceSimulation(simNodes, simLinks, { centerX: CENTER_X, centerY: CENTER_Y });
   }, [visibleNodes, visibleEdges]);
-  const [, setFrame] = useState5(0);
-  const [view, setView] = useState5({ x: 0, y: 0, k: 1 });
-  const draggingNodeRef = useRef4(null);
-  const dragStartRef = useRef4(null);
-  const movedRef = useRef4(false);
-  const panRef = useRef4(null);
-  const panMovedRef = useRef4(false);
-  const marqueeRef = useRef4(null);
-  const [marqueeRect, setMarqueeRect] = useState5(null);
-  const rafRef = useRef4(0);
-  const runningRef = useRef4(false);
+  const [, setFrame] = useState6(0);
+  const [view, setView] = useState6({ x: 0, y: 0, k: 1 });
+  const draggingNodeRef = useRef5(null);
+  const dragStartRef = useRef5(null);
+  const movedRef = useRef5(false);
+  const panRef = useRef5(null);
+  const panMovedRef = useRef5(false);
+  const marqueeRef = useRef5(null);
+  const [marqueeRect, setMarqueeRect] = useState6(null);
+  const rafRef = useRef5(0);
+  const runningRef = useRef5(false);
   const runLoop = useCallback2(() => {
     if (typeof requestAnimationFrame !== "function" || runningRef.current) return;
     runningRef.current = true;
@@ -2502,7 +2810,7 @@ function ForceGraph({
     return set;
   }, [visibleEdges, selectedSet]);
   const transform = `translate(${view.x} ${view.y}) scale(${view.k})`;
-  return /* @__PURE__ */ jsxs16(
+  return /* @__PURE__ */ jsxs18(
     "div",
     {
       "data-maximized": isMaximized,
@@ -2512,12 +2820,12 @@ function ForceGraph({
         className
       ),
       children: [
-        /* @__PURE__ */ jsxs16("div", { className: "space-y-2", children: [
-          statusText && /* @__PURE__ */ jsx30("p", { className: "text-sm text-muted-foreground", children: statusText }),
-          /* @__PURE__ */ jsxs16("div", { className: "flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-2", children: [
-            /* @__PURE__ */ jsxs16("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Minimum edges per node", children: [
-              /* @__PURE__ */ jsx30("span", { className: "text-xs text-muted-foreground", children: L.minEdges }),
-              /* @__PURE__ */ jsx30(
+        /* @__PURE__ */ jsxs18("div", { className: "space-y-2", children: [
+          statusText && /* @__PURE__ */ jsx32("p", { className: "text-sm text-muted-foreground", children: statusText }),
+          /* @__PURE__ */ jsxs18("div", { className: "flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border pt-2", children: [
+            /* @__PURE__ */ jsxs18("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Minimum edges per node", children: [
+              /* @__PURE__ */ jsx32("span", { className: "text-xs text-muted-foreground", children: L.minEdges }),
+              /* @__PURE__ */ jsx32(
                 "button",
                 {
                   type: "button",
@@ -2528,8 +2836,8 @@ function ForceGraph({
                   children: "\u2212"
                 }
               ),
-              /* @__PURE__ */ jsx30("span", { "aria-live": "polite", className: "w-5 text-center text-xs tabular-nums", children: minDegree }),
-              /* @__PURE__ */ jsx30(
+              /* @__PURE__ */ jsx32("span", { "aria-live": "polite", className: "w-5 text-center text-xs tabular-nums", children: minDegree }),
+              /* @__PURE__ */ jsx32(
                 "button",
                 {
                   type: "button",
@@ -2541,10 +2849,10 @@ function ForceGraph({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx30("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
-            /* @__PURE__ */ jsxs16("div", { className: "flex items-center gap-2", children: [
-              /* @__PURE__ */ jsx30("span", { className: "text-xs text-muted-foreground", children: L.edgeLength }),
-              /* @__PURE__ */ jsx30(
+            /* @__PURE__ */ jsx32("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
+            /* @__PURE__ */ jsxs18("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsx32("span", { className: "text-xs text-muted-foreground", children: L.edgeLength }),
+              /* @__PURE__ */ jsx32(
                 "input",
                 {
                   type: "range",
@@ -2559,10 +2867,10 @@ function ForceGraph({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx30("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
-            /* @__PURE__ */ jsxs16("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Zoom", children: [
-              /* @__PURE__ */ jsx30("span", { className: "text-xs text-muted-foreground", children: L.zoom }),
-              /* @__PURE__ */ jsx30(
+            /* @__PURE__ */ jsx32("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
+            /* @__PURE__ */ jsxs18("div", { className: "flex items-center gap-1", role: "group", "aria-label": "Zoom", children: [
+              /* @__PURE__ */ jsx32("span", { className: "text-xs text-muted-foreground", children: L.zoom }),
+              /* @__PURE__ */ jsx32(
                 "button",
                 {
                   type: "button",
@@ -2572,7 +2880,7 @@ function ForceGraph({
                   children: "+"
                 }
               ),
-              /* @__PURE__ */ jsx30(
+              /* @__PURE__ */ jsx32(
                 "button",
                 {
                   type: "button",
@@ -2582,7 +2890,7 @@ function ForceGraph({
                   children: "\u2212"
                 }
               ),
-              /* @__PURE__ */ jsx30(
+              /* @__PURE__ */ jsx32(
                 "button",
                 {
                   type: "button",
@@ -2594,8 +2902,8 @@ function ForceGraph({
                 }
               )
             ] }),
-            /* @__PURE__ */ jsx30("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
-            /* @__PURE__ */ jsx30(
+            /* @__PURE__ */ jsx32("span", { "aria-hidden": "true", className: "h-5 border-l border-border" }),
+            /* @__PURE__ */ jsx32(
               "button",
               {
                 type: "button",
@@ -2607,7 +2915,7 @@ function ForceGraph({
             )
           ] })
         ] }),
-        /* @__PURE__ */ jsxs16(
+        /* @__PURE__ */ jsxs18(
           "div",
           {
             className: cn(
@@ -2615,7 +2923,7 @@ function ForceGraph({
               isMaximized && "flex-1 min-h-0"
             ),
             children: [
-              /* @__PURE__ */ jsxs16(
+              /* @__PURE__ */ jsxs18(
                 "svg",
                 {
                   ref: setSvgRef,
@@ -2627,7 +2935,7 @@ function ForceGraph({
                   role: "application",
                   "aria-label": "Force-directed graph",
                   children: [
-                    /* @__PURE__ */ jsx30(
+                    /* @__PURE__ */ jsx32(
                       "rect",
                       {
                         x: 0,
@@ -2641,8 +2949,8 @@ function ForceGraph({
                         onPointerCancel: onBackgroundPointerCancel
                       }
                     ),
-                    /* @__PURE__ */ jsxs16("g", { transform, children: [
-                      /* @__PURE__ */ jsx30("defs", { children: /* @__PURE__ */ jsx30(
+                    /* @__PURE__ */ jsxs18("g", { transform, children: [
+                      /* @__PURE__ */ jsx32("defs", { children: /* @__PURE__ */ jsx32(
                         "marker",
                         {
                           id: "fg-arrow",
@@ -2653,7 +2961,7 @@ function ForceGraph({
                           markerHeight: "7",
                           orient: "auto-start-reverse",
                           className: "fill-muted-foreground",
-                          children: /* @__PURE__ */ jsx30("path", { d: "M 0 0 L 10 5 L 0 10 z" })
+                          children: /* @__PURE__ */ jsx32("path", { d: "M 0 0 L 10 5 L 0 10 z" })
                         }
                       ) }),
                       visibleEdges.map((e, i) => {
@@ -2668,7 +2976,7 @@ function ForceGraph({
                         const dist = Math.hypot(dx, dy) || 1;
                         const tx = e.directed ? b.x - dx / dist * (b.r + 2) : b.x;
                         const ty = e.directed ? b.y - dy / dist * (b.r + 2) : b.y;
-                        return /* @__PURE__ */ jsx30(
+                        return /* @__PURE__ */ jsx32(
                           "line",
                           {
                             x1: a.x,
@@ -2691,7 +2999,7 @@ function ForceGraph({
                         const isNeighbor = neighborIds?.has(n.id) ?? false;
                         const dimmed = selectedSet.size > 0 && !isSelected && !isNeighbor;
                         const r = sn.r;
-                        return /* @__PURE__ */ jsxs16(
+                        return /* @__PURE__ */ jsxs18(
                           "g",
                           {
                             transform: `translate(${sn.x} ${sn.y})`,
@@ -2717,8 +3025,8 @@ function ForceGraph({
                               }
                             },
                             children: [
-                              /* @__PURE__ */ jsx30("title", { children: `${n.label} (${n.kind})` }),
-                              /* @__PURE__ */ jsx30(
+                              /* @__PURE__ */ jsx32("title", { children: `${n.label} (${n.kind})` }),
+                              /* @__PURE__ */ jsx32(
                                 "circle",
                                 {
                                   r,
@@ -2728,7 +3036,7 @@ function ForceGraph({
                                   strokeWidth: (isSelected ? 3 : 1.5) / view.k
                                 }
                               ),
-                              /* @__PURE__ */ jsx30(
+                              /* @__PURE__ */ jsx32(
                                 "text",
                                 {
                                   y: r + 11 / view.k,
@@ -2747,7 +3055,7 @@ function ForceGraph({
                           n.id
                         );
                       }),
-                      marqueeRect && /* @__PURE__ */ jsx30(
+                      marqueeRect && /* @__PURE__ */ jsx32(
                         "rect",
                         {
                           x: marqueeRect.x,
@@ -2764,7 +3072,7 @@ function ForceGraph({
                   ]
                 }
               ),
-              /* @__PURE__ */ jsx30(
+              /* @__PURE__ */ jsx32(
                 "button",
                 {
                   type: "button",
@@ -2773,11 +3081,11 @@ function ForceGraph({
                   title: isMaximized ? L.minimize : L.maximize,
                   onClick: () => setIsMaximized((m) => !m),
                   className: "absolute left-2 top-2 z-10 rounded-md border border-border bg-background/90 p-1.5 text-muted-foreground hover:text-foreground",
-                  children: isMaximized ? /* @__PURE__ */ jsx30(CollapseIcon, {}) : /* @__PURE__ */ jsx30(ExpandIcon, {})
+                  children: isMaximized ? /* @__PURE__ */ jsx32(CollapseIcon, {}) : /* @__PURE__ */ jsx32(ExpandIcon, {})
                 }
               ),
-              selectedIdsArr.length > 0 && (onExpandNode || onExpandAction || onDeleteNodes) && /* @__PURE__ */ jsxs16("div", { className: "absolute bottom-2 left-2 z-10 flex items-center gap-1.5", children: [
-                actionsActive && selectedIdsArr.length === 1 ? expandActions.map((action) => /* @__PURE__ */ jsx30(
+              selectedIdsArr.length > 0 && (onExpandNode || onExpandAction || onDeleteNodes) && /* @__PURE__ */ jsxs18("div", { className: "absolute bottom-2 left-2 z-10 flex items-center gap-1.5", children: [
+                actionsActive && selectedIdsArr.length === 1 ? expandActions.map((action) => /* @__PURE__ */ jsx32(
                   "button",
                   {
                     type: "button",
@@ -2787,7 +3095,7 @@ function ForceGraph({
                     children: action.label
                   },
                   action.id
-                )) : onExpandNode && selectedIdsArr.length === 1 && /* @__PURE__ */ jsx30(
+                )) : onExpandNode && selectedIdsArr.length === 1 && /* @__PURE__ */ jsx32(
                   "button",
                   {
                     type: "button",
@@ -2797,7 +3105,7 @@ function ForceGraph({
                     children: L.expandSelected
                   }
                 ),
-                onDeleteNodes && /* @__PURE__ */ jsx30(
+                onDeleteNodes && /* @__PURE__ */ jsx32(
                   "button",
                   {
                     type: "button",
@@ -2808,8 +3116,8 @@ function ForceGraph({
                   }
                 )
               ] }),
-              legend && legend.length > 0 && /* @__PURE__ */ jsx30("div", { className: "absolute right-2 top-2 max-w-[12rem] rounded-md border border-border bg-background/90 p-2 text-xs space-y-1", children: /* @__PURE__ */ jsx30("ul", { className: "space-y-0.5", children: legend.map(({ kind, label }) => /* @__PURE__ */ jsxs16("li", { className: "flex items-center gap-1.5", children: [
-                /* @__PURE__ */ jsx30(
+              legend && legend.length > 0 && /* @__PURE__ */ jsx32("div", { className: "absolute right-2 top-2 max-w-[12rem] rounded-md border border-border bg-background/90 p-2 text-xs space-y-1", children: /* @__PURE__ */ jsx32("ul", { className: "space-y-0.5", children: legend.map(({ kind, label }) => /* @__PURE__ */ jsxs18("li", { className: "flex items-center gap-1.5", children: [
+                /* @__PURE__ */ jsx32(
                   "span",
                   {
                     "aria-hidden": "true",
@@ -2817,7 +3125,7 @@ function ForceGraph({
                     style: { backgroundColor: nodeStyles[kind]?.color ?? "currentColor" }
                   }
                 ),
-                /* @__PURE__ */ jsx30("span", { className: "truncate", children: label })
+                /* @__PURE__ */ jsx32("span", { className: "truncate", children: label })
               ] }, kind)) }) })
             ]
           }
@@ -3125,15 +3433,15 @@ function usePurpose(scope) {
 import {
   useCallback as useCallback4,
   useEffect as useEffect5,
-  useId as useId3,
-  useLayoutEffect,
-  useRef as useRef5,
-  useState as useState6,
+  useId as useId4,
+  useLayoutEffect as useLayoutEffect2,
+  useRef as useRef6,
+  useState as useState7,
   useSyncExternalStore as useSyncExternalStore3
 } from "react";
-import { createPortal } from "react-dom";
-import { cva as cva4 } from "class-variance-authority";
-import { Fragment as Fragment4, jsx as jsx31, jsxs as jsxs17 } from "react/jsx-runtime";
+import { createPortal as createPortal2 } from "react-dom";
+import { cva as cva5 } from "class-variance-authority";
+import { Fragment as Fragment5, jsx as jsx33, jsxs as jsxs19 } from "react/jsx-runtime";
 var DEFAULT_LABELS2 = {
   purpose: "Purpose",
   empty: "No purpose stated",
@@ -3151,7 +3459,7 @@ var DEFAULT_LABELS2 = {
   errorHeader: "Too long to send together. Shorten one of the fields.",
   errorEmpty: "Enter a case reference or a reason."
 };
-var trigger = cva4(
+var trigger = cva5(
   [
     // A square icon button below `sm`, where the header has no room for words;
     // from there up it widens and truncates to whatever room is left.
@@ -3184,9 +3492,9 @@ function PurposeField({
 }) {
   const errorId = `${id}-error`;
   const describedBy = [error && errorId, formErrorId].filter(Boolean).join(" ");
-  return /* @__PURE__ */ jsxs17("div", { className: "flex flex-col gap-1.5", children: [
-    /* @__PURE__ */ jsx31("label", { htmlFor: id, className: "text-sm font-medium text-foreground", children: label }),
-    /* @__PURE__ */ jsx31(
+  return /* @__PURE__ */ jsxs19("div", { className: "flex flex-col gap-1.5", children: [
+    /* @__PURE__ */ jsx33("label", { htmlFor: id, className: "text-sm font-medium text-foreground", children: label }),
+    /* @__PURE__ */ jsx33(
       Input,
       {
         ref: inputRef,
@@ -3200,7 +3508,7 @@ function PurposeField({
         className: "aria-invalid:border-danger aria-invalid:focus-visible:ring-danger"
       }
     ),
-    error && /* @__PURE__ */ jsx31("p", { id: errorId, className: "text-sm text-danger", children: error })
+    error && /* @__PURE__ */ jsx33("p", { id: errorId, className: "text-sm text-danger", children: error })
   ] });
 }
 function PurposeBar({ scope, required = false, labels, className }) {
@@ -3215,16 +3523,16 @@ function PurposeBar({ scope, required = false, labels, className }) {
     () => isPurposeRequested(scope),
     () => false
   );
-  const [open, setOpen] = useState6(false);
-  const [draft, setDraft] = useState6({ caseRef: "", reason: "" });
-  const [attempted, setAttempted] = useState6(false);
-  const openRef = useRef5(false);
-  const triggerRef = useRef5(null);
-  const dialogRef = useRef5(null);
-  const caseRefInput = useRef5(null);
-  const reasonInput = useRef5(null);
-  const returnFocus = useRef5(null);
-  const id = useId3();
+  const [open, setOpen] = useState7(false);
+  const [draft, setDraft] = useState7({ caseRef: "", reason: "" });
+  const [attempted, setAttempted] = useState7(false);
+  const openRef = useRef6(false);
+  const triggerRef = useRef6(null);
+  const dialogRef = useRef6(null);
+  const caseRefInput = useRef6(null);
+  const reasonInput = useRef6(null);
+  const returnFocus = useRef6(null);
+  const id = useId4();
   const show = useCallback4(() => {
     if (openRef.current) return;
     const active = document.activeElement;
@@ -3239,7 +3547,7 @@ function PurposeBar({ scope, required = false, labels, className }) {
     () => registerPurposeEditor(scope, { open: show, isOpen: () => openRef.current }),
     [scope, show]
   );
-  useLayoutEffect(() => {
+  useLayoutEffect2(() => {
     if (!open) return;
     const dialog = dialogRef.current;
     if (dialog && !dialog.open) {
@@ -3304,8 +3612,8 @@ function PurposeBar({ scope, required = false, labels, className }) {
     purpose.caseRef && `${L.caseRef}: ${purpose.caseRef}`,
     purpose.reason && `${L.reason}: ${purpose.reason}`
   ].filter(Boolean).join("\n") : void 0;
-  return /* @__PURE__ */ jsxs17(Fragment4, { children: [
-    /* @__PURE__ */ jsxs17(
+  return /* @__PURE__ */ jsxs19(Fragment5, { children: [
+    /* @__PURE__ */ jsxs19(
       "button",
       {
         ref: triggerRef,
@@ -3317,25 +3625,25 @@ function PurposeBar({ scope, required = false, labels, className }) {
         onClick: show,
         className: cn(trigger({ state }), className),
         children: [
-          state === "required" ? /* @__PURE__ */ jsx31(WarningIcon, { className: "h-4 w-4 shrink-0 text-danger" }) : (
+          state === "required" ? /* @__PURE__ */ jsx33(WarningIcon, { className: "h-4 w-4 shrink-0 text-danger" }) : (
             // Lit with the accent once stated, so the icon alone still tells
             // the two quiet states apart where the words are hidden.
-            /* @__PURE__ */ jsx31(
+            /* @__PURE__ */ jsx33(
               TagIcon,
               {
                 className: cn("h-4 w-4 shrink-0", purpose ? "text-primary" : "text-muted-foreground")
               }
             )
           ),
-          purpose ? /* @__PURE__ */ jsxs17(Fragment4, { children: [
-            /* @__PURE__ */ jsx31("span", { className: "hidden shrink-0 text-muted-foreground sm:inline", children: L.purpose }),
-            /* @__PURE__ */ jsx31("span", { className: "hidden min-w-0 max-w-xs truncate sm:block", children: summary })
-          ] }) : /* @__PURE__ */ jsx31("span", { className: "hidden min-w-0 truncate sm:block", children: name })
+          purpose ? /* @__PURE__ */ jsxs19(Fragment5, { children: [
+            /* @__PURE__ */ jsx33("span", { className: "hidden shrink-0 text-muted-foreground sm:inline", children: L.purpose }),
+            /* @__PURE__ */ jsx33("span", { className: "hidden min-w-0 max-w-xs truncate sm:block", children: summary })
+          ] }) : /* @__PURE__ */ jsx33("span", { className: "hidden min-w-0 truncate sm:block", children: name })
         ]
       }
     ),
-    open && createPortal(
-      /* @__PURE__ */ jsx31(
+    open && createPortal2(
+      /* @__PURE__ */ jsx33(
         "dialog",
         {
           ref: dialogRef,
@@ -3347,16 +3655,16 @@ function PurposeBar({ scope, required = false, labels, className }) {
             if (openRef.current) cancel();
           },
           className: "m-auto w-[calc(100%-2rem)] max-w-md rounded-lg border border-border bg-background p-0 text-foreground shadow-lg backdrop:bg-background/80",
-          children: /* @__PURE__ */ jsxs17("form", { noValidate: true, onSubmit: save, className: "flex flex-col gap-4 p-5", children: [
-            /* @__PURE__ */ jsxs17("div", { className: "flex flex-col gap-1.5", children: [
-              /* @__PURE__ */ jsx31("h2", { id: titleId, className: "text-base font-semibold", children: L.title }),
-              requested && /* @__PURE__ */ jsxs17("p", { id: requestedId, className: "flex items-start gap-1.5 text-sm text-foreground", children: [
-                /* @__PURE__ */ jsx31(InfoIcon, { className: "mt-0.5 h-4 w-4 shrink-0 text-primary" }),
+          children: /* @__PURE__ */ jsxs19("form", { noValidate: true, onSubmit: save, className: "flex flex-col gap-4 p-5", children: [
+            /* @__PURE__ */ jsxs19("div", { className: "flex flex-col gap-1.5", children: [
+              /* @__PURE__ */ jsx33("h2", { id: titleId, className: "text-base font-semibold", children: L.title }),
+              requested && /* @__PURE__ */ jsxs19("p", { id: requestedId, className: "flex items-start gap-1.5 text-sm text-foreground", children: [
+                /* @__PURE__ */ jsx33(InfoIcon, { className: "mt-0.5 h-4 w-4 shrink-0 text-primary" }),
                 L.requested
               ] }),
-              /* @__PURE__ */ jsx31("p", { id: descriptionId, className: "text-sm text-muted-foreground", children: L.description })
+              /* @__PURE__ */ jsx33("p", { id: descriptionId, className: "text-sm text-muted-foreground", children: L.description })
             ] }),
-            /* @__PURE__ */ jsx31(
+            /* @__PURE__ */ jsx33(
               PurposeField,
               {
                 id: `${id}-case-ref`,
@@ -3369,7 +3677,7 @@ function PurposeBar({ scope, required = false, labels, className }) {
                 spellCheck: false
               }
             ),
-            /* @__PURE__ */ jsx31(
+            /* @__PURE__ */ jsx33(
               PurposeField,
               {
                 id: `${id}-reason`,
@@ -3381,11 +3689,11 @@ function PurposeBar({ scope, required = false, labels, className }) {
                 inputRef: reasonInput
               }
             ),
-            formError && /* @__PURE__ */ jsx31("p", { id: formErrorId, className: "text-sm text-danger", children: formError }),
-            /* @__PURE__ */ jsxs17(ActionBar, { className: "pt-1", children: [
-              purpose && /* @__PURE__ */ jsx31(Button, { type: "button", variant: "secondary", size: "sm", onClick: clear, children: L.clear }),
-              /* @__PURE__ */ jsx31(Button, { type: "button", variant: "secondary", size: "sm", onClick: cancel, children: L.cancel }),
-              /* @__PURE__ */ jsx31(Button, { type: "submit", size: "sm", children: L.save })
+            formError && /* @__PURE__ */ jsx33("p", { id: formErrorId, className: "text-sm text-danger", children: formError }),
+            /* @__PURE__ */ jsxs19(ActionBar, { className: "pt-1", children: [
+              purpose && /* @__PURE__ */ jsx33(Button, { type: "button", variant: "secondary", size: "sm", onClick: clear, children: L.clear }),
+              /* @__PURE__ */ jsx33(Button, { type: "button", variant: "secondary", size: "sm", onClick: cancel, children: L.cancel }),
+              /* @__PURE__ */ jsx33(Button, { type: "submit", size: "sm", children: L.save })
             ] })
           ] })
         }
@@ -3401,6 +3709,8 @@ export {
   AppShell,
   ArrowLeftIcon,
   AttachButton,
+  AttachmentTile,
+  AudioIcon,
   Badge,
   Banner,
   BrainActiveIcon,
@@ -3423,12 +3733,14 @@ export {
   DownloadLink,
   EmptyState,
   ExternalLinkIcon,
+  FileIcon,
   FileList,
   ForceGraph,
   HoverIconAction,
   IconButton,
   IconLink,
   ImageIcon,
+  ImageLightbox,
   InfoIcon,
   Input,
   LayersIcon,
@@ -3479,6 +3791,7 @@ export {
   UndoIcon,
   UserBubble,
   UserMenu,
+  VideoIcon,
   WarningIcon,
   XIcon,
   clearAllPurposes,
