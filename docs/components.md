@@ -558,6 +558,13 @@ there is no picture left to show. At `md` it keeps the square. The face is
 opaque (`bg-background`), so the tile reads on the page and on `UserBubble`'s
 accent alike.
 
+With `onRemove`, a small cross (20px drawn, a 12px `×`, a 24px target) sits on
+the tile's corner. Where a pointer can hover it shows only while the pointer is
+over the tile or the keyboard's focus is in it (the face's, or the cross's
+own): a row of files reads as files, not as a row of crosses. A touch screen
+cannot hover, so there it always shows. It is its own stop in the tab order
+either way.
+
 The composer's row: `sm` tiles above the pill.
 
 ```tsx

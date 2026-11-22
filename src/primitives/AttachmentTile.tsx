@@ -92,7 +92,12 @@ const face = cva(
  * button still is).
  *
  * A failure is drawn with the warning, not the cross. The cross in the corner is
- * the remove action, and two crosses on one tile would mean two things.
+ * the remove action, and two crosses on one tile would mean two things. It is
+ * small (20px drawn, a 12px cross, a 24px target) and, where a pointer can hover,
+ * shows only while the pointer is over the tile or the keyboard's focus is in it,
+ * so a row of files reads as files; on a touch screen, which cannot hover, it
+ * always shows. It stays its own stop in the tab order, and shows as soon as the
+ * keyboard reaches it.
  *
  * The caller makes, owns and revokes the thumbnail's object URL; the tile
  * fetches nothing. Put tiles above `ChatComposer`'s pill, not inside it: its
@@ -261,7 +266,7 @@ export function AttachmentTile({
       data-kind={kind}
       data-status={status}
       data-size={size}
-      className={cn('relative w-fit', className)}
+      className={cn('group/tile relative w-fit', className)}
     >
       {onOpen ? (
         <button
@@ -283,7 +288,14 @@ export function AttachmentTile({
         <RemoveButton
           label={removeLabel ?? `Remove ${name}`}
           onClick={() => onRemove()}
-          className="absolute -right-2 -top-2 h-6 w-6 rounded-full border border-border bg-background shadow-sm"
+          className={cn(
+            'absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full border border-border bg-background shadow-sm [&_svg]:h-3 [&_svg]:w-3',
+            // Drawn at 20px, a target of 24px (WCAG 2.2, 2.5.8).
+            "after:absolute after:-inset-0.5 after:content-['']",
+            // Shown on hover or keyboard focus where a pointer can hover; always on a touch screen. The hover and focus
+            // classes outrank the hiding one by specificity, not by order.
+            'transition-opacity [@media(hover:hover)]:opacity-0 group-hover/tile:opacity-100 group-has-[:focus-visible]/tile:opacity-100',
+          )}
         />
       )}
     </div>
