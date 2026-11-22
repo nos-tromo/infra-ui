@@ -78,6 +78,23 @@ test('the remove button is its own control, after the face, and never opens', as
   expect(onOpen).not.toHaveBeenCalled()
 })
 
+test('the cross is small, and shows on hover or focus where a pointer can hover, always on touch', () => {
+  const { container } = render(
+    <AttachmentTile name="quarterly-plan.pdf" kind="document" status="ready" onRemove={() => {}} />,
+  )
+  expect(container.firstElementChild).toHaveClass('group/tile')
+  const cross = screen.getByRole('button', { name: 'Remove quarterly-plan.pdf' })
+  expect(cross).toHaveClass('h-5', 'w-5', '[&_svg]:h-3', '[&_svg]:w-3')
+  expect(cross).toHaveClass('after:absolute', 'after:-inset-0.5') // a 24px target
+  expect(cross).toHaveClass(
+    '[@media(hover:hover)]:opacity-0',
+    'group-hover/tile:opacity-100',
+    'group-has-[:focus-visible]/tile:opacity-100',
+  )
+  expect(cross).not.toHaveClass('h-6')
+  expect(cross).not.toHaveClass('h-8')
+})
+
 test('without a removeLabel the remove button is still named after the file', () => {
   render(
     <AttachmentTile name="quarterly-plan.pdf" kind="document" status="ready" onRemove={() => {}} />,

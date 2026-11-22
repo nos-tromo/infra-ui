@@ -1141,7 +1141,12 @@ interface AttachmentTileProps {
  * button still is).
  *
  * A failure is drawn with the warning, not the cross. The cross in the corner is
- * the remove action, and two crosses on one tile would mean two things.
+ * the remove action, and two crosses on one tile would mean two things. It is
+ * small (20px drawn, a 12px cross, a 24px target) and, where a pointer can hover,
+ * shows only while the pointer is over the tile or the keyboard's focus is in it,
+ * so a row of files reads as files; on a touch screen, which cannot hover, it
+ * always shows. It stays its own stop in the tab order, and shows as soon as the
+ * keyboard reaches it.
  *
  * The caller makes, owns and revokes the thumbnail's object URL; the tile
  * fetches nothing. Put tiles above `ChatComposer`'s pill, not inside it: its

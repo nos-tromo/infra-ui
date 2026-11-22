@@ -1435,7 +1435,7 @@ function AttachmentTile({
       "data-kind": kind,
       "data-status": status,
       "data-size": size,
-      className: cn("relative w-fit", className),
+      className: cn("group/tile relative w-fit", className),
       children: [
         onOpen ? /* @__PURE__ */ jsx23(
           "button",
@@ -1454,7 +1454,14 @@ function AttachmentTile({
           {
             label: removeLabel ?? `Remove ${name}`,
             onClick: () => onRemove(),
-            className: "absolute -right-2 -top-2 h-6 w-6 rounded-full border border-border bg-background shadow-sm"
+            className: cn(
+              "absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full border border-border bg-background shadow-sm [&_svg]:h-3 [&_svg]:w-3",
+              // Drawn at 20px, a target of 24px (WCAG 2.2, 2.5.8).
+              "after:absolute after:-inset-0.5 after:content-['']",
+              // Shown on hover or keyboard focus where a pointer can hover; always on a touch screen. The hover and focus
+              // classes outrank the hiding one by specificity, not by order.
+              "transition-opacity [@media(hover:hover)]:opacity-0 group-hover/tile:opacity-100 group-has-[:focus-visible]/tile:opacity-100"
+            )
           }
         )
       ]
