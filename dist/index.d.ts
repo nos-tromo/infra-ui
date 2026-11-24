@@ -1228,6 +1228,41 @@ declare namespace ImageLightbox {
     var displayName: string;
 }
 
+interface ContextMeterProps {
+    /** How much is used, as a fraction from 0 to 1. Clamped to [0, 1]; NaN is 0. */
+    value: number;
+    /** The accessible name and the tooltip, in the app's language: "about 62 % of the context used". */
+    label: string;
+    /** The fraction from which the meter warns. Defaults to 0.8. */
+    warnAt?: number;
+    /** Merged onto the root, last. */
+    className?: string;
+}
+/**
+ * How much of a budget is used, such as a chat's context, as a small ring that
+ * fills clockwise from the top.
+ *
+ * The number lives only in `label`, never in the drawing: the app words it and
+ * rounds it in its own language, with its own "about", and the ring holds no
+ * text that a translation or a font could change. The normal arc is muted, not
+ * the accent, because the ring is a reading and not a control; from `warnAt` it
+ * turns to the warning colour.
+ *
+ * The level is decided on the value, not on the rounded percent, so an app that
+ * shows a note from the same value and the same threshold agrees with the ring:
+ * 0.799 reads as 80 and is still below 0.8. A value above 1 (an estimate over
+ * its budget) draws a full ring, and a missing number (`NaN`) is 0. Nothing
+ * that rounds to 0 draws an arc, so a round-capped dot never shows for an empty
+ * budget.
+ *
+ * It has no transition and no animation: the ring is read, not watched, so
+ * `prefers-reduced-motion` has nothing to turn off.
+ */
+declare function ContextMeter({ value, label, warnAt, className, }: ContextMeterProps): ReactElement;
+declare namespace ContextMeter {
+    var displayName: string;
+}
+
 interface PageHeaderProps extends HTMLAttributes<HTMLElement> {
     /** Route title — exactly one PageHeader (one h1) per route. */
     title: string;
@@ -1838,4 +1873,4 @@ declare namespace PurposeBar {
     var displayName: string;
 }
 
-export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, type AttachmentKind, AttachmentTile, type AttachmentTileProps, type AttachmentTileStatus, AudioIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, FileIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, ImageLightbox, type ImageLightboxProps, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, VideoIcon, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };
+export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, type AttachmentKind, AttachmentTile, type AttachmentTileProps, type AttachmentTileStatus, AudioIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, ContextMeter, type ContextMeterProps, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, FileIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, ImageLightbox, type ImageLightboxProps, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, VideoIcon, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };

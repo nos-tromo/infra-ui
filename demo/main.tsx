@@ -11,6 +11,7 @@ import {
   ChatComposer,
   CopyButton,
   Card,
+  ContextMeter,
   CycleButton,
   FileList,
   DeleteButton,
@@ -377,6 +378,17 @@ function Sink() {
           <p className="text-xs text-muted-foreground">
             {openedTile ? `Opened ${openedTile}` : 'Nothing opened'}
           </p>
+          {/* The context ring at four fills: the app words the number in `label`,
+              the ring draws it. 1.4 is an estimate over its budget. */}
+          <div className="flex items-center gap-3">
+            {[0.12, 0.62, 0.8, 1.4].map((fill) => (
+              <ContextMeter
+                key={fill}
+                value={fill}
+                label={`about ${Math.round(Math.min(1, fill) * 100)} % of the context used`}
+              />
+            ))}
+          </div>
           {/* Portalled to the body: it sits here only for its state. The pictures
               are drawn SVG, so the saved file is named for what it holds. */}
           <ImageLightbox
@@ -401,12 +413,18 @@ function Sink() {
               onChange={(event) => setChatDraft(event.target.value)}
               start={<AttachButton label="Attach files" />}
               end={
-                <SendButton
-                  type="submit"
-                  variant="primary"
-                  label="Send"
-                  disabled={!chatDraft.trim()}
-                />
+                <>
+                  <ContextMeter
+                    value={chatDraft.length / 200}
+                    label={`about ${Math.round(Math.min(1, chatDraft.length / 200) * 100)} % of the context used`}
+                  />
+                  <SendButton
+                    type="submit"
+                    variant="primary"
+                    label="Send"
+                    disabled={!chatDraft.trim()}
+                  />
+                </>
               }
             />
           </form>
