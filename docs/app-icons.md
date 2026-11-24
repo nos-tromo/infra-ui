@@ -56,7 +56,7 @@ names the whole app and is never part of a control
 |---|---|---|---|
 | Portal | 2 × 2 grid of rounded squares: the app overview | `#3f3f46`, neutral zinc | none (no app accent) |
 | docint | network of nodes, a hub with four neighbours, two of them linked: connections in a large body of documents | `#0b7f58`, `hsl(160 84% 27%)` | `hsl(160 84% 39%)` |
-| Nextext | symmetric waveform of five bars: audio and video | `#916308`, `hsl(40 90% 30%)` | `hsl(40 90% 55%)` |
+| Nextext | symmetric waveform of five bars: audio and video | `#9b6a08`, `hsl(40 90% 32%)` | `hsl(40 90% 40%)` |
 | translator | 文A: translation | `#0a5adb`, `hsl(217 91% 45%)` | `hsl(217 91% 60%)` |
 | Ghostwriter | speech bubble with two eyes: the chat agent | `#bb1b50`, `hsl(340 75% 42%)` | `hsl(340 75% 62%)` |
 | Grafana | curve over a baseline: measurements over time | `#d15a05`, `hsl(25 95% 42%)` | none (favicon only) |
@@ -66,6 +66,12 @@ An app's accent must reach 4.5:1 as text: the light value on `#fff`, the dark
 one on the dark background `hsl(240 6% 8%)`. White on each tile reaches at
 least 4:1. Each app's `src/favicon.test.ts` checks that its tile is its light
 `--app-accent`, so the two cannot drift apart.
+
+The tile has no dark variant, so in dark mode it sits beside the dark accent.
+Keep the two close in lightness: a dark accent far lighter than the tile reads
+as another colour beside it. Ochres and yellows turn from brown to gold
+fastest. Nextext's pair is 8 points apart; its first one, 25 points apart,
+put a gold UI beside a brown tab.
 
 ## Files and head
 
@@ -84,10 +90,21 @@ The head links them in this order, PNG first and SVG second, so a browser that
 reads SVG favicons takes the SVG and the others the PNG:
 
 ```html
-<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="icon" href="/favicon-32.png?v=c49bf66c" type="image/png" sizes="32x32" />
+<link rel="icon" href="/favicon.svg?v=b10306e7" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=b4bbd02b" />
 ```
+
+Each link carries `?v=` and the first 8 hex digits of the file's SHA-256
+(`shasum -a 256 favicon.svg | cut -c1-8`). A browser keeps a favicon in a
+store of its own, keyed by the icon's URL, and ignores `no-cache` for it, so
+a redrawn icon has to arrive under a new URL: without one, Nextext's tab
+kept its old icon after a redraw while the file served was already the new
+one. Each app's `favicon.test.ts` computes the digits from `public/`, and
+edge-plane's `scripts/check-favicon-versions.sh` does so for the portal's
+pages, so an icon changed without new digits fails CI. `/favicon.ico` and
+Grafana's icons cannot be versioned: browsers and Authelia ask for the first
+on their own, and Grafana's pages link theirs.
 
 In the apps the files sit in `frontend/public/`, and Vite prefixes the `base`
 (`/docint/favicon.svg`). The portal links them absolutely, as it does
@@ -125,5 +142,6 @@ Path("favicon.ico").write_bytes(head + entries + b"".join(pngs))
 Redraw the SVG and render the PNGs again in the app's repository, and release
 it with the app's next version. There is no second copy: Authelia's login
 page mounts the portal's `favicon.ico` itself. A changed accent changes the
-tile with it, and the app's favicon test fails until both agree. A browser
-may show the old icon from its cache for a while.
+tile with it, and the app's favicon test fails until both agree. Then put
+the new digits into the head links (see Files and head): the favicon test,
+or edge-plane's check for the portal, fails until they match the files.
