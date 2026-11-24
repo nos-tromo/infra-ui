@@ -1429,9 +1429,9 @@ function AttachmentTile({
       /* @__PURE__ */ jsxs10("span", { className: "flex min-w-0 flex-1 flex-col", children: [
         /* @__PURE__ */ jsx23("span", { className: "truncate font-medium", title: name, children: name }),
         hasDetail && /* @__PURE__ */ jsx23("span", { id: detailId, className: "truncate text-xs text-muted-foreground", children: detail }),
-        showWarning && /* @__PURE__ */ jsxs10("span", { className: "flex min-w-0 items-center gap-1 text-xs text-warning", children: [
+        showWarning && /* @__PURE__ */ jsxs10("span", { title: warning, className: "flex min-w-0 items-center gap-1 text-xs text-warning", children: [
           /* @__PURE__ */ jsx23(WarningIcon, { className: "h-3 w-3 shrink-0" }),
-          /* @__PURE__ */ jsx23("span", { id: warningId, title: warning, className: "truncate", children: warning })
+          /* @__PURE__ */ jsx23("span", { id: warningId, className: "truncate", children: warning })
         ] })
       ] }),
       failed && /* @__PURE__ */ jsxs10("span", { className: "flex shrink-0", children: [
@@ -1640,7 +1640,6 @@ function ContextMeter({
       "aria-valuemin": 0,
       "aria-valuemax": 100,
       "aria-valuenow": percent,
-      "aria-valuetext": label,
       "aria-label": label,
       title: label,
       "data-level": level,

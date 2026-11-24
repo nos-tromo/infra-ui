@@ -10,7 +10,7 @@ test('a meter from 0 to 100, named and titled by its label, at the whole percent
   expect(meter).toHaveAttribute('aria-valuemin', '0')
   expect(meter).toHaveAttribute('aria-valuemax', '100')
   expect(meter).toHaveAttribute('aria-valuenow', '62')
-  expect(meter).toHaveAttribute('aria-valuetext', LABEL) // read as the app words it, not a bare 62
+  expect(meter).not.toHaveAttribute('aria-valuetext') // the label is the name; a second copy as the value would be heard twice
   expect(meter).toHaveAttribute('title', LABEL)
   expect(meter.textContent).toBe('') // drawn, never typed
   expect(meter.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
@@ -58,6 +58,15 @@ test('the level turns to warn at 0.8 by default, and the arc to the warning colo
     expect(screen.getByRole('meter')).toHaveAttribute('data-level', 'warn')
     expect(arc(container)).toHaveClass('text-warning')
   }
+})
+
+test('warnAt moves the arc’s colour with the level', () => {
+  const { container, rerender } = render(<ContextMeter value={0.5} warnAt={0.5} label={LABEL} />)
+  expect(arc(container)).toHaveClass('text-warning')
+  expect(arc(container)).not.toHaveClass('text-muted-foreground')
+  rerender(<ContextMeter value={0.85} warnAt={0.9} label={LABEL} />)
+  expect(arc(container)).toHaveClass('text-muted-foreground')
+  expect(arc(container)).not.toHaveClass('text-warning')
 })
 
 test('the level is decided on the value, not on the rounded percent', () => {

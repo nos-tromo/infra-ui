@@ -104,12 +104,14 @@ const face = cva(
  * A `warning` is a caution about a file that works: "Very long: read only in
  * parts". It shows only while the tile is `ready`: a failed or expired tile has
  * its own marker, and a busy tile's warning waits until it is ready, so the two
- * never stack. A blank warning counts as none. It is tinted `warning`, not `danger`, and the border stays as it
- * was, since nothing has failed. A row gives it a third line under the detail,
- * cut with an ellipsis and whole in its tooltip. A square has no room for a line
- * and the picture must stay clear, so it draws the sign alone in the bottom-left
- * corner, away from the remove cross; its text is the tooltip and, for a screen
- * reader, part of the description.
+ * never stack. A blank warning counts as none. It is tinted `warning`, not
+ * `danger`, and the border stays as it was, since nothing has failed. A row
+ * gives it a third line under the detail, cut with an ellipsis and whole in its
+ * tooltip, so keep it short: about 20 characters fit an `sm` row. A square has
+ * no room for a line and the picture must stay clear, so it draws the sign alone
+ * in the bottom-left corner, away from the remove cross. Its text is the tooltip
+ * and, for a screen reader, part of the description; a sighted user sees it only
+ * on hover, so it must carry nothing essential.
  *
  * The caller makes, owns and revokes the thumbnail's object URL; the tile
  * fetches nothing. Put tiles above `ChatComposer`'s pill, not inside it: its
@@ -268,9 +270,9 @@ export function AttachmentTile({
             </span>
           )}
           {showWarning && (
-            <span className="flex min-w-0 items-center gap-1 text-xs text-warning">
+            <span title={warning} className="flex min-w-0 items-center gap-1 text-xs text-warning">
               <WarningIcon className="h-3 w-3 shrink-0" />
-              <span id={warningId} title={warning} className="truncate">
+              <span id={warningId} className="truncate">
                 {warning}
               </span>
             </span>

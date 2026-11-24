@@ -301,7 +301,7 @@ test('a ready document shows its warning under the detail, drawn and said, witho
   )
   const text = screen.getByText(LONG)
   expect(text).toHaveClass('truncate')
-  expect(text).toHaveAttribute('title', LONG)
+  expect(text.parentElement).toHaveAttribute('title', LONG) // the sign shows the text too
   expect(text.parentElement).toHaveClass('text-warning')
   expect(text.parentElement!.querySelector('svg')!.innerHTML).toBe(drawing(<WarningIcon />))
   const detail = screen.getByText('18.6 MB')
@@ -309,6 +309,21 @@ test('a ready document shows its warning under the detail, drawn and said, witho
   expect(screen.getByText('field-survey.pdf')).toHaveAttribute('title', 'field-survey.pdf')
   expect(face(container)).toHaveClass('h-14', 'w-56', 'border-border') // the row's size; a caution, not a failure
   expect(face(container).querySelector('svg')!.innerHTML).toBe(drawing(<FileIcon />)) // the kind still leads
+})
+
+test('a medium row keeps its size with the warning as a third line', () => {
+  const { container } = render(
+    <AttachmentTile
+      name="field-survey.pdf"
+      kind="document"
+      status="ready"
+      detail="18.6 MB"
+      warning={LONG}
+      size="md"
+    />,
+  )
+  expect(face(container)).toHaveClass('h-16', 'w-64', 'border-border')
+  expect(screen.getByText(LONG)).toBeInTheDocument()
 })
 
 test('each face button is described by its own warning', () => {
