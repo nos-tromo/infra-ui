@@ -554,7 +554,7 @@ ring and the note turn together.
       {usage && (
         <ContextMeter
           value={usage.used / usage.budget}
-          label={t('composer.contextUsed', { percent: Math.round((usage.used / usage.budget) * 100) })}
+          label={t('composer.contextUsed', { percent: Math.round(Math.min(1, usage.used / usage.budget) * 100) })}
           warnAt={NEARLY_FULL}
         />
       )}
@@ -585,9 +585,10 @@ What it draws:
 
 Accessibility: the root is `role="meter"` with `aria-valuemin` 0,
 `aria-valuemax` 100 and `aria-valuenow` the whole percent. `label` is its name
-(`aria-label`), its tooltip (`title`) and its value's text (`aria-valuetext`),
-so a screen reader says the app's wording, "about 62 % of the context used", and
-not a bare "62" after it. The ring is `aria-hidden`.
+(`aria-label`) and its tooltip (`title`). A screen reader reads the label as the
+meter's name, then the whole percent as its value: "about 62 % of the context
+used, meter, 62". There is no `aria-valuetext`, since a second copy of the label
+as the value would be spoken twice. The ring is `aria-hidden`.
 
 Three rules:
 
@@ -690,7 +691,7 @@ The status marker, by status:
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ---------------------------------------------------------------- |
 | `uploading`  | A spinner, centred over the picture on a veil; on other kinds, and on an image with no picture, it takes the drawing's place                                                                  | none                             | `statusLabel`, default "Uploading" (`role="status"`)             |
 | `processing` | The same spinner                                                                                                                                                                              | none                             | `statusLabel`, default "Processing" (`role="status"`)            |
-| `ready`      | none; a `warning`, if given                                                                                                                                                                   | none                             | none                                                             |
+| `ready`      | none; a `warning`, if given                                                                                                                                                                   | the `warning` on a row, if given | the `warning`, in the description, if given                      |
 | `failed`     | The warning drawing in `text-danger`: over the picture on a veil, in the drawing's place on an image with no picture, at the row's end on other kinds; the face's border goes `border-danger` | none                             | `statusLabel`, default "Failed" (`role="img"`, also the tooltip) |
 | `expired`    | A `Badge`; the drawing's square goes muted. At `sm` an image is a row (square, name, then the badge at the row's end); at `md` the badge sits under the drawing in the square                 | `statusLabel`, default "Expired" | The same text                                                    |
 
@@ -706,6 +707,11 @@ row keeps its size. On an image's square, where there is no room for a line and
 the picture must stay clear, it is the drawing alone in the bottom-left corner,
 away from the remove cross, with the text as its tooltip. Where the face is a
 button, the text is part of its description.
+
+Keep a warning short: about 20 characters fit an `sm` row, and the rest is cut
+with an ellipsis, whole only in the tooltip, which a touch screen cannot show.
+A square's warning is hover-only for a sighted user, so it must not carry
+anything essential.
 
 Where the face is a button, it is named by the file (`aria-label`) and
 described by the detail, the marker and the warning (`aria-describedby`); its picture then
