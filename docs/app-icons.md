@@ -56,7 +56,7 @@ names the whole app and is never part of a control
 |---|---|---|---|
 | Portal | 2 × 2 grid of rounded squares: the app overview | `#3f3f46`, neutral zinc | none (no app accent) |
 | docint | network of nodes, a hub with four neighbours, two of them linked: connections in a large body of documents | `#0b7f58`, `hsl(160 84% 27%)` | `hsl(160 84% 39%)` |
-| Nextext | symmetric waveform of five bars: audio and video | `#7c3bed`, `hsl(262 83% 58%)` | `hsl(262 83% 70%)` |
+| Nextext | symmetric waveform of five bars: audio and video | `#916308`, `hsl(40 90% 30%)` | `hsl(40 90% 55%)` |
 | translator | 文A: translation | `#0a5adb`, `hsl(217 91% 45%)` | `hsl(217 91% 60%)` |
 | Ghostwriter | speech bubble with two eyes: the chat agent | `#bb1b50`, `hsl(340 75% 42%)` | `hsl(340 75% 62%)` |
 | Grafana | curve over a baseline: measurements over time | `#d15a05`, `hsl(25 95% 42%)` | none (favicon only) |
