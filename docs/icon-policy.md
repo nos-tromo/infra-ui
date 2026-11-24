@@ -126,6 +126,15 @@ open bars, kept apart from `MicIcon`, which starts dictation rather than naming
 a recording already made. The lightbox's Close is `XIcon` on a plain
 `IconButton`, not `RemoveButton`, because closing a view removes nothing.
 
+`v0.28.0` adds no icon. `AttachmentTile`'s `warning` draws `WarningIcon`, in the
+new warning colour: a caution about a file that works, which is what its
+docstring has always said the drawing means. A failed tile keeps the same
+drawing in `danger`, with a red border, and the two never show on one tile: a
+failed or expired tile drops its warning. The new `ContextMeter`'s ring is a
+drawing of a value, not an icon of the set. It has one call site and no
+counterpart, so it lives in `ContextMeter.tsx` beside the glyphs kept local
+below, `aria-hidden` and in `currentColor`, with no digits and no `%` in it.
+
 An icon with more than one call site is exported **once** from `src/icons/` and
 imported everywhere, including by this package's own primitives: `CopyButton`
 and `FileList` each drew a private checkmark and cross of their own from before
