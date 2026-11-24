@@ -20,6 +20,8 @@ export interface AttachmentTileProps {
   thumbnailUrl?: string
   /** What to say under the name on a non-image tile: "2.4 MB", "24 slides", "01:12". */
   detail?: string
+  /** A short caution about a ready file ("Very long: read only in parts"). Shown only while `status` is `ready`. */
+  warning?: string
   /** The status marker's text. Defaults to Uploading, Processing, Failed or Expired. */
   statusLabel?: string
   /** Opens the file. The face is a `<button>` only when this is set. */
@@ -79,7 +81,7 @@ const face = cva(
  * An image shows its `thumbnailUrl` as a square cover. Every other kind is a
  * row of its drawing, the name and a `detail`, and ignores the URL. While a file
  * is `uploading` or `processing` a spinner marks it; `failed` is drawn with the
- * warning and a red border, and `expired` shows the drawing with a badge in
+ * warning sign and a red border, and `expired` shows the drawing with a badge in
  * place of the picture, which is gone by then. Without a URL, or when the
  * picture does not load, an image falls back to its drawing. At `sm` an expired
  * image is drawn as a row, like every other kind, so its badge reads whole; at
@@ -91,13 +93,23 @@ const face = cva(
  * is set, so the face of a tile that opens nothing is not focusable (its remove
  * button still is).
  *
- * A failure is drawn with the warning, not the cross. The cross in the corner is
+ * A failure is drawn with the warning sign, not the cross. The cross in the corner is
  * the remove action, and two crosses on one tile would mean two things. It is
  * small (20px drawn, a 12px cross, a 24px target) and, where a pointer can hover,
  * shows only while the pointer is over the tile or the keyboard's focus is in it,
  * so a row of files reads as files; on a touch screen, which cannot hover, it
  * always shows. It stays its own stop in the tab order, and shows as soon as the
  * keyboard reaches it.
+ *
+ * A `warning` is a caution about a file that works: "Very long: read only in
+ * parts". It shows only while the tile is `ready`: a failed or expired tile has
+ * its own marker, and a busy tile's warning waits until it is ready, so the two
+ * never stack. It is tinted `warning`, not `danger`, and the border stays as it
+ * was, since nothing has failed. A row gives it a third line under the detail,
+ * cut with an ellipsis and whole in its tooltip. A square has no room for a line
+ * and the picture must stay clear, so it draws the sign alone in the bottom-left
+ * corner, away from the remove cross; its text is the tooltip and, for a screen
+ * reader, part of the description.
  *
  * The caller makes, owns and revokes the thumbnail's object URL; the tile
  * fetches nothing. Put tiles above `ChatComposer`'s pill, not inside it: its
@@ -112,6 +124,7 @@ export function AttachmentTile({
   status,
   thumbnailUrl,
   detail,
+  warning,
   statusLabel,
   onOpen,
   onRemove,
@@ -122,6 +135,7 @@ export function AttachmentTile({
   const id = useId()
   const markerId = `${id}-status`
   const detailId = `${id}-detail`
+  const warningId = `${id}-warning`
   // The URL that failed, not a flag: a new URL is tried with no effect to reset it.
   const [failedUrl, setFailedUrl] = useState<string>()
 
@@ -139,12 +153,16 @@ export function AttachmentTile({
   // square has no room for the badge ("Ex…") and there is no picture to show.
   const row = !isImage || (expired && size === 'sm')
   const hasDetail = !isImage && Boolean(detail)
+  // A failed or expired tile has its marker, and a busy one's warning waits.
+  const showWarning = Boolean(warning) && status === 'ready'
   const describedBy =
-    [hasDetail && detailId, hasMarker && markerId].filter(Boolean).join(' ') || undefined
+    [hasDetail && detailId, hasMarker && markerId, showWarning && warningId]
+      .filter(Boolean)
+      .join(' ') || undefined
 
   const big = size === 'md'
   const spinner = <Spinner label={label} className={big ? 'h-7 w-7' : 'h-5 w-5'} />
-  const warning = (iconClass: string) => (
+  const failureMark = (iconClass: string) => (
     <span role="img" aria-label={label} title={label} className="inline-flex text-danger">
       <WarningIcon className={iconClass} />
     </span>
@@ -193,7 +211,7 @@ export function AttachmentTile({
         ) : busy || failed ? (
           // No picture: the marker takes the drawing's place, so the two never stack.
           <span className="flex items-center justify-center" title={name}>
-            {busy ? spinner : warning(big ? 'h-7 w-7' : 'h-5 w-5')}
+            {busy ? spinner : failureMark(big ? 'h-7 w-7' : 'h-5 w-5')}
             {said}
             {!onOpen && <span className="sr-only">{name}</span>}
           </span>
@@ -203,8 +221,20 @@ export function AttachmentTile({
         {picture && (busy || failed) && (
           // A picture is veiled, so the marker reads on any of them.
           <span className="absolute inset-0 flex items-center justify-center bg-background/50">
-            {busy ? spinner : warning(big ? 'h-7 w-7' : 'h-5 w-5')}
+            {busy ? spinner : failureMark(big ? 'h-7 w-7' : 'h-5 w-5')}
             {said}
+          </span>
+        )}
+        {showWarning && (
+          // No room for a line: the drawing alone, bottom left, clear of the remove cross.
+          <span
+            title={warning}
+            className="absolute bottom-1 left-1 inline-flex rounded-full bg-background p-0.5 text-warning"
+          >
+            <WarningIcon className="h-3.5 w-3.5" />
+            <span id={warningId} className="sr-only">
+              {warning}
+            </span>
           </span>
         )}
       </>
@@ -236,10 +266,18 @@ export function AttachmentTile({
               {detail}
             </span>
           )}
+          {showWarning && (
+            <span className="flex min-w-0 items-center gap-1 text-xs text-warning">
+              <WarningIcon className="h-3 w-3 shrink-0" />
+              <span id={warningId} title={warning} className="truncate">
+                {warning}
+              </span>
+            </span>
+          )}
         </span>
         {failed && (
           <span className="flex shrink-0">
-            {warning('h-5 w-5')}
+            {failureMark('h-5 w-5')}
             {said}
           </span>
         )}

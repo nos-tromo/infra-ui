@@ -138,6 +138,7 @@ interface DemoTile {
   status: AttachmentTileStatus
   thumbnailUrl?: string
   detail?: string
+  warning?: string
   statusLabel?: string
 }
 
@@ -184,6 +185,22 @@ const INITIAL_TILES: DemoTile[] = [
     detail: '2.4 MB',
   },
   { id: 't10', name: 'budget-draft.xlsx', kind: 'document', status: 'expired', detail: '88 KB' },
+  {
+    id: 't11',
+    name: 'field-survey.pdf',
+    kind: 'document',
+    status: 'ready',
+    detail: '18.6 MB',
+    warning: 'Very long: read only in parts',
+  },
+  {
+    id: 't12',
+    name: 'site-map.png',
+    kind: 'image',
+    status: 'ready',
+    thumbnailUrl: PICTURE_FLOORPLAN,
+    warning: 'Sent at a reduced size',
+  },
 ]
 
 function Sink() {
@@ -345,6 +362,7 @@ function Sink() {
                 status={tile.status}
                 thumbnailUrl={tile.thumbnailUrl}
                 detail={tile.detail}
+                warning={tile.warning}
                 statusLabel={tile.statusLabel}
                 onOpen={tile.status === 'ready' ? () => openTile(tile) : undefined}
                 onRemove={() => setTiles((list) => list.filter((t) => t.id !== tile.id))}

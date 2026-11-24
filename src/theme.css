@@ -9,6 +9,8 @@
   --color-border: hsl(240 5% 84%);
   --color-accent: hsl(240 5% 90%);
   --color-danger: hsl(0 72% 40%);
+  /* a caution: something needs attention and nothing has failed (`ContextMeter`'s warn level, `AttachmentTile`'s warning); `danger` stays for failure */
+  --color-warning: hsl(32 95% 32%);
 
   /* shell chrome (AppShell header + sidebar); canvas insets into it */
   --color-chrome: hsl(240 5% 96%);
@@ -64,6 +66,7 @@
   --color-border: hsl(240 4% 22%);
   --color-accent: hsl(240 5% 26%);
   --color-danger: hsl(0 72% 65%);
+  --color-warning: hsl(38 92% 55%);
   --color-chrome: hsl(240 4% 12%);
 }
 
@@ -77,6 +80,7 @@
     --color-border: hsl(240 4% 22%);
     --color-accent: hsl(240 5% 26%);
     --color-danger: hsl(0 72% 65%);
+    --color-warning: hsl(38 92% 55%);
     --color-chrome: hsl(240 4% 12%);
   }
 }

@@ -286,3 +286,135 @@ test('a long name keeps the tile’s width: truncated, whole in the tooltip and 
   expect(screen.getByText(name)).toHaveAttribute('title', name)
   expect(screen.getByRole('button', { name })).toBeInTheDocument()
 })
+
+const LONG = 'Very long: read only in parts'
+
+test('a ready document shows its warning under the detail, drawn and said, without hiding either', () => {
+  const { container } = render(
+    <AttachmentTile
+      name="field-survey.pdf"
+      kind="document"
+      status="ready"
+      detail="18.6 MB"
+      warning={LONG}
+    />,
+  )
+  const text = screen.getByText(LONG)
+  expect(text).toHaveClass('truncate')
+  expect(text).toHaveAttribute('title', LONG)
+  expect(text.parentElement).toHaveClass('text-warning')
+  expect(text.parentElement!.querySelector('svg')!.innerHTML).toBe(drawing(<WarningIcon />))
+  const detail = screen.getByText('18.6 MB')
+  expect(detail.compareDocumentPosition(text) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy() // under it
+  expect(screen.getByText('field-survey.pdf')).toHaveAttribute('title', 'field-survey.pdf')
+  expect(face(container)).toHaveClass('h-14', 'w-56', 'border-border') // the row's size; a caution, not a failure
+  expect(face(container).querySelector('svg')!.innerHTML).toBe(drawing(<FileIcon />)) // the kind still leads
+})
+
+test('each face button is described by its own warning', () => {
+  render(
+    <>
+      <AttachmentTile
+        name="field-survey.pdf"
+        kind="document"
+        status="ready"
+        detail="18.6 MB"
+        warning={LONG}
+        onOpen={() => {}}
+      />
+      <AttachmentTile
+        name="site-ledger.xlsx"
+        kind="document"
+        status="ready"
+        detail="4.1 MB"
+        warning="Sheets read in parts"
+        onOpen={() => {}}
+      />
+    </>,
+  )
+  const first = screen.getByRole('button', { name: 'field-survey.pdf' })
+  const text = screen.getByText(LONG)
+  expect(text.id).not.toBe('')
+  expect(first.getAttribute('aria-describedby')!.split(' ')).toContain(text.id)
+  expect(first).toHaveAccessibleDescription(`18.6 MB ${LONG}`)
+  expect(screen.getByRole('button', { name: 'site-ledger.xlsx' })).toHaveAccessibleDescription(
+    '4.1 MB Sheets read in parts',
+  )
+})
+
+test('failed and expired keep their own marker and drop the warning', () => {
+  const props = {
+    name: 'field-survey.pdf',
+    kind: 'document',
+    detail: '18.6 MB',
+    warning: LONG,
+    onOpen: () => {},
+  } as const
+  const { rerender } = render(
+    <AttachmentTile {...props} status="failed" statusLabel="Could not be read" />,
+  )
+  expect(screen.getByRole('img', { name: 'Could not be read' })).toBeInTheDocument()
+  expect(screen.queryByText(LONG)).not.toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'field-survey.pdf' })).toHaveAccessibleDescription(
+    '18.6 MB Could not be read',
+  )
+  rerender(<AttachmentTile {...props} status="expired" statusLabel="Expired" />)
+  expect(screen.getByText('Expired')).toBeInTheDocument()
+  expect(screen.queryByText(LONG)).not.toBeInTheDocument()
+})
+
+test.each(['uploading', 'processing'] as const)(
+  'a %s tile shows its spinner, not the warning yet',
+  (status) => {
+    render(
+      <AttachmentTile
+        name="field-survey.pdf"
+        kind="document"
+        status={status}
+        detail="18.6 MB"
+        warning={LONG}
+      />,
+    )
+    expect(screen.getByRole('status')).toBeInTheDocument()
+    expect(screen.queryByText(LONG)).not.toBeInTheDocument()
+  },
+)
+
+test('without a warning, or with an empty one, the tile is as before', () => {
+  const props = {
+    name: 'field-survey.pdf',
+    kind: 'document',
+    status: 'ready',
+    detail: '18.6 MB',
+    onOpen: () => {},
+  } as const
+  const { container, rerender } = render(<AttachmentTile {...props} />)
+  expect(face(container).querySelectorAll('svg')).toHaveLength(1) // the kind alone
+  expect(screen.getByRole('button')).toHaveAccessibleDescription('18.6 MB')
+  rerender(<AttachmentTile {...props} warning="" />)
+  expect(face(container).querySelectorAll('svg')).toHaveLength(1)
+  expect(screen.getByRole('button')).toHaveAccessibleDescription('18.6 MB')
+})
+
+test('on an image’s square the warning is the drawing in a corner, its text the tooltip and the description', () => {
+  const { container } = render(
+    <AttachmentTile
+      name="harbour-sketch.png"
+      kind="image"
+      status="ready"
+      thumbnailUrl={PICTURE}
+      warning={LONG}
+      onOpen={() => {}}
+    />,
+  )
+  expect(face(container)).toHaveClass('size-14') // still the square
+  expect(container.querySelector('img')).toHaveAttribute('src', PICTURE)
+  expect(container.querySelector('[class*="bg-background/50"]')).toBeNull() // not veiled
+  const corner = face(container).querySelector(`[title="${LONG}"]`)!
+  expect(corner).toHaveClass('text-warning')
+  expect(corner.querySelector('svg')!.innerHTML).toBe(drawing(<WarningIcon />))
+  expect(screen.getByText(LONG)).toHaveClass('sr-only')
+  expect(screen.getByRole('button', { name: 'harbour-sketch.png' })).toHaveAccessibleDescription(
+    LONG,
+  )
+})

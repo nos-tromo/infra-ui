@@ -1109,6 +1109,8 @@ interface AttachmentTileProps {
     thumbnailUrl?: string;
     /** What to say under the name on a non-image tile: "2.4 MB", "24 slides", "01:12". */
     detail?: string;
+    /** A short caution about a ready file ("Very long: read only in parts"). Shown only while `status` is `ready`. */
+    warning?: string;
     /** The status marker's text. Defaults to Uploading, Processing, Failed or Expired. */
     statusLabel?: string;
     /** Opens the file. The face is a `<button>` only when this is set. */
@@ -1128,7 +1130,7 @@ interface AttachmentTileProps {
  * An image shows its `thumbnailUrl` as a square cover. Every other kind is a
  * row of its drawing, the name and a `detail`, and ignores the URL. While a file
  * is `uploading` or `processing` a spinner marks it; `failed` is drawn with the
- * warning and a red border, and `expired` shows the drawing with a badge in
+ * warning sign and a red border, and `expired` shows the drawing with a badge in
  * place of the picture, which is gone by then. Without a URL, or when the
  * picture does not load, an image falls back to its drawing. At `sm` an expired
  * image is drawn as a row, like every other kind, so its badge reads whole; at
@@ -1140,13 +1142,23 @@ interface AttachmentTileProps {
  * is set, so the face of a tile that opens nothing is not focusable (its remove
  * button still is).
  *
- * A failure is drawn with the warning, not the cross. The cross in the corner is
+ * A failure is drawn with the warning sign, not the cross. The cross in the corner is
  * the remove action, and two crosses on one tile would mean two things. It is
  * small (20px drawn, a 12px cross, a 24px target) and, where a pointer can hover,
  * shows only while the pointer is over the tile or the keyboard's focus is in it,
  * so a row of files reads as files; on a touch screen, which cannot hover, it
  * always shows. It stays its own stop in the tab order, and shows as soon as the
  * keyboard reaches it.
+ *
+ * A `warning` is a caution about a file that works: "Very long: read only in
+ * parts". It shows only while the tile is `ready`: a failed or expired tile has
+ * its own marker, and a busy tile's warning waits until it is ready, so the two
+ * never stack. It is tinted `warning`, not `danger`, and the border stays as it
+ * was, since nothing has failed. A row gives it a third line under the detail,
+ * cut with an ellipsis and whole in its tooltip. A square has no room for a line
+ * and the picture must stay clear, so it draws the sign alone in the bottom-left
+ * corner, away from the remove cross; its text is the tooltip and, for a screen
+ * reader, part of the description.
  *
  * The caller makes, owns and revokes the thumbnail's object URL; the tile
  * fetches nothing. Put tiles above `ChatComposer`'s pill, not inside it: its
@@ -1155,7 +1167,7 @@ interface AttachmentTileProps {
  * @param props - `name`, `kind` and `status` are required.
  * @returns The tile.
  */
-declare function AttachmentTile({ name, kind, status, thumbnailUrl, detail, statusLabel, onOpen, onRemove, removeLabel, size, className, }: AttachmentTileProps): ReactElement;
+declare function AttachmentTile({ name, kind, status, thumbnailUrl, detail, warning, statusLabel, onOpen, onRemove, removeLabel, size, className, }: AttachmentTileProps): ReactElement;
 declare namespace AttachmentTile {
     var displayName: string;
 }

@@ -1338,6 +1338,7 @@ function AttachmentTile({
   status,
   thumbnailUrl,
   detail,
+  warning,
   statusLabel,
   onOpen,
   onRemove,
@@ -1348,6 +1349,7 @@ function AttachmentTile({
   const id = useId3();
   const markerId = `${id}-status`;
   const detailId = `${id}-detail`;
+  const warningId = `${id}-warning`;
   const [failedUrl, setFailedUrl] = useState4();
   const isImage = kind === "image";
   const picture = isImage && status !== "expired" && thumbnailUrl && failedUrl !== thumbnailUrl ? thumbnailUrl : void 0;
@@ -1358,10 +1360,11 @@ function AttachmentTile({
   const label = status === "ready" ? "" : statusLabel ?? DEFAULT_STATUS_LABELS[status];
   const row = !isImage || expired && size === "sm";
   const hasDetail = !isImage && Boolean(detail);
-  const describedBy = [hasDetail && detailId, hasMarker && markerId].filter(Boolean).join(" ") || void 0;
+  const showWarning = Boolean(warning) && status === "ready";
+  const describedBy = [hasDetail && detailId, hasMarker && markerId, showWarning && warningId].filter(Boolean).join(" ") || void 0;
   const big = size === "md";
   const spinner = /* @__PURE__ */ jsx23(Spinner, { label, className: big ? "h-7 w-7" : "h-5 w-5" });
-  const warning = (iconClass) => /* @__PURE__ */ jsx23("span", { role: "img", "aria-label": label, title: label, className: "inline-flex text-danger", children: /* @__PURE__ */ jsx23(WarningIcon, { className: iconClass }) });
+  const failureMark = (iconClass) => /* @__PURE__ */ jsx23("span", { role: "img", "aria-label": label, title: label, className: "inline-flex text-danger", children: /* @__PURE__ */ jsx23(WarningIcon, { className: iconClass }) });
   const badge2 = /* @__PURE__ */ jsx23(Badge, { className: "block max-w-full truncate", children: label });
   const said = onOpen ? /* @__PURE__ */ jsx23("span", { id: markerId, className: "sr-only", children: label }) : null;
   const Icon = KIND_ICONS[kind];
@@ -1385,16 +1388,28 @@ function AttachmentTile({
       ] }) : busy || failed ? (
         // No picture: the marker takes the drawing's place, so the two never stack.
         /* @__PURE__ */ jsxs10("span", { className: "flex items-center justify-center", title: name, children: [
-          busy ? spinner : warning(big ? "h-7 w-7" : "h-5 w-5"),
+          busy ? spinner : failureMark(big ? "h-7 w-7" : "h-5 w-5"),
           said,
           !onOpen && /* @__PURE__ */ jsx23("span", { className: "sr-only", children: name })
         ] })
       ) : stand,
       picture && (busy || failed) && // A picture is veiled, so the marker reads on any of them.
       /* @__PURE__ */ jsxs10("span", { className: "absolute inset-0 flex items-center justify-center bg-background/50", children: [
-        busy ? spinner : warning(big ? "h-7 w-7" : "h-5 w-5"),
+        busy ? spinner : failureMark(big ? "h-7 w-7" : "h-5 w-5"),
         said
-      ] })
+      ] }),
+      showWarning && // No room for a line: the drawing alone, bottom left, clear of the remove cross.
+      /* @__PURE__ */ jsxs10(
+        "span",
+        {
+          title: warning,
+          className: "absolute bottom-1 left-1 inline-flex rounded-full bg-background p-0.5 text-warning",
+          children: [
+            /* @__PURE__ */ jsx23(WarningIcon, { className: "h-3.5 w-3.5" }),
+            /* @__PURE__ */ jsx23("span", { id: warningId, className: "sr-only", children: warning })
+          ]
+        }
+      )
     ] });
   } else {
     content = /* @__PURE__ */ jsxs10(Fragment4, { children: [
@@ -1413,10 +1428,14 @@ function AttachmentTile({
       ),
       /* @__PURE__ */ jsxs10("span", { className: "flex min-w-0 flex-1 flex-col", children: [
         /* @__PURE__ */ jsx23("span", { className: "truncate font-medium", title: name, children: name }),
-        hasDetail && /* @__PURE__ */ jsx23("span", { id: detailId, className: "truncate text-xs text-muted-foreground", children: detail })
+        hasDetail && /* @__PURE__ */ jsx23("span", { id: detailId, className: "truncate text-xs text-muted-foreground", children: detail }),
+        showWarning && /* @__PURE__ */ jsxs10("span", { className: "flex min-w-0 items-center gap-1 text-xs text-warning", children: [
+          /* @__PURE__ */ jsx23(WarningIcon, { className: "h-3 w-3 shrink-0" }),
+          /* @__PURE__ */ jsx23("span", { id: warningId, title: warning, className: "truncate", children: warning })
+        ] })
       ] }),
       failed && /* @__PURE__ */ jsxs10("span", { className: "flex shrink-0", children: [
-        warning("h-5 w-5"),
+        failureMark("h-5 w-5"),
         said
       ] }),
       expired && /* @__PURE__ */ jsx23("span", { id: markerId, className: "flex max-w-[40%] min-w-0", children: badge2 })
