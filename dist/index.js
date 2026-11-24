@@ -1360,7 +1360,7 @@ function AttachmentTile({
   const label = status === "ready" ? "" : statusLabel ?? DEFAULT_STATUS_LABELS[status];
   const row = !isImage || expired && size === "sm";
   const hasDetail = !isImage && Boolean(detail);
-  const showWarning = Boolean(warning) && status === "ready";
+  const showWarning = Boolean(warning?.trim()) && status === "ready";
   const describedBy = [hasDetail && detailId, hasMarker && markerId, showWarning && warningId].filter(Boolean).join(" ") || void 0;
   const big = size === "md";
   const spinner = /* @__PURE__ */ jsx23(Spinner, { label, className: big ? "h-7 w-7" : "h-5 w-5" });
@@ -1640,6 +1640,7 @@ function ContextMeter({
       "aria-valuemin": 0,
       "aria-valuemax": 100,
       "aria-valuenow": percent,
+      "aria-valuetext": label,
       "aria-label": label,
       title: label,
       "data-level": level,

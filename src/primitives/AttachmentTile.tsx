@@ -104,7 +104,7 @@ const face = cva(
  * A `warning` is a caution about a file that works: "Very long: read only in
  * parts". It shows only while the tile is `ready`: a failed or expired tile has
  * its own marker, and a busy tile's warning waits until it is ready, so the two
- * never stack. It is tinted `warning`, not `danger`, and the border stays as it
+ * never stack. A blank warning counts as none. It is tinted `warning`, not `danger`, and the border stays as it
  * was, since nothing has failed. A row gives it a third line under the detail,
  * cut with an ellipsis and whole in its tooltip. A square has no room for a line
  * and the picture must stay clear, so it draws the sign alone in the bottom-left
@@ -153,8 +153,9 @@ export function AttachmentTile({
   // square has no room for the badge ("Ex…") and there is no picture to show.
   const row = !isImage || (expired && size === 'sm')
   const hasDetail = !isImage && Boolean(detail)
-  // A failed or expired tile has its marker, and a busy one's warning waits.
-  const showWarning = Boolean(warning) && status === 'ready'
+  // A failed or expired tile has its marker, and a busy one's warning waits. A
+  // blank warning is none: it would draw a sign with no words.
+  const showWarning = Boolean(warning?.trim()) && status === 'ready'
   const describedBy =
     [hasDetail && detailId, hasMarker && markerId, showWarning && warningId]
       .filter(Boolean)
@@ -170,8 +171,8 @@ export function AttachmentTile({
   // `block`: an ellipsis needs a block container, which `Badge`'s inline-flex is not.
   const badge = <Badge className="block max-w-full truncate">{label}</Badge>
   // The button's contents are presentational, so what describes it is this text,
-  // not the labelled spinner or warning beside it. A div face has no description
-  // to give, and there the spinner or warning already names the state.
+  // not the labelled spinner or failure mark beside it. A div face has no
+  // description to give, and there the spinner or failure mark already names the state.
   const said = onOpen ? (
     <span id={markerId} className="sr-only">
       {label}

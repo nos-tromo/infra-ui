@@ -394,6 +394,9 @@ test('without a warning, or with an empty one, the tile is as before', () => {
   rerender(<AttachmentTile {...props} warning="" />)
   expect(face(container).querySelectorAll('svg')).toHaveLength(1)
   expect(screen.getByRole('button')).toHaveAccessibleDescription('18.6 MB')
+  rerender(<AttachmentTile {...props} warning="   " />) // blank is none
+  expect(face(container).querySelectorAll('svg')).toHaveLength(1)
+  expect(screen.getByRole('button')).toHaveAccessibleDescription('18.6 MB')
 })
 
 test('on an image’s square the warning is the drawing in a corner, its text the tooltip and the description', () => {
@@ -412,6 +415,7 @@ test('on an image’s square the warning is the drawing in a corner, its text th
   expect(container.querySelector('[class*="bg-background/50"]')).toBeNull() // not veiled
   const corner = face(container).querySelector(`[title="${LONG}"]`)!
   expect(corner).toHaveClass('text-warning')
+  expect(corner).toHaveClass('bottom-1', 'left-1') // the lower left, as the cross is the upper right
   expect(corner.querySelector('svg')!.innerHTML).toBe(drawing(<WarningIcon />))
   expect(screen.getByText(LONG)).toHaveClass('sr-only')
   expect(screen.getByRole('button', { name: 'harbour-sketch.png' })).toHaveAccessibleDescription(

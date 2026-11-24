@@ -10,6 +10,7 @@ test('a meter from 0 to 100, named and titled by its label, at the whole percent
   expect(meter).toHaveAttribute('aria-valuemin', '0')
   expect(meter).toHaveAttribute('aria-valuemax', '100')
   expect(meter).toHaveAttribute('aria-valuenow', '62')
+  expect(meter).toHaveAttribute('aria-valuetext', LABEL) // read as the app words it, not a bare 62
   expect(meter).toHaveAttribute('title', LABEL)
   expect(meter.textContent).toBe('') // drawn, never typed
   expect(meter.querySelector('svg')).toHaveAttribute('aria-hidden', 'true')
@@ -25,6 +26,13 @@ test.each([
   render(<ContextMeter value={value} label={LABEL} />)
   expect(screen.getByRole('meter')).toHaveAttribute('aria-valuenow', now)
   expect(screen.getByRole('meter')).toHaveAttribute('data-level', level)
+})
+
+test('the ring starts at the top: the svg is turned a quarter back, on a track of radius 9', () => {
+  const { container } = render(<ContextMeter value={0.5} label={LABEL} />)
+  expect(container.querySelector('svg')).toHaveClass('-rotate-90')
+  expect(container.querySelector('[data-part="track"]')).toHaveAttribute('r', '9')
+  expect(arc(container)).toHaveAttribute('r', '9')
 })
 
 test('the arc draws the same whole percent the meter says, and nothing at zero', () => {

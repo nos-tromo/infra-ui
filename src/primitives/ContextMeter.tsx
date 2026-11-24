@@ -22,6 +22,10 @@ export interface ContextMeterProps {
  * the accent, because the ring is a reading and not a control; from `warnAt` it
  * turns to the warning colour.
  *
+ * `label` is also the value's text (`aria-valuetext`), so a screen reader
+ * announces the app's wording, "about 62 % of the context used", and not a bare
+ * "62" after the name.
+ *
  * The level is decided on the value, not on the rounded percent, so an app that
  * shows a note from the same value and the same threshold agrees with the ring:
  * 0.799 reads as 80 and is still below 0.8. A value above 1 (an estimate over
@@ -47,6 +51,7 @@ export function ContextMeter({
       aria-valuemin={0}
       aria-valuemax={100}
       aria-valuenow={percent}
+      aria-valuetext={label}
       aria-label={label}
       title={label}
       data-level={level}
