@@ -45,6 +45,8 @@ const PAIRS: Array<[string, string]> = [
   ['--color-muted-foreground', '--color-chrome'],
   ['--color-danger', '--color-background'],
   ['--color-danger', '--color-muted'],
+  ['--color-warning', '--color-background'],
+  ['--color-warning', '--color-muted'],
 ]
 
 for (const [name, block] of [

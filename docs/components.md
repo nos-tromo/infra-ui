@@ -3,8 +3,8 @@
 Props, keyboard maps and worked examples for the things that need more than a
 one-line description: `AppShell`, `SelectMenu`, `Menu`, where actions go
 (`SectionHeader`, `ActionBar`, `EmptyState`), the icon actions, the chat
-composer and user bubble, the attachment tiles and the image lightbox,
-`ForceGraph` and `PurposeBar`. The other primitives take a prop or two and are listed, with what
+composer and user bubble, the context meter, the attachment tiles and the image
+lightbox, `ForceGraph` and `PurposeBar`. The other primitives take a prop or two and are listed, with what
 each is for, in the top-level [README](../README.md#primitives), which also
 carries the install and the Tailwind wiring; this file is the detail behind it.
 Why the icons are drawn rather than typed, and what each named action means, is
@@ -537,6 +537,70 @@ holds in both themes (often the light theme's accent).
 }
 ```
 
+## Context meter
+
+`ContextMeter` shows how much of a budget is used, such as a chat's context
+window, as a small ring (18px) that fills clockwise from the top. It sits in
+`ChatComposer`'s `end`, before Send, so the number is beside the box it is
+about. The app renders it only when it has a number, and passes as `warnAt` its
+own constant, the same one that decides its own note ("nearly full"), so the
+ring and the note turn together.
+
+```tsx
+<ChatComposer
+  …
+  end={
+    <>
+      {usage && (
+        <ContextMeter
+          value={usage.used / usage.budget}
+          label={t('composer.contextUsed', { percent: Math.round(Math.min(1, usage.used / usage.budget) * 100) })}
+          warnAt={NEARLY_FULL}
+        />
+      )}
+      <SendButton type="submit" variant="primary" label={t('composer.send')} disabled={!text.trim()} />
+    </>
+  }
+/>
+```
+
+| Prop        | Type     | Default  | What it does                                                                                                   |
+| ----------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| `value`     | `number` | required | How much is used, as a fraction from 0 to 1; clamped to [0, 1], and `NaN` is 0                                 |
+| `label`     | `string` | required | The accessible name, the value's text and the tooltip, in the app's language: "about 62 % of the context used" |
+| `warnAt`    | `number` | `0.8`    | The fraction from which the meter warns                                                                        |
+| `className` | `string` | none     | Merged onto the root, last                                                                                     |
+
+What it draws:
+
+- A ring on a track of `border` colour; the arc is `text-muted-foreground`, and
+  from `warnAt` it is `text-warning`. The root carries `data-level`, `normal` or
+  `warn`.
+- No arc at 0: a value that rounds to 0 draws nothing but the track, never a
+  round-capped dot.
+- No digits and no `%`. The number is in `label` only, where the app words and
+  rounds it in its own language.
+- No transition and no animation: the ring is read, not watched, so
+  `prefers-reduced-motion` has nothing to turn off.
+
+Accessibility: the root is `role="meter"` with `aria-valuemin` 0,
+`aria-valuemax` 100 and `aria-valuenow` the whole percent. `label` is its name
+(`aria-label`) and its tooltip (`title`). A screen reader reads the label as the
+meter's name, then the whole percent as its value: "about 62 % of the context
+used, meter, 62". There is no `aria-valuetext`, since a second copy of the label
+as the value would be spoken twice. The ring is `aria-hidden`.
+
+Three rules:
+
+- **The level is decided on the value, not on the rounded percent.** `0.799`
+  reads as 80 and is still `normal`, so the ring agrees with an app that compares
+  the same value with the same `warnAt`.
+- **Out-of-range values are clamped.** An estimate over its budget (`1.4`, or
+  `Infinity`) draws a full ring, says 100 and warns; below 0 is 0; `NaN` says 0
+  and stays `normal`.
+- **No number, no meter.** An app that has no figure renders no meter at all,
+  rather than a ring that says 0.
+
 ## Attachment tiles and the image lightbox
 
 A file attached to a chat is shown as itself: its picture when it is an image,
@@ -606,19 +670,20 @@ A message's grid: `md` tiles inside the bubble.
 </UserBubble>
 ```
 
-| Prop           | Type                                                              | Default           | What it does                                                                 |
-| -------------- | ----------------------------------------------------------------- | ----------------- | ---------------------------------------------------------------------------- |
-| `name`         | `string`                                                          | required          | The file's name: the tile's accessible name and its tooltip                  |
-| `kind`         | `'image' \| 'document' \| 'video' \| 'audio'`                     | required          | The shape and the drawing                                                    |
-| `status`       | `'uploading' \| 'processing' \| 'ready' \| 'failed' \| 'expired'` | required          | Where the file stands; `ready` shows no marker                               |
-| `thumbnailUrl` | `string`                                                          | none              | The picture, drawn only when `kind` is `image` and `status` is not `expired` |
-| `detail`       | `string`                                                          | none              | Under the name on a non-image tile                                           |
-| `statusLabel`  | `string`                                                          | per status, below | The marker's text, in the app's language                                     |
-| `onOpen`       | `() => void`                                                      | none              | Makes the face a `<button>`; without it the face is a `<div>`                |
-| `onRemove`     | `() => void`                                                      | none              | Renders the remove button                                                    |
-| `removeLabel`  | `string`                                                          | `Remove ${name}`  | The remove button's label                                                    |
-| `size`         | `'sm' \| 'md'`                                                    | `'sm'`            | `sm` for a composer's row, `md` for a message's grid                         |
-| `className`    | `string`                                                          | none              | Merged onto the root, last                                                   |
+| Prop           | Type                                                              | Default           | What it does                                                                                                                                                               |
+| -------------- | ----------------------------------------------------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`         | `string`                                                          | required          | The file's name: the tile's accessible name and its tooltip                                                                                                                |
+| `kind`         | `'image' \| 'document' \| 'video' \| 'audio'`                     | required          | The shape and the drawing                                                                                                                                                  |
+| `status`       | `'uploading' \| 'processing' \| 'ready' \| 'failed' \| 'expired'` | required          | Where the file stands; `ready` shows no marker                                                                                                                             |
+| `thumbnailUrl` | `string`                                                          | none              | The picture, drawn only when `kind` is `image` and `status` is not `expired`                                                                                               |
+| `detail`       | `string`                                                          | none              | Under the name on a non-image tile                                                                                                                                         |
+| `statusLabel`  | `string`                                                          | per status, below | The marker's text, in the app's language                                                                                                                                   |
+| `warning`      | `string`                                                          | none              | A caution about a ready file: a line under the detail on a row, the drawing alone in a square's corner with the text as its tooltip. Shown only while `status` is `ready`. |
+| `onOpen`       | `() => void`                                                      | none              | Makes the face a `<button>`; without it the face is a `<div>`                                                                                                              |
+| `onRemove`     | `() => void`                                                      | none              | Renders the remove button                                                                                                                                                  |
+| `removeLabel`  | `string`                                                          | `Remove ${name}`  | The remove button's label                                                                                                                                                  |
+| `size`         | `'sm' \| 'md'`                                                    | `'sm'`            | `sm` for a composer's row, `md` for a message's grid                                                                                                                       |
+| `className`    | `string`                                                          | none              | Merged onto the root, last                                                                                                                                                 |
 
 The status marker, by status:
 
@@ -626,22 +691,38 @@ The status marker, by status:
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | ---------------------------------------------------------------- |
 | `uploading`  | A spinner, centred over the picture on a veil; on other kinds, and on an image with no picture, it takes the drawing's place                                                                  | none                             | `statusLabel`, default "Uploading" (`role="status"`)             |
 | `processing` | The same spinner                                                                                                                                                                              | none                             | `statusLabel`, default "Processing" (`role="status"`)            |
-| `ready`      | none                                                                                                                                                                                          | none                             | none                                                             |
+| `ready`      | none; a `warning`, if given                                                                                                                                                                   | the `warning` on a row, if given | the `warning`, in the description, if given                      |
 | `failed`     | The warning drawing in `text-danger`: over the picture on a veil, in the drawing's place on an image with no picture, at the row's end on other kinds; the face's border goes `border-danger` | none                             | `statusLabel`, default "Failed" (`role="img"`, also the tooltip) |
 | `expired`    | A `Badge`; the drawing's square goes muted. At `sm` an image is a row (square, name, then the badge at the row's end); at `md` the badge sits under the drawing in the square                 | `statusLabel`, default "Expired" | The same text                                                    |
 
 A failure is drawn with the warning and not a cross. The cross in the tile's
 corner is the remove action, and two crosses on one tile would mean two things.
 
+A `warning` (v0.28.0) is a caution, not a failure: "Very long: read only in
+parts" is about a file that works. It is drawn with `WarningIcon` in
+`text-warning`, and the face's border stays as it was. It shows only while the
+tile is `ready`, and a blank string counts as none. On a row it is a third line
+under the detail, cut with an ellipsis, and its whole text is in its tooltip; the
+row keeps its size. On an image's square, where there is no room for a line and
+the picture must stay clear, it is the drawing alone in the bottom-left corner,
+away from the remove cross, with the text as its tooltip. Where the face is a
+button, the text is part of its description.
+
+Keep a warning short: about 20 characters fit an `sm` row, and the rest is cut
+with an ellipsis, whole only in the tooltip, which a touch screen cannot show.
+A square's warning is hover-only for a sighted user, so it must not carry
+anything essential.
+
 Where the face is a button, it is named by the file (`aria-label`) and
-described by the detail and the marker (`aria-describedby`); its picture then
+described by the detail, the marker and the warning (`aria-describedby`); its picture then
 has an empty `alt`, because the button carries the name. Where it is a `div`,
 the picture's `alt` is the name.
 
 The face and the remove button are siblings, never nested: a button inside a
 button is invalid, and removing must be its own stop in the tab order that
 never opens the file. The remove button sits on the tile's top-right corner
-and is always visible.
+and is shown on hover or keyboard focus where a pointer can hover, always on a
+touch screen.
 
 The app makes, owns and revokes the thumbnail object URLs; the tile fetches
 nothing, and a data URL or an object URL is all it needs. When `thumbnailUrl`

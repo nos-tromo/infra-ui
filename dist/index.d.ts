@@ -1109,6 +1109,8 @@ interface AttachmentTileProps {
     thumbnailUrl?: string;
     /** What to say under the name on a non-image tile: "2.4 MB", "24 slides", "01:12". */
     detail?: string;
+    /** A short caution about a ready file ("Very long: read only in parts"). Shown only while `status` is `ready`. */
+    warning?: string;
     /** The status marker's text. Defaults to Uploading, Processing, Failed or Expired. */
     statusLabel?: string;
     /** Opens the file. The face is a `<button>` only when this is set. */
@@ -1128,7 +1130,7 @@ interface AttachmentTileProps {
  * An image shows its `thumbnailUrl` as a square cover. Every other kind is a
  * row of its drawing, the name and a `detail`, and ignores the URL. While a file
  * is `uploading` or `processing` a spinner marks it; `failed` is drawn with the
- * warning and a red border, and `expired` shows the drawing with a badge in
+ * warning sign and a red border, and `expired` shows the drawing with a badge in
  * place of the picture, which is gone by then. Without a URL, or when the
  * picture does not load, an image falls back to its drawing. At `sm` an expired
  * image is drawn as a row, like every other kind, so its badge reads whole; at
@@ -1140,13 +1142,25 @@ interface AttachmentTileProps {
  * is set, so the face of a tile that opens nothing is not focusable (its remove
  * button still is).
  *
- * A failure is drawn with the warning, not the cross. The cross in the corner is
+ * A failure is drawn with the warning sign, not the cross. The cross in the corner is
  * the remove action, and two crosses on one tile would mean two things. It is
  * small (20px drawn, a 12px cross, a 24px target) and, where a pointer can hover,
  * shows only while the pointer is over the tile or the keyboard's focus is in it,
  * so a row of files reads as files; on a touch screen, which cannot hover, it
  * always shows. It stays its own stop in the tab order, and shows as soon as the
  * keyboard reaches it.
+ *
+ * A `warning` is a caution about a file that works: "Very long: read only in
+ * parts". It shows only while the tile is `ready`: a failed or expired tile has
+ * its own marker, and a busy tile's warning waits until it is ready, so the two
+ * never stack. A blank warning counts as none. It is tinted `warning`, not
+ * `danger`, and the border stays as it was, since nothing has failed. A row
+ * gives it a third line under the detail, cut with an ellipsis and whole in its
+ * tooltip, so keep it short: about 20 characters fit an `sm` row. A square has
+ * no room for a line and the picture must stay clear, so it draws the sign alone
+ * in the bottom-left corner, away from the remove cross. Its text is the tooltip
+ * and, for a screen reader, part of the description; a sighted user sees it only
+ * on hover, so it must carry nothing essential.
  *
  * The caller makes, owns and revokes the thumbnail's object URL; the tile
  * fetches nothing. Put tiles above `ChatComposer`'s pill, not inside it: its
@@ -1155,7 +1169,7 @@ interface AttachmentTileProps {
  * @param props - `name`, `kind` and `status` are required.
  * @returns The tile.
  */
-declare function AttachmentTile({ name, kind, status, thumbnailUrl, detail, statusLabel, onOpen, onRemove, removeLabel, size, className, }: AttachmentTileProps): ReactElement;
+declare function AttachmentTile({ name, kind, status, thumbnailUrl, detail, warning, statusLabel, onOpen, onRemove, removeLabel, size, className, }: AttachmentTileProps): ReactElement;
 declare namespace AttachmentTile {
     var displayName: string;
 }
@@ -1213,6 +1227,46 @@ interface ImageLightboxProps {
  */
 declare function ImageLightbox({ open, ...props }: ImageLightboxProps): ReactElement | null;
 declare namespace ImageLightbox {
+    var displayName: string;
+}
+
+interface ContextMeterProps {
+    /** How much is used, as a fraction from 0 to 1. Clamped to [0, 1]; NaN is 0. */
+    value: number;
+    /** The accessible name and the tooltip, in the app's language: "about 62 % of the context used". */
+    label: string;
+    /** The fraction from which the meter warns. Defaults to 0.8. */
+    warnAt?: number;
+    /** Merged onto the root, last. */
+    className?: string;
+}
+/**
+ * How much of a budget is used, such as a chat's context, as a small ring that
+ * fills clockwise from the top.
+ *
+ * The number lives only in `label`, never in the drawing: the app words it and
+ * rounds it in its own language, with its own "about", and the ring holds no
+ * text that a translation or a font could change. The normal arc is muted, not
+ * the accent, because the ring is a reading and not a control; from `warnAt` it
+ * turns to the warning colour.
+ *
+ * A screen reader reads `label` as the meter's name, then the whole percent as
+ * its value: "about 62 % of the context used, meter, 62". There is no
+ * `aria-valuetext`, because a second copy of the label as the value would be
+ * spoken twice.
+ *
+ * The level is decided on the value, not on the rounded percent, so an app that
+ * shows a note from the same value and the same threshold agrees with the ring:
+ * 0.799 reads as 80 and is still below 0.8. A value above 1 (an estimate over
+ * its budget) draws a full ring, and a missing number (`NaN`) is 0. Nothing
+ * that rounds to 0 draws an arc, so a round-capped dot never shows for an empty
+ * budget.
+ *
+ * It has no transition and no animation: the ring is read, not watched, so
+ * `prefers-reduced-motion` has nothing to turn off.
+ */
+declare function ContextMeter({ value, label, warnAt, className, }: ContextMeterProps): ReactElement;
+declare namespace ContextMeter {
     var displayName: string;
 }
 
@@ -1826,4 +1880,4 @@ declare namespace PurposeBar {
     var displayName: string;
 }
 
-export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, type AttachmentKind, AttachmentTile, type AttachmentTileProps, type AttachmentTileStatus, AudioIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, FileIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, ImageLightbox, type ImageLightboxProps, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, VideoIcon, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };
+export { ActionBar, AppHeader, type AppHeaderProps, AppShell, type AppShellProps, ArrowLeftIcon, AttachButton, type AttachmentKind, AttachmentTile, type AttachmentTileProps, type AttachmentTileStatus, AudioIcon, Badge, type BadgeProps, Banner, type BannerProps, BrainActiveIcon, BrainIcon, Button, type ButtonProps, Card, type CardProps, ChatComposer, type ChatComposerProps, CheckIcon, ChevronDownIcon, ChevronUpIcon, ChevronsUpDownIcon, ContextMeter, type ContextMeterProps, CopyButton, type CopyButtonProps, CycleButton, type CycleButtonOption, type CycleButtonProps, DeleteButton, DisclosureButton, type DisclosureButtonProps, DisclosureText, type DisclosureTextProps, DocumentsIcon, DownloadButton, DownloadIcon, DownloadLink, EmptyState, type EmptyStateProps, ExternalLinkIcon, FileIcon, type FileLike, FileList, type FileListLabels, type FileListProps, ForceGraph, type ForceGraphEdge, type ForceGraphEdgeStyle, type ForceGraphExpandAction, type ForceGraphHandle, type ForceGraphLabels, type ForceGraphNode, type ForceGraphNodeStyle, type ForceGraphProps, type GraphHtmlExportOptions, HoverIconAction, type HoverIconActionProps, IconButton, type IconButtonProps, IconLink, type IconLinkProps, type IconProps, ImageIcon, ImageLightbox, type ImageLightboxProps, InfoIcon, Input, LayersIcon, MAX_PURPOSE_FIELD, MAX_PURPOSE_HEADER, Menu, MenuItem, type MenuItemProps, type MenuProps, type MenuRenderContext, type MenuTriggerProps, MicButton, MicIcon, MoreIcon, MoveDownButton, MoveUpButton, NewButton, PURPOSE_HEADER, PURPOSE_REQUIRED_STATUS, PageHeader, type PageHeaderProps, PaperclipIcon, PencilIcon, PlayButton, PlayIcon, PlusIcon, type Purpose, PurposeBar, type PurposeBarLabels, type PurposeBarProps, PurposeError, type PurposeErrors, type PurposeFieldError, type PurposeInput, RefreshButton, RefreshIcon, RemoveButton, ReportCheckIcon, ReportIcon, SIDEBAR_STORAGE_KEY, SearchButton, SearchIcon, SectionHeader, type SectionHeaderProps, Select, SelectMenu, type SelectMenuOption, type SelectMenuProps, SendButton, SendIcon, SidebarGroup, Spinner, type SpinnerProps, StatusIcon, type StatusIconProps, type StatusIconStatus, StopButton, StopIcon, StopwatchIcon, THEME_STORAGE_KEY, TagIcon, type ThemeMode, type ThemeToggleLabels, ToggleButton, type ToggleButtonProps, TrashIcon, UndoButton, UndoIcon, type UsePurposeResult, UserBubble, type UserBubbleProps, UserMenu, type UserMenuProps, VideoIcon, WarningIcon, XIcon, clearAllPurposes, clearPurpose, cn, downloadText, encodePurpose, getPurpose, isPurposeStated, mergeFiles, purposeHeaders, requestPurpose, setPurpose, subscribePurpose, toGraphHtml, toGraphJson, toGraphML, usePurpose, useTheme, validatePurpose, withPurpose };

@@ -13,6 +13,7 @@ test('declares the fixed family tokens', () => {
     '--color-border',
     '--color-accent',
     '--color-danger',
+    '--color-warning',
     '--color-primary-foreground',
     '--font-sans',
     '--font-mono',
